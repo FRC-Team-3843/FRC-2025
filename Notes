@@ -1,1 +1,186 @@
 Notes
+//Robot.java
+
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot;
+
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+
+
+/**
+ * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
+ * the code necessary to operate a robot with tank drive.
+ */
+
+public class Robot extends TimedRobot {
+
+  private final TalonSRX LFMotor = new TalonSRX(1);
+  private final TalonSRX LBMotor = new TalonSRX(2);
+  private final TalonSRX RBMotor = new TalonSRX(3);
+  private final TalonSRX RFMotor = new TalonSRX(4);
+  private static final double deadband = 0.1;
+
+  private XboxController controller1;
+  double LJYAxis, LJXAxis = 0;
+  double RJYAxis = 0;
+  double RSpeed, LSpeed = 0;
+
+  /** Called once at the beginning of the robot program. */
+  public Robot() {
+    // We need to invert one side of the drivetrain so that positive voltages
+    // result in both sides moving forward. Depending on how your robot's
+    // gearbox is constructed, you might have to invert the left side instead.
+
+    
+  }
+
+  @Override
+  public void robotInit() {
+    controller1 = new XboxController(0);
+
+    RFMotor.setInverted(true);
+    RBMotor.setInverted(true);
+    RBMotor.follow(RFMotor);
+    LBMotor.follow(LFMotor);
+ }
+
+  @Override
+  public void teleopPeriodic() {
+
+    LJYAxis = MathUtil.applyDeadband(controller1.getLeftY(), deadband);
+    LJXAxis = MathUtil.applyDeadband(controller1.getLeftX(), deadband);
+    RJYAxis = MathUtil.applyDeadband(controller1.getRightY(), deadband);
+
+    RSpeed = LJXAxis + LJYAxis;
+    LSpeed = (-1 * LJXAxis) + LJYAxis;
+    if (LSpeed > 1) {
+      LSpeed = 1;
+    } else if (LSpeed < -1) {
+      LSpeed = -1;
+    }
+    if (RSpeed > 1) {
+      RSpeed = 1;
+    } else if (RSpeed < -1) {
+      RSpeed = -1;
+    }
+    
+    //LFMotor.set(TalonSRXControlMode.PercentOutput, 1);
+    
+
+    RFMotor.set(TalonSRXControlMode.PercentOutput, RSpeed);
+    LFMotor.set(TalonSRXControlMode.PercentOutput, LSpeed);
+    
+  
+  }
+}
+
+
+ /* "imu": {
+    "type": "adis16448",
+    "id": 0,
+    "canbus": null
+  },
+  "invertedIMU": false,
+  "modules": [
+    "frontleft.json",
+    "frontright.json",
+    "backleft.json",
+    "backright.json"
+  ]
+}/*/
+//Extra code for swerve config, should be swervedrive.json
+
+/*{
+  "conversionFactors": {
+    "angle": {
+      "gearRatio": 46.42,
+      "factor": 0
+    },
+    "drive": {
+      "gearRatio": 5.50,
+      "diameter": 3,
+      "factor": 0
+    }
+  },
+  "currentLimit": {
+    "drive": 40,
+    "angle": 20
+  },
+  "rampRate": {
+    "drive": 0.25,
+    "angle": 0.25
+  },
+  "optimalVoltage": 12,
+  "wheelGripCoefficientOfFriction": 1.19
+} */
+//physicalproperties.json
+
+/*{
+  "drive": {
+    "p": 0.0020645,
+    "i": 0,
+    "d": 0,
+    "f": 0,
+    "iz": 0
+  },
+  "angle": {
+    "p": 0.01,
+    "i": 0,
+    "d": 0,
+    "f": 0,
+    "iz": 0
+  }
+} */
+//pidfproperties.json
+
+/*{
+  "drive": {
+    "type": "sparkmax",
+    "id": 2,
+    "canbus": null
+  },
+  "angle": {
+    "type": "sparkmax",
+    "id": 1,
+    "canbus": null
+  },
+  "encoder": {
+    "type": "cancoder",
+    "id": 10,
+    "canbus": null
+  },
+  "inverted": {
+    "drive": false,
+    "angle": false
+  },
+  "absoluteEncoderInverted": false,
+  "absoluteEncoderOffset": -50.977,
+  "location": {
+    "front": 12,
+    "left": -12
+  }
+} */
+//x.json, not in modules folder?
+
+/*{
+  "angleJoystickRadiusDeadband": 0.5,
+  "heading": {
+    "p": 0.4,
+    "i": 0,
+    "d": 0.01
+  }
+} */
+//controllerproperties.json
+
