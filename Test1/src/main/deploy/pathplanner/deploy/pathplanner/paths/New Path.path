@@ -1,0 +1,109 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.9916940789512068,
+        "y": 7.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.6565684876517865,
+        "y": 7.11470398822932
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.6370065789445345,
+        "y": 6.209128289472581
+      },
+      "prevControl": {
+        "x": 3.4762964831861924,
+        "y": 6.400628328953894
+      },
+      "nextControl": {
+        "x": 3.8975282022826856,
+        "y": 5.898694144563534
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.677467105260323,
+        "y": 3.0724506578928863
+      },
+      "prevControl": {
+        "x": 6.980079492072257,
+        "y": 4.152402403797456
+      },
+      "nextControl": {
+        "x": 6.469933002231111,
+        "y": 2.3318107281717437
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.6370065789445345,
+        "y": 2.1102796052620545
+      },
+      "prevControl": {
+        "x": 5.234255332784617,
+        "y": 2.2855022316390503
+      },
+      "nextControl": {
+        "x": 3.3494602821133435,
+        "y": 2.07873497752977
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.5305098684248906,
+        "y": 3.0724506578928863
+      },
+      "prevControl": {
+        "x": 2.422463312520346,
+        "y": 2.847004562878654
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Let me cook!",
+      "waypointRelativePos": 0.05,
+      "endWaypointRelativePos": 0.3339317773788153,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

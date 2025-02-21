@@ -13,9 +13,11 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.ClawIntake;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -25,12 +27,22 @@ import swervelib.SwerveInputStream;
  * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
  * Instead, the structure of the robot (including subsystems, commands, and trigger mappings) should be declared here.
  */
+
+ /*
+  1. Tune F variable on drive motors
+  2. pathplanner 
+  */
 public class RobotContainer
 {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
+
+
   // The robot's subsystems and commands are defined here...
+
+  private final ClawIntake clawIntake = new ClawIntake();
+
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
 
@@ -114,6 +126,11 @@ public class RobotContainer
     Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
     Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
+
+    //driverXbox.a().onTrue(Commands.run(() -> {clawIntake.intake(.5);}));
+    //driverXbox.a().onFalse(Commands.runOnce(() -> {clawIntake.stop();}));
+
+    driverXbox.a().whileTrue(Commands.startEnd(() -> clawIntake.intake(.2), () -> clawIntake.stop()));
 
     if (RobotBase.isSimulation())
     {

@@ -48,4 +48,9 @@ public final class Constants
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
   }
+
+  public static class ClawConstants{
+    public static final int CLAW_INTAKE_MOTOR_ID = 30;
+    public static final boolean  CLAW_INTAKE_MOTOR_INVERT = true;
+  }
 }
