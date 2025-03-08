@@ -1,15 +1,20 @@
 Notes
-
-
+61.5 Target Position = 1 rotation
+3.5 rotations = 
 Pod Length : 25.25 in || 0.6413 m
 Pod Width : 19.25 in || 0.4889 m
 
+IMPORTANT!!! DO THIS WHEN POSSABLE:
+
 TODO:
- - We need to configure Pathplanner and PIDF
+ - We need to configure Pathplanner
  - Tune the bot.
  - Code the auto
  - Fix the bumpyness with the swerve drive.
  - Everything else.
+ - Button Maping
+ - Cut off bolt to prevent wire on KrakenX44 from falling out -> lifterIntakeMotor
+ - Commands
  
  Fill Out This for PathPlanner (please, Harrison, please):
  Robot Mass (kg):
@@ -32,6 +37,3 @@ TODO:
  Back Left Y (m):
  Back Right X (m):
  Back Right Y (m):
- 
- 
- 

@@ -17,8 +17,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.ClawArm;
+import frc.robot.subsystems.ClawElevator;
 import frc.robot.subsystems.ClawIntake;
+import frc.robot.subsystems.Lifter;
+import frc.robot.subsystems.LifterIntake;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.commands.CoralCommand;
+import frc.robot.commands.CoralCommand;
 import java.io.File;
 import swervelib.SwerveInputStream;
 
@@ -42,6 +48,11 @@ public class RobotContainer
   // The robot's subsystems and commands are defined here...
 
   private final ClawIntake clawIntake = new ClawIntake();
+  private final Lifter lifter = new Lifter();
+  private final LifterIntake lifterIntake = new LifterIntake();
+  private final ClawElevator clawElevator = new ClawElevator();
+  private final ClawArm clawArm = new ClawArm();
+  private final CoralCommand coralCommand = new CoralCommand();
 
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
@@ -53,7 +64,7 @@ public class RobotContainer
                                                                 () -> driverXbox.getLeftY() * -1,
                                                                 () -> driverXbox.getLeftX() * -1)
                                                             .withControllerRotationAxis(driverXbox::getRightX)
-                                                            .deadband(OperatorConstants.DEADBAND)
+                                                            .deadband(Constants.OperatorConstants.DEADBAND)
                                                             .scaleTranslation(0.8)
                                                             .allianceRelativeControl(true);
 
@@ -75,7 +86,7 @@ public class RobotContainer
                                                                         () -> -driverXbox.getLeftX())
                                                                     .withControllerRotationAxis(() -> driverXbox.getRawAxis(
                                                                         2))
-                                                                    .deadband(OperatorConstants.DEADBAND)
+                                                                    .deadband(Constants.OperatorConstants.DEADBAND)
                                                                     .scaleTranslation(0.8)
                                                                     .allianceRelativeControl(true);
   // Derive the heading axis with math!
@@ -130,8 +141,31 @@ public class RobotContainer
     //driverXbox.a().onTrue(Commands.run(() -> {clawIntake.intake(.5);}));
     //driverXbox.a().onFalse(Commands.runOnce(() -> {clawIntake.stop();}));
 
-    driverXbox.a().whileTrue(Commands.startEnd(() -> clawIntake.intake(.2), () -> clawIntake.stop()));
+    // What buttons should connect to which things?
+    driverXbox.povDown().whileTrue(Commands.startEnd(() -> coralCommand.coralIntakeCommand(lifter, lifterIntake, 1), () -> coralCommand.reset(lifter, lifterIntake)));
+    driverXbox.povLeft().onTrue(Commands.runOnce(() -> {lifter.moveClimbingApproachPos();}));
+    driverXbox.povUp().onTrue(Commands.runOnce(() -> {lifter.moveHangPos();}));
+    /*driverXbox.b().whileTrue(Commands.startEnd(() -> {
+          coralCommand.coralOutakeCommand(lifter, lifterIntake);
+        }, () -> coralCommand.reset(lifter, lifterIntake))); */
+    driverXbox.a().whileTrue(Commands.startEnd(() -> lifterIntake.intake(1), () -> lifterIntake.stop()));
+    driverXbox.y().whileTrue(Commands.startEnd(() -> lifterIntake.outtake(1), () -> lifterIntake.stop()));
+    //driverXbox.rightBumper().onTrue(Commands.runOnce(() -> {lifter.moveCoralScorePos();} ));
+    driverXbox.b().onTrue(Commands.runOnce(() -> {lifter.moveStowedPos();}));
+    driverXbox.x().onTrue(Commands.runOnce(() -> {lifter.moveCoralIntakePos();}));
+    //driverXbox.x().onTrue(Commands.runOnce(() -> {clawArm.middleCoralScoringPos();}));
+    //driverXbox.a().onTrue(Commands.runOnce(() -> {clawElevator.bottomPos();}));
+    //driverXbox.b().onTrue(Commands.runOnce(() -> {clawElevator.middleCoralScoringPos();}));
+    //driverXbox.x().onTrue(Commands.runOnce(() -> {clawArm.lowCoralScoringPos();}));
+    //driverXbox.y().whileTrue(Commands.startEnd(() -> clawIntake.intake(1), () -> clawIntake.stop()));
+    //driverXbox.a().whileTrue(Commands.startEnd(() -> clawIntake.outtake(1), () -> clawIntake.stop()));
 
+
+    //driverXbox.y().onTrue(Commands.runOnce(() -> {lifter.moveClimbingApproachPos();}));
+    //driverXbox.rightBumper().onTrue(Commands.runOnce(() -> {lifter.moveClimbingApproachPos();}));
+    driverXbox.leftBumper().onTrue(Commands.runOnce(() -> {lifter.moveCoralScorePos();}));
+    // driverXbox.rightBumper(Commands.runOnce(() -> {clawArm.topPos();}));
+ 
     if (RobotBase.isSimulation())
     {
       drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
@@ -157,18 +191,18 @@ public class RobotContainer
       driverXbox.leftBumper().onTrue(Commands.none());
       driverXbox.rightBumper().onTrue(Commands.none());
     } else
-    {
-      driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-      driverXbox.b().whileTrue(
-          drivebase.driveToPose(
-              new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-                              );
+    { 
+      //driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+      //driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
+      //driverXbox.b().whileTrue(
+      //    drivebase.driveToPose(
+      //        new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
+      //                        );
       driverXbox.start().whileTrue(Commands.none());
       driverXbox.back().whileTrue(Commands.none());
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
-    }
+    } 
 
   }
 

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.signals.InvertedValue;
+
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
@@ -39,11 +41,9 @@ public final class Constants
     public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
 
-  public static class OperatorConstants
-  {
-
+  public static class OperatorConstants{
     // Joystick Deadband
-    public static final double DEADBAND        = 0.1;
+    public static final double DEADBAND        = 0.15;
     public static final double LEFT_Y_DEADBAND = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
@@ -52,5 +52,55 @@ public final class Constants
   public static class ClawConstants{
     public static final int CLAW_INTAKE_MOTOR_ID = 30;
     public static final boolean  CLAW_INTAKE_MOTOR_INVERT = true;
+    public static final int CLAW_ARM_MOTOR_ID = 34;
+    public static final double ALGAE_SCORE_POS = 47.5;
+    public static final double STOWED_POS = 0.77;
+    public static final double STRAIGHT_POS = 34.2;
+    public static final double LOW_CORAL_SCORING_POS = 22.97;
+    public static final double MIDDLE_CORAL_SCORING_POS = 25.76;
+  }
+
+  public static class LifterConstants{
+    public static final int LIFTER_RIGHT_MOTOR_ID = 31;
+    public static final int LIFTER_LEFT_MOTOR_ID = 32;
+    public static final int LIFTER_INTAKE_MOTOR_ID = 35;
+    public static final boolean LIFTER_RIGHT_MOTOR_INVERT = false;
+    public static final boolean LIFTER_LEFT_MOTOR_INVERT = true;
+    public static final double DRIVE_MOTOR_IZ = 0;
+    public static final double DRIVE_MOTOR_MAX_VELOCITY = 8000;
+    public static final double DRIVE_MOTOR_ALLOWED_ERROR = 0;
+    public static final double DRIVE_MOTOR_MIN_OUTPUT = -1;
+    public static final double DRIVE_MOTOR_MAX_ACCELERATION = 8000;
+    public static final double LIFTER_RIGHT_P = 0.15;
+    public static final double LIFTER_RIGHT_I = 0;
+    public static final double LIFTER_RIGHT_D = 0.001;
+    public static final double LIFTER_LEFT_P = 0.15;
+    public static final double LIFTER_LEFT_I = 0;
+    public static final double LIFTER_LEFT_D = 0.001;
+
+    public static final double STOWED_POS = 10;
+    public static final double CLIMBING_APPROACH_POS = 196;
+    public static final double CORAL_INTAKE_POS = 195;
+    public static final double ALGAE_INTAKE_POS = 125.1;
+    public static final double SCORING_TROUGH_POS = 200;
+    public static final double HANG_POS = 21.4;
+    public static final double CORAL_SCORE_POS = 85;
+
+
+  }
+
+  public static class ElevatorConstants{
+    public static final int ELEVATOR_MOTOR_ID = 50;
+    public static final double BOTTOM_POS = 0;
+    public static final double SCORING_POS = 31;
+    public static final double CAGE_POS = 1.77;
+    public static final double BALL_STOWED_POS = 18.5;
+    public static final double MIDDLE_CORAL_SCORING_POS = 19;
+    public static final double LOW_CORAL_SCORING_POS = 0;
+
+  }
+
+  public static class LifterIntakeConstants{
+    public static InvertedValue LIFTER_MOTOR_INVERT = InvertedValue.Clockwise_Positive;
   }
 }

@@ -1,58 +1,23 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// Phoenix 6 is in the com.ctre.phoenix6.* packages
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 
-package frc.robot;
+// All hardware classes already have WPILib integration
+final TalonFX m_talonFX = new TalonFX(0);
+final CANcoder m_cancoder = new CANcoder(0);
 
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+final TalonFXSimState m_talonFXSim = m_talonFX.getSimState();
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.util.sendable.SendableRegistry;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+final DutyCycleOut m_talonFXOut = new DutyCycleOut(0);
 
+final TalonFXConfiguration m_talonFXConfig = new TalonFXConfiguration();
+final CANcoderConfiguration m_cancoderConfig = new CANcoderConfiguration();
 
-/**
- * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
- * the code necessary to operate a robot with tank drive.
- */
+InvertedValue m_talonFXInverted = InvertedValue.CounterClockwise_Positive;
 
-public class Robot extends TimedRobot {
-
-  private final TalonSRX test = new TalonSRX(30);
-
-
-  private XboxController controller1;
-  double LJYAxis = 0;
-  double RJYAxis = 0;
-
-  /** Called once at the beginning of the robot program. */
-  public Robot() {
-    // We need to invert one side of the drivetrain so that positive voltages
-    // result in both sides moving forward. Depending on how your robot's
-    // gearbox is constructed, you might have to invert the left side instead.
-
-
-  }
-
-  @Override
-  public void robotInit() {
-    controller1 = new XboxController(0);
-
- }
-
-  @Override
-  public void teleopPeriodic() {
-
-    if (controller1.getAButton()){
-      test.set(TalonSRXControlMode.PercentOutput, .5);
-    }
-      
-
-
-  }
-}
+m_talonFX.setControl(m_talonFXOut);
