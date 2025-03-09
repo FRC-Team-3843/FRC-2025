@@ -56,9 +56,18 @@ public class ClawElevator extends SubsystemBase{
         setPos(Constants.ElevatorConstants.SCORING_POS);
     }
 
-    public void middleCoralScoringPos() {
-        setPos(Constants.ElevatorConstants.MIDDLE_CORAL_SCORING_POS);
+    public void L1CoralScoringPos() {
+        setPos(Constants.ElevatorConstants.L1_CORAL_SCORING_POS);
     }
 
+    public void L2CoralScoringPos() {
+        setPos(Constants.ElevatorConstants.L2_CORAL_SCORING_POS);
+    }
+    public void L1AlgaeIntakePos() {
+        setPos(Constants.ElevatorConstants.L1_ALGAE_INTAKE_POS);
+    }
+    public void L2AlgaeIntakePos() {
+        setPos(Constants.ElevatorConstants.L2_ALGAE_INTAKE_POS);
+    }
 
 }

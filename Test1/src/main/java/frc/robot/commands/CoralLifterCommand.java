@@ -3,19 +3,25 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Lifter;
 import frc.robot.subsystems.LifterIntake;
 
-public class CoralCommand extends Command {
+public class CoralLifterCommand extends Command {
 public Lifter lifter;
 public LifterIntake lifterIntake;
+public double speed;
+
+
 
 public void coralIntakeCommand(Lifter lifter, LifterIntake lifterIntake, double speed) {
     this.lifter = lifter;
     this.lifterIntake = lifterIntake;
-    System.out.println("Sending regards!%");
+    System.out.println("Sending regards!");
     lifter.moveCoralIntakePos();
     lifterIntake.intake(speed);
 }
 
-public void coralOutakeCommand(Lifter lifter, LifterIntake lifterIntake) {
+
+
+
+/*public void coralOutakeCommand(Lifter lifter, LifterIntake lifterIntake) {
     this.lifter = lifter;
     this.lifterIntake = lifterIntake;
 
@@ -26,7 +32,7 @@ public void coralOutakeCommand(Lifter lifter, LifterIntake lifterIntake) {
         lifterIntake.outtake(.2);
     }
     
-}
+} */
 
 public void reset(Lifter lifter, LifterIntake lifterIntake) {
     this.lifter = lifter;

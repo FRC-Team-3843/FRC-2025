@@ -54,6 +54,7 @@ public final class Constants
     public static final boolean  CLAW_INTAKE_MOTOR_INVERT = true;
     public static final int CLAW_ARM_MOTOR_ID = 34;
     public static final double ALGAE_SCORE_POS = 47.5;
+    public static final double CORAL_HUMAN_POS = 45;
     public static final double STOWED_POS = 0.77;
     public static final double STRAIGHT_POS = 34.2;
     public static final double LOW_CORAL_SCORING_POS = 22.97;
@@ -95,8 +96,10 @@ public final class Constants
     public static final double SCORING_POS = 31;
     public static final double CAGE_POS = 1.77;
     public static final double BALL_STOWED_POS = 18.5;
-    public static final double MIDDLE_CORAL_SCORING_POS = 19;
-    public static final double LOW_CORAL_SCORING_POS = 0;
+    public static final double L2_CORAL_SCORING_POS = 19;
+    public static final double L1_CORAL_SCORING_POS = 0;
+    public static final double L1_ALGAE_INTAKE_POS = 0;
+    public static final double L2_ALGAE_INTAKE_POS = 19;
 
   }
 

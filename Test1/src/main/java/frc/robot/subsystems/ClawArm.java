@@ -15,6 +15,7 @@ public class ClawArm extends SubsystemBase{
     private final TalonFX clawArmMotor = new TalonFX(Constants.ClawConstants.CLAW_ARM_MOTOR_ID);
     private final MotionMagicVoltage clawArmMM = new MotionMagicVoltage(0);
     public final TalonFXConfiguration clawArmConfig = new TalonFXConfiguration();
+	public Object moveAlgaeIntakePos;
     public ClawArm () {
 
         FeedbackConfigs fdb = clawArmConfig.Feedback;
@@ -67,4 +68,8 @@ public class ClawArm extends SubsystemBase{
     public void middleCoralScoringPos() {
         setPos(Constants.ClawConstants.MIDDLE_CORAL_SCORING_POS);
     }
+    public void coralHumanPos() {
+        setPos(Constants.ClawConstants.CORAL_HUMAN_POS);
+    }
+
 }

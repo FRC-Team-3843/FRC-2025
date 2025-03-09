@@ -106,7 +106,7 @@ public class Lifter extends SubsystemBase {
         lifterLeftClosedLoopController.setReference(targetPosition, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
         lifterRightClosedLoopController.setReference(targetPosition, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
         
-        System.out.println(targetPosition);
+     //   System.out.println(targetPosition);
         
     }
 
@@ -118,7 +118,6 @@ public class Lifter extends SubsystemBase {
         setPos(Constants.LifterConstants.CLIMBING_APPROACH_POS);
     }
     public void moveCoralIntakePos() {
-        System.out.println("Hello!");
         setPos(Constants.LifterConstants.CORAL_INTAKE_POS);
     }
     public void moveAlgaeIntakePos() {
@@ -134,6 +133,9 @@ public class Lifter extends SubsystemBase {
     public void moveHangPos() {
         setPos(Constants.LifterConstants.HANG_POS);
     }
-
+    public double getPosition() {
+        return lifterLeftEncoder.getPosition();
+        
+    }
 
 }

@@ -23,8 +23,12 @@ import frc.robot.subsystems.ClawIntake;
 import frc.robot.subsystems.Lifter;
 import frc.robot.subsystems.LifterIntake;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.commands.CoralCommand;
-import frc.robot.commands.CoralCommand;
+import frc.robot.commands.CoralLifterCommand;
+import frc.robot.commands.CoralLifterCommand;
+import frc.robot.commands.CoralLifterOuttakeCommand;
+import frc.robot.commands.StowedAfterCommand;
+import frc.robot.commands.CoralLifterOuttakeCommand;
+import frc.robot.commands.tempclass;
 import java.io.File;
 import swervelib.SwerveInputStream;
 
@@ -52,7 +56,9 @@ public class RobotContainer
   private final LifterIntake lifterIntake = new LifterIntake();
   private final ClawElevator clawElevator = new ClawElevator();
   private final ClawArm clawArm = new ClawArm();
-  private final CoralCommand coralCommand = new CoralCommand();
+  private final CoralLifterCommand coralLifterCommand = new CoralLifterCommand();
+  private final CoralLifterOuttakeCommand coralLifterOuttakeCommand = new CoralLifterOuttakeCommand();
+  private final StowedAfterCommand stowedAfterCommand = new StowedAfterCommand();
 
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
@@ -142,17 +148,20 @@ public class RobotContainer
     //driverXbox.a().onFalse(Commands.runOnce(() -> {clawIntake.stop();}));
 
     // What buttons should connect to which things?
-    driverXbox.povDown().whileTrue(Commands.startEnd(() -> coralCommand.coralIntakeCommand(lifter, lifterIntake, 1), () -> coralCommand.reset(lifter, lifterIntake)));
-    driverXbox.povLeft().onTrue(Commands.runOnce(() -> {lifter.moveClimbingApproachPos();}));
-    driverXbox.povUp().onTrue(Commands.runOnce(() -> {lifter.moveHangPos();}));
+    
+    driverXbox.a().whileTrue(Commands.startEnd(() -> coralLifterCommand.coralIntakeCommand(lifter, lifterIntake, 1), () -> coralLifterCommand.reset(lifter, lifterIntake)));
+    driverXbox.b().whileTrue(Commands.startEnd(() -> coralLifterOuttakeCommand.coralOuttakeCommand(lifter, lifterIntake, 1), () -> coralLifterOuttakeCommand.reset(lifter, lifterIntake)));
+   // driverXbox.povLeft().onTrue(Commands.runOnce(() -> {lifter.moveClimbingApproachPos();}));
+   // driverXbox.povUp().onTrue(Commands.runOnce(() -> {lifter.moveHangPos();}));
     /*driverXbox.b().whileTrue(Commands.startEnd(() -> {
           coralCommand.coralOutakeCommand(lifter, lifterIntake);
         }, () -> coralCommand.reset(lifter, lifterIntake))); */
-    driverXbox.a().whileTrue(Commands.startEnd(() -> lifterIntake.intake(1), () -> lifterIntake.stop()));
-    driverXbox.y().whileTrue(Commands.startEnd(() -> lifterIntake.outtake(1), () -> lifterIntake.stop()));
+   // driverXbox.a().whileTrue(Commands.startEnd(() -> lifterIntake.intake(1), () -> lifterIntake.stop()));
+    //driverXbox.y().whileTrue(Commands.startEnd(() -> lifterIntake.outtake(1), () -> lifterIntake.stop()));
     //driverXbox.rightBumper().onTrue(Commands.runOnce(() -> {lifter.moveCoralScorePos();} ));
-    driverXbox.b().onTrue(Commands.runOnce(() -> {lifter.moveStowedPos();}));
-    driverXbox.x().onTrue(Commands.runOnce(() -> {lifter.moveCoralIntakePos();}));
+    driverXbox.x().onTrue(Commands.runOnce(() -> stowedAfterCommand.stowedAfterCommand(clawIntake, lifter, lifterIntake)));
+
+    //driverXbox.x().onTrue(Commands.runOnce(() -> {lifter.moveCoralIntakePos();}));
     //driverXbox.x().onTrue(Commands.runOnce(() -> {clawArm.middleCoralScoringPos();}));
     //driverXbox.a().onTrue(Commands.runOnce(() -> {clawElevator.bottomPos();}));
     //driverXbox.b().onTrue(Commands.runOnce(() -> {clawElevator.middleCoralScoringPos();}));
