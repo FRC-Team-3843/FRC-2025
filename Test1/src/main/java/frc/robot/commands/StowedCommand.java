@@ -8,18 +8,11 @@ import frc.robot.subsystems.Lifter;
 import frc.robot.subsystems.LifterIntake;
 
 public class StowedCommand extends Command{
- public ClawIntake clawIntake;
-    public Lifter lifter;
-    public LifterIntake lifterIntake;
 
-    public void stowedAfterCommand (ClawIntake clawIntake, Lifter lifter, LifterIntake lifterIntake) {
-        this.clawIntake = clawIntake;
-        this.lifter = lifter;
-        this.lifterIntake = lifterIntake;
-        
-        lifterIntake.stop();
-        clawIntake.stop();
-        lifter.moveStowedPos();
+    public StowedCommand (ClawIntake m_clawIntake, ClawArm m_ClawArm, ClawElevator m_clawElevator, Lifter m_lifter, LifterIntake m_lifterIntake) {
+        m_lifterIntake.stop();
+        m_clawIntake.stop();
+        m_lifter.moveStowedPos();
     }
 
 }

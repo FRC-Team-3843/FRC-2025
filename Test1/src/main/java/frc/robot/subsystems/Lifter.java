@@ -24,11 +24,6 @@ public class Lifter extends SubsystemBase {
     SparkMaxConfig lifterRightConfig = new SparkMaxConfig();
     SparkMaxConfig lifterLeftConfig = new SparkMaxConfig();
 
-    public double getMotorPosition() {
-        // Get the position of the motor in revolutions
-        return lifterRightEncoder.getPosition();
-    }
-
     public Lifter(){
         lifterRightConfig.inverted(Constants.LifterConstants.LIFTER_RIGHT_MOTOR_INVERT);
         lifterLeftConfig.inverted(Constants.LifterConstants.LIFTER_LEFT_MOTOR_INVERT);
@@ -106,23 +101,26 @@ public class Lifter extends SubsystemBase {
         lifterLeftClosedLoopController.setReference(targetPosition, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
         lifterRightClosedLoopController.setReference(targetPosition, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
         
-     //   System.out.println(targetPosition);
+     // System.out.println(targetPosition);
         
     }
 
     public void moveStowedPos() {
         setPos(Constants.LifterConstants.STOWED_POS);
-        //setPos(10);
     }
+
     public void moveClimbingApproachPos() {
         setPos(Constants.LifterConstants.CLIMBING_APPROACH_POS);
     }
+
     public void moveCoralIntakePos() {
         setPos(Constants.LifterConstants.CORAL_INTAKE_POS);
     }
+
     public void moveAlgaeIntakePos() {
         setPos(Constants.LifterConstants.ALGAE_INTAKE_POS);
     }
+
     public void moveScoringTroughPos() {
         setPos(Constants.LifterConstants.SCORING_TROUGH_POS);
     }
@@ -130,12 +128,52 @@ public class Lifter extends SubsystemBase {
     public void moveCoralScorePos() {
         setPos(Constants.LifterConstants.CORAL_SCORE_POS);
     }
+
     public void moveHangPos() {
         setPos(Constants.LifterConstants.HANG_POS);
     }
+
     public double getPosition() {
         return lifterLeftEncoder.getPosition();
-        
+    }
+
+    private double getMotorPosition() {
+        // Get the average position of the motor in revolutions
+        return ((lifterRightEncoder.getPosition() + lifterLeftEncoder.getPosition()) / 2);
+    }
+
+    private boolean isAtPosition(double position){
+        if(Math.abs(getMotorPosition() - position) < 2)
+            return true;
+        return false;
+    }
+
+    public boolean isAtStowedPos() {
+        return isAtPosition(Constants.LifterConstants.STOWED_POS);
+    }
+
+    public boolean isAtClimbingApproachPos() {
+        return isAtPosition(Constants.LifterConstants.CLIMBING_APPROACH_POS);
+    }
+
+    public boolean isAtCoralIntakePos() {
+        return isAtPosition(Constants.LifterConstants.CORAL_INTAKE_POS);
+    }
+
+    public boolean isAtAlgaeIntakePos() {
+        return isAtPosition(Constants.LifterConstants.ALGAE_INTAKE_POS);
+    }
+
+    public boolean isAtScoringTroughPos() {
+        return isAtPosition(Constants.LifterConstants.SCORING_TROUGH_POS);
+    }
+
+    public boolean isAtCoralScorePos() {
+        return isAtPosition(Constants.LifterConstants.CORAL_SCORE_POS);
+    }
+
+    public boolean isAtHangPos() {
+        return isAtPosition(Constants.LifterConstants.HANG_POS);
     }
 
 }

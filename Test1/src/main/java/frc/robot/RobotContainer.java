@@ -23,12 +23,10 @@ import frc.robot.subsystems.ClawIntake;
 import frc.robot.subsystems.Lifter;
 import frc.robot.subsystems.LifterIntake;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.commands.CoralLifterCommand;
-import frc.robot.commands.CoralLifterCommand;
+import frc.robot.commands.AlgaeGroundIntakeCommand;
+import frc.robot.commands.CoralLifterIntakeCommand;
 import frc.robot.commands.CoralLifterOuttakeCommand;
-import frc.robot.commands.StowedAfterCommand;
-import frc.robot.commands.CoralLifterOuttakeCommand;
-import frc.robot.commands.tempclass;
+import frc.robot.commands.StowedCommand;
 import java.io.File;
 import swervelib.SwerveInputStream;
 
@@ -39,29 +37,31 @@ import swervelib.SwerveInputStream;
  */
 
  /*
+ TODO
   1. Tune F variable on drive motors
   2. pathplanner 
-  */
+*/
+
 public class RobotContainer
 {
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  final         CommandXboxController driverXbox = new CommandXboxController(0);
+  private static CommandXboxController driverXbox = new CommandXboxController(0);
 
 
   // The robot's subsystems and commands are defined here...
 
-  private final ClawIntake clawIntake = new ClawIntake();
-  private final Lifter lifter = new Lifter();
-  private final LifterIntake lifterIntake = new LifterIntake();
-  private final ClawElevator clawElevator = new ClawElevator();
-  private final ClawArm clawArm = new ClawArm();
-  private final CoralLifterCommand coralLifterCommand = new CoralLifterCommand();
-  private final CoralLifterOuttakeCommand coralLifterOuttakeCommand = new CoralLifterOuttakeCommand();
-  private final StowedAfterCommand stowedAfterCommand = new StowedAfterCommand();
+  private static ClawIntake clawIntake;
+  private static Lifter lifter;
+  private static LifterIntake lifterIntake;
+  private static ClawElevator clawElevator;
+  private static ClawArm clawArm;
 
-  private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
-                                                                                "swerve"));
+  private final SwerveSubsystem drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+
+  private CoralLifterIntakeCommand coralLifterIntakeCommand = new CoralLifterIntakeCommand(lifter, lifterIntake, 1);
+  private CoralLifterOuttakeCommand coralLifterOuttakeCommand = new CoralLifterOuttakeCommand();
+  private StowedCommand stowedCommand = new StowedCommand(clawIntake, clawArm, clawElevator, lifter, lifterIntake);
+
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -137,20 +137,21 @@ public class RobotContainer
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
     Command driveRobotOrientedAngularVelocity  = drivebase.driveFieldOriented(driveRobotOriented);
-    Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(
-        driveDirectAngle);
+    Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngle);
     Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
     Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
-    Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
-        driveDirectAngleKeyboard);
+    Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleKeyboard);
 
-    //driverXbox.a().onTrue(Commands.run(() -> {clawIntake.intake(.5);}));
-    //driverXbox.a().onFalse(Commands.runOnce(() -> {clawIntake.stop();}));
 
     // What buttons should connect to which things?
-    
-    driverXbox.a().whileTrue(Commands.startEnd(() -> coralLifterCommand.coralIntakeCommand(lifter, lifterIntake, 1), () -> coralLifterCommand.reset(lifter, lifterIntake)));
-    driverXbox.b().whileTrue(Commands.startEnd(() -> coralLifterOuttakeCommand.coralOuttakeCommand(lifter, lifterIntake, 1), () -> coralLifterOuttakeCommand.reset(lifter, lifterIntake)));
+    driverXbox.a()
+      .onTrue(coralLifterIntakeCommand)
+      .onFalse(stowedCommand);
+    //driverXbox.b().onTrue(coralLifterOuttakeCommand);
+    //driverXbox.x().onTrue(stowedCommand);
+
+    //driverXbox.a().whileTrue(Commands.startEnd(() -> coralLifterCommand.coralIntakeCommand(lifter, lifterIntake, 1), () -> coralLifterCommand.reset(lifter, lifterIntake)));
+    //driverXbox.b().whileTrue(Commands.startEnd(() -> coralLifterOuttakeCommand.coralOuttakeCommand(lifter, lifterIntake, 1), () -> coralLifterOuttakeCommand.reset(lifter, lifterIntake)));
    // driverXbox.povLeft().onTrue(Commands.runOnce(() -> {lifter.moveClimbingApproachPos();}));
    // driverXbox.povUp().onTrue(Commands.runOnce(() -> {lifter.moveHangPos();}));
     /*driverXbox.b().whileTrue(Commands.startEnd(() -> {
@@ -159,7 +160,7 @@ public class RobotContainer
    // driverXbox.a().whileTrue(Commands.startEnd(() -> lifterIntake.intake(1), () -> lifterIntake.stop()));
     //driverXbox.y().whileTrue(Commands.startEnd(() -> lifterIntake.outtake(1), () -> lifterIntake.stop()));
     //driverXbox.rightBumper().onTrue(Commands.runOnce(() -> {lifter.moveCoralScorePos();} ));
-    driverXbox.x().onTrue(Commands.runOnce(() -> stowedAfterCommand.stowedAfterCommand(clawIntake, lifter, lifterIntake)));
+    //driverXbox.x().onTrue(Commands.runOnce(() -> stowedAfterCommand.stowedAfterCommand(clawIntake, lifter, lifterIntake)));
 
     //driverXbox.x().onTrue(Commands.runOnce(() -> {lifter.moveCoralIntakePos();}));
     //driverXbox.x().onTrue(Commands.runOnce(() -> {clawArm.middleCoralScoringPos();}));
@@ -175,6 +176,8 @@ public class RobotContainer
     driverXbox.leftBumper().onTrue(Commands.runOnce(() -> {lifter.moveCoralScorePos();}));
     // driverXbox.rightBumper(Commands.runOnce(() -> {clawArm.topPos();}));
  
+    
+    
     if (RobotBase.isSimulation())
     {
       drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
