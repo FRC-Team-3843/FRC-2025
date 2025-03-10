@@ -14,8 +14,8 @@ public class CoralClawIntakeCommand extends Command {
     this.clawArm = clawArm;
     this.clawIntake = clawIntake;
     this.clawElevator = clawElevator;
-    clawElevator.L2CoralScoringPos();
-    clawArm.coralHumanPos();
+    //clawElevator.L2CoralScoringPos();
+    //clawArm.coralHumanPos();
     clawIntake.intake(speed);
 
 }

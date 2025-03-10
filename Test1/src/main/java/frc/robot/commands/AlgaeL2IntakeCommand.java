@@ -13,8 +13,8 @@ public class AlgaeL2IntakeCommand extends Command {
         this.clawArm = clawArm;
         this.clawIntake = clawIntake;
         this.clawElevator = clawElevator;
-        clawElevator.L2AlgaeIntakePos();
-        clawArm.straightPos();
+        //clawElevator.L2AlgaeIntakePos();
+        //clawArm.straightPos();
         clawIntake.intake(speed);
     }
 }

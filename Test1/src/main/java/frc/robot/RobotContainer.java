@@ -56,7 +56,7 @@ public class RobotContainer
   private static Lifter lifter = new Lifter();
   private static LifterIntake lifterIntake = new LifterIntake();
   private static ClawElevator clawElevator = new ClawElevator();
-  private static ClawArm clawArm;
+  private static ClawArm clawArm = new ClawArm();
 
   private final SwerveSubsystem drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 

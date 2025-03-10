@@ -13,8 +13,8 @@ public class AlgaeScoreNetCommand extends Command {
         this.clawArm = clawArm;
         this.clawIntake = clawIntake;
         this.clawElevator = clawElevator;
-        clawElevator.scoringPos();
-        clawArm.algaescorePos();
+        //clawElevator.scoringPos();
+        //clawArm.algaescorePos();
         clawIntake.intake(-speed);
     }
 

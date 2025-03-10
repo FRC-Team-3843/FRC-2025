@@ -13,8 +13,8 @@ public void algaeL1IntakeCommand (ClawArm clawArm, ClawIntake clawIntake, ClawEl
     this.clawArm = clawArm;
     this.clawIntake = clawIntake;
     this.clawElevator = clawElevator;
-    clawElevator.L1AlgaeIntakePos();
-    clawArm.straightPos();
+    //clawElevator.L1AlgaeIntakePos();
+    //clawArm.straightPos();
     clawIntake.intake(speed);
     }
 }
