@@ -58,15 +58,16 @@ public final class Constants
     public static final int MOTOR_ID = 34;
     
     // Claw Arm Positions
-    public static final double STOWED_POS = 0.77;
-    public static final double CLIMBING_APPROACH_POS = 0.77;
-    public static final double ALGAE_TRANSFER_POS = 0; //?
-    public static final double L1_CORAL_SCORING_POS = 22.97;
-    public static final double L2_CORAL_SCORING_POS = 25.76;
-    public static final double L1_ALGAE_INTAKE_POS = 34.2;
-    public static final double L2_ALGAE_INTAKE_POS = 34.2;
-    public static final double CORAL_HUMAN_POS = 45;
-    public static final double ALGAE_SCORE_POS = 47.5;    
+    public static final double STOWED_POS = 0.77;//
+    public static final double CLIMBING_APPROACH_POS = 0.77;//
+    public static final double ALGAE_TRANSFER_POS = 10.47; //
+    public static final double MIN_ARM = 19.2; //
+    public static final double L1_CORAL_SCORING_POS = 22; //
+    public static final double L2_CORAL_SCORING_POS = 20.6; //
+    public static final double L1_ALGAE_INTAKE_POS = 24.7; //
+    public static final double L2_ALGAE_INTAKE_POS = 19.8; //
+    public static final double CORAL_HUMAN_POS = 37.6; //
+    public static final double ALGAE_SCORE_POS = 48.8; //
   }
 
   public static class LifterConstants{
@@ -88,14 +89,14 @@ public final class Constants
     public static final double LIFTER_LEFT_D = 0.001;
 
     // Lifter Positions
-    public static final double STOWED_POS = 10;
-    public static final double HANG_POS = 15;
-    public static final double CORAL_SCORE_POS = 85;
-    public static final double ALGAE_INTAKE_POS = 125.1;
-    public static final double ALGAE_SCORE_POS = 125.1;
-    public static final double ARM_CLEARANCE_POS = 150;
-    public static final double CORAL_INTAKE_POS = 195;
-    public static final double CLIMBING_APPROACH_POS = 196;
+    public static final double STOWED_POS = 10; //
+    public static final double HANG_POS = 15; //
+    public static final double CORAL_SCORE_POS = 101; //
+    public static final double ALGAE_INTAKE_POS = 125.1; //
+    public static final double ALGAE_SCORE_POS = 125.1; //
+    public static final double ARM_CLEARANCE_POS = 118; 
+    public static final double CORAL_INTAKE_POS = 198; //
+    public static final double CLIMBING_APPROACH_POS = 198; //
 
   }
 
@@ -103,15 +104,15 @@ public final class Constants
     public static final int MOTOR_ID = 50;
     
     // Elevator Positions
-    public static final double STOWED_POS = 0;
-    public static final double L1_CORAL_SCORING_POS = 0;
-    public static final double L1_ALGAE_INTAKE_POS = 0;
-    public static final double CORAL_HUMAN_POS = 0;
-    public static final double CLIMBING_APPROACH_POS = 1.77;
-    public static final double ALGAE_TRANSFER_POS = 18.5;  //?
-    public static final double L2_CORAL_SCORING_POS = 19;
-    public static final double L2_ALGAE_INTAKE_POS = 19;
-    public static final double ALGAE_SCORE_POS = 31;
+    public static final double STOWED_POS = 0; //
+    public static final double L1_CORAL_SCORING_POS = 0; //
+    public static final double L1_ALGAE_INTAKE_POS = 0; //
+    public static final double CORAL_HUMAN_POS = 0; //
+    public static final double CLIMBING_APPROACH_POS = 1.77; //
+    public static final double ALGAE_TRANSFER_POS = 18.5;  //
+    public static final double L2_CORAL_SCORING_POS = 21.8; //
+    public static final double L2_ALGAE_INTAKE_POS = 28.75; //
+    public static final double ALGAE_SCORE_POS = 27.6; //
 
   }
 
@@ -119,3 +120,5 @@ public final class Constants
     public static InvertedValue LIFTER_MOTOR_INVERT = InvertedValue.Clockwise_Positive;
   }
 }
+
+
