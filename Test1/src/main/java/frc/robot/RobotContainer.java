@@ -50,11 +50,11 @@ public class RobotContainer
 
   // The robot's subsystems and commands are defined here...
 
-  private static ClawIntake clawIntake;
-  private static Lifter lifter;
-  private static LifterIntake lifterIntake;
-  private static ClawElevator clawElevator;
-  private static ClawArm clawArm;
+  private static ClawIntake clawIntake = new ClawIntake();
+  private static Lifter lifter = new Lifter();
+  private static LifterIntake lifterIntake = new LifterIntake();
+  private static ClawElevator clawElevator = new ClawElevator();
+  private static ClawArm clawArm = new ClawArm();
 
   private final SwerveSubsystem drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
@@ -147,6 +147,8 @@ public class RobotContainer
     driverXbox.a()
       .onTrue(coralLifterIntakeCommand)
       .onFalse(stowedCommand);
+    driverXbox.b()
+      .onTrue(stowedCommand);
     //driverXbox.b().onTrue(coralLifterOuttakeCommand);
     //driverXbox.x().onTrue(stowedCommand);
 
