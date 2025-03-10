@@ -44,7 +44,7 @@ public class ClawArm extends SubsystemBase{
         }
 
     }
-    private void setPos(double targetPosition) {
+    public void setPos(double targetPosition) {
         clawArmMM.withPosition(targetPosition);
         clawArmMotor.setControl(clawArmMM);
     }
@@ -53,7 +53,7 @@ public class ClawArm extends SubsystemBase{
         return clawArmMotor.getPosition().getValue().magnitude();
     }
 
-    private boolean isAtPosition(double position){
+    public boolean isAtPosition(double position){
         if(Math.abs(getPosition() - position) < 2)
             return true;
         return false;

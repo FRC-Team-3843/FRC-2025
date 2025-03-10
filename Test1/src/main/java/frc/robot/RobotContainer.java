@@ -156,8 +156,7 @@ public class RobotContainer
       .onTrue(coralLifterOuttakeCommand)
       .onFalse(Commands.runOnce(() -> lifterIntake.stop()));
 
-        
-
+    
 
     driverXbox.start().onTrue(hangApproachCommand);
     driverXbox.back().onTrue(hangCommand);

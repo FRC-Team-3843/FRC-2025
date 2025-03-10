@@ -61,7 +61,7 @@ public final class Constants
     public static final double STOWED_POS = 0.77;//
     public static final double CLIMBING_APPROACH_POS = 0.77;//
     public static final double ALGAE_TRANSFER_POS = 10.47; //
-    public static final double MIN_ARM = 19.2; //
+    public static final double MIN_ARM_POS = 19.2; //
     public static final double L1_CORAL_SCORING_POS = 22; //
     public static final double L2_CORAL_SCORING_POS = 20.6; //
     public static final double L1_ALGAE_INTAKE_POS = 24.7; //

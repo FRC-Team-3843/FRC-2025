@@ -97,12 +97,23 @@ public class Lifter extends SubsystemBase {
         // Code here gets executed perodically
     }
 
-    private void setPos(double targetPosition) {
+    public void setPos(double targetPosition) {
         lifterLeftClosedLoopController.setReference(targetPosition, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
         lifterRightClosedLoopController.setReference(targetPosition, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
         
      // System.out.println(targetPosition);
         
+    }
+
+    public double getPosition() {
+        // Get the average position of the motor in revolutions
+        return ((lifterRightEncoder.getPosition() + lifterLeftEncoder.getPosition()) / 2);
+    }
+
+    public boolean isAtPosition(double position){
+        if(Math.abs(getMotorPosition() - position) < 2)
+            return true;
+        return false;
     }
 
     public void moveStowedPos() {
@@ -131,21 +142,6 @@ public class Lifter extends SubsystemBase {
 
     public void moveHangPos() {
         setPos(Constants.LifterConstants.HANG_POS);
-    }
-
-    public double getPosition() {
-        return lifterLeftEncoder.getPosition();
-    }
-
-    private double getMotorPosition() {
-        // Get the average position of the motor in revolutions
-        return ((lifterRightEncoder.getPosition() + lifterLeftEncoder.getPosition()) / 2);
-    }
-
-    private boolean isAtPosition(double position){
-        if(Math.abs(getMotorPosition() - position) < 2)
-            return true;
-        return false;
     }
 
     public boolean isAtStowedPos() {
