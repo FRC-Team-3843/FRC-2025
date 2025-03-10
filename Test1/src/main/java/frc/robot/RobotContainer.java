@@ -26,6 +26,8 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.commands.AlgaeGroundIntakeCommand;
 import frc.robot.commands.CoralLifterIntakeCommand;
 import frc.robot.commands.CoralLifterOuttakeCommand;
+import frc.robot.commands.HangApproachCommand;
+import frc.robot.commands.HangCommand;
 import frc.robot.commands.StowedCommand;
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -54,13 +56,15 @@ public class RobotContainer
   private static Lifter lifter = new Lifter();
   private static LifterIntake lifterIntake = new LifterIntake();
   private static ClawElevator clawElevator = new ClawElevator();
-  private static ClawArm clawArm = new ClawArm();
+  private static ClawArm clawArm;
 
   private final SwerveSubsystem drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
   private CoralLifterIntakeCommand coralLifterIntakeCommand = new CoralLifterIntakeCommand(lifter, lifterIntake, 1);
-  private CoralLifterOuttakeCommand coralLifterOuttakeCommand = new CoralLifterOuttakeCommand();
+  private CoralLifterOuttakeCommand coralLifterOuttakeCommand = new CoralLifterOuttakeCommand(lifter, lifterIntake, 1);
   private StowedCommand stowedCommand = new StowedCommand(clawIntake, clawArm, clawElevator, lifter, lifterIntake);
+  private HangApproachCommand hangApproachCommand = new HangApproachCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
+  private HangCommand hangCommand = new HangCommand(lifter);
 
 
   /**
@@ -144,11 +148,20 @@ public class RobotContainer
 
 
     // What buttons should connect to which things?
-    driverXbox.a()
+    driverXbox.a().onTrue(stowedCommand);
+    driverXbox.x()
       .onTrue(coralLifterIntakeCommand)
-      .onFalse(stowedCommand);
-    driverXbox.b()
-      .onTrue(stowedCommand);
+      .onFalse(Commands.runOnce(() -> lifterIntake.stop()));
+    driverXbox.y()
+      .onTrue(coralLifterOuttakeCommand)
+      .onFalse(Commands.runOnce(() -> lifterIntake.stop()));
+
+        
+
+
+    driverXbox.start().onTrue(hangApproachCommand);
+    driverXbox.back().onTrue(hangCommand);
+
     //driverXbox.b().onTrue(coralLifterOuttakeCommand);
     //driverXbox.x().onTrue(stowedCommand);
 
