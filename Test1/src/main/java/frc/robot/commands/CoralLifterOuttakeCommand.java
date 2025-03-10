@@ -1,57 +1,25 @@
 package frc.robot.commands;
-import java.io.Console;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Lifter;
 import frc.robot.subsystems.LifterIntake;
 
-public class CoralLifterOuttakeCommand extends Command {
+public class CoralLifterOuttakeCommand extends SequentialCommandGroup {
 public Lifter lifter;
 public LifterIntake lifterIntake;
-//public static int positionVariation = 2;
 public double speed;
 
-public void coralOuttakeCommand(Lifter lifter, LifterIntake lifterIntake, double speed) {
-    this.lifter = lifter;
-    this.speed = speed;
-    this.lifterIntake = lifterIntake;
-
-    lifter.moveCoralScorePos();
+public CoralLifterOuttakeCommand(Lifter m_lifter, LifterIntake m_lifterIntake, double speed) {
+   
+    addRequirements(m_lifter);
+    addRequirements(m_lifterIntake);
+    addCommands(
+        Commands.runOnce(() -> m_lifter.moveCoralScorePos()),
+        new WaitUntilCommand(() -> m_lifter.isAtCoralScorePos()),
+        Commands.runOnce(() -> m_lifterIntake.outtake(speed))
+    );
 }
-
-/*public void execute() {
-    System.out.println("Execute is running here");
-    lifter.moveCoralScorePos();
-}
-
-public boolean isFinished() {
-    System.out.println("Hey! This is working!");
-    if (lifter.getPosition() > Constants.LifterConstants.CORAL_SCORE_POS - positionVariation && lifter.getPosition() < Constants.LifterConstants.CORAL_SCORE_POS + positionVariation)
-        return true;
-        System.out.println("Look here");
-        
-    return false;
-}
-
-public void end(boolean interrupted) {
-    if (interrupted)
-    return;
-    lifterIntake.outtake(speed);
-    try {
-        wait(2000);
-    } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
-    lifterIntake.stop();*/
-
-
-
-    public void reset(Lifter lifter, LifterIntake lifterIntake) {
-        this.lifter = lifter;
-        this.lifterIntake = lifterIntake;
-        lifterIntake.outtake(1);
-    }
 
 }

@@ -18,18 +18,18 @@ public class LifterIntake extends SubsystemBase{
         // Code here gets executed perodically
     }
 
-    public void setIntakeMotor(double speed, boolean direction) {
+    public void setMotor(double speed, boolean direction) {
         if (direction) lifterIntakeMotor.set(speed);
         else lifterIntakeMotor.set( -speed);
     }
 
     public void intake(double speed) {
-        setIntakeMotor(speed, false);
+        setMotor(speed, false);
     }
     public void outtake(double speed) {
-        setIntakeMotor(speed, true);
+        setMotor(speed, true);
     }
     public void stop() {
-        setIntakeMotor(0, false);
+        setMotor(0, false);
     }
 }

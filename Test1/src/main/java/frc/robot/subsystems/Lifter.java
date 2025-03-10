@@ -121,8 +121,8 @@ public class Lifter extends SubsystemBase {
         setPos(Constants.LifterConstants.ALGAE_INTAKE_POS);
     }
 
-    public void moveScoringTroughPos() {
-        setPos(Constants.LifterConstants.SCORING_TROUGH_POS);
+    public void moveClearancePos() {
+        setPos(Constants.LifterConstants.ARM_CLEARANCE_POS);
     }
 
     public void moveCoralScorePos() {
@@ -164,16 +164,24 @@ public class Lifter extends SubsystemBase {
         return isAtPosition(Constants.LifterConstants.ALGAE_INTAKE_POS);
     }
 
-    public boolean isAtScoringTroughPos() {
-        return isAtPosition(Constants.LifterConstants.SCORING_TROUGH_POS);
-    }
-
     public boolean isAtCoralScorePos() {
         return isAtPosition(Constants.LifterConstants.CORAL_SCORE_POS);
     }
 
     public boolean isAtHangPos() {
         return isAtPosition(Constants.LifterConstants.HANG_POS);
+    }
+
+    public boolean isClear(){
+        if(getMotorPosition() > Constants.LifterConstants.ARM_CLEARANCE_POS)
+            return true;
+        return false;
+    }
+
+    public void moveClear(){
+        if (isClear())
+            return;
+        moveClearancePos();
     }
 
 }

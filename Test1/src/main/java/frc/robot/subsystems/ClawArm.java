@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ClawArm extends SubsystemBase{
-    private final TalonFX clawArmMotor = new TalonFX(Constants.ClawConstants.CLAW_ARM_MOTOR_ID);
+    private final TalonFX clawArmMotor = new TalonFX(Constants.ClawArmConstants.MOTOR_ID);
     private final MotionMagicVoltage clawArmMM = new MotionMagicVoltage(0);
     public final TalonFXConfiguration clawArmConfig = new TalonFXConfiguration();
 	public Object moveAlgaeIntakePos;
@@ -45,31 +45,94 @@ public class ClawArm extends SubsystemBase{
 
     }
     private void setPos(double targetPosition) {
-        System.out.println("hey?");
         clawArmMM.withPosition(targetPosition);
         clawArmMotor.setControl(clawArmMM);
     }
-    public void stowedPos() { 
-        setPos(Constants.ClawConstants.STOWED_POS);
+
+    public double getPosition() {
+        return clawArmMotor.getPosition().getValue().magnitude();
     }
 
-    public void algaescorePos() {
-        setPos(Constants.ClawConstants.ALGAE_SCORE_POS);
+    private boolean isAtPosition(double position){
+        if(Math.abs(getPosition() - position) < 2)
+            return true;
+        return false;
+    }
+    
+    public void moveStowedPos() {
+        setPos(Constants.ClawArmConstants.STOWED_POS);
     }
 
-    public void straightPos() {
-        setPos(Constants.ClawConstants.STRAIGHT_POS);
+    public void moveClimbingApproachPos() {
+        setPos(Constants.ClawArmConstants.CLIMBING_APPROACH_POS);
     }
 
-    public void lowCoralScoringPos() {
-        setPos(Constants.ClawConstants.LOW_CORAL_SCORING_POS);
+    public void moveAlgaeScorePos() {
+        setPos(Constants.ClawArmConstants.ALGAE_SCORE_POS);
     }
 
-    public void middleCoralScoringPos() {
-        setPos(Constants.ClawConstants.MIDDLE_CORAL_SCORING_POS);
+    public void moveCoralHumanPos() {
+        setPos(Constants.ClawArmConstants.CORAL_HUMAN_POS);
     }
-    public void coralHumanPos() {
-        setPos(Constants.ClawConstants.CORAL_HUMAN_POS);
+
+    public void moveL1CoralScoringPos() {
+        setPos(Constants.ClawArmConstants.L1_CORAL_SCORING_POS);
     }
+
+    public void moveL2CoralScoringPos() {
+        setPos(Constants.ClawArmConstants.L2_CORAL_SCORING_POS);
+    }
+
+    public void moveL1AlgaeIntakePos() {
+        setPos(Constants.ClawArmConstants.L1_ALGAE_INTAKE_POS);
+    }
+
+    public void moveL2AlgaeIntakePos() {
+        setPos(Constants.ClawArmConstants.L2_ALGAE_INTAKE_POS);
+    }
+
+    public void moveAlgaeTransferPos() {
+        setPos(Constants.ClawArmConstants.ALGAE_TRANSFER_POS);
+    }
+
+    public boolean isAtStowedPos() {
+        return isAtPosition(Constants.ClawArmConstants.STOWED_POS);
+    }
+
+    public boolean isAtClimbingApproachPos() {
+        return isAtPosition(Constants.ClawArmConstants.CLIMBING_APPROACH_POS);
+    }
+
+    public boolean isAtAlgaeScorePos() {
+        return isAtPosition(Constants.ClawArmConstants.ALGAE_SCORE_POS);
+    }
+
+    public boolean isAtCoralHumanPos() {
+        return isAtPosition(Constants.ClawArmConstants.CORAL_HUMAN_POS);
+    }
+
+    public boolean isAtL1CoralScoringPos() {
+        return isAtPosition(Constants.ClawArmConstants.L1_CORAL_SCORING_POS);
+    }
+
+    public boolean isAtL2CoralScoringPos() {
+        return isAtPosition(Constants.ClawArmConstants.L2_CORAL_SCORING_POS);
+    }
+
+    public boolean isAtL1AlgaeIntakePos() {
+        return isAtPosition(Constants.ClawArmConstants.L1_ALGAE_INTAKE_POS);
+    }
+
+    public boolean isAtL2AlgaeIntakePos() {
+        return isAtPosition(Constants.ClawArmConstants.L2_ALGAE_INTAKE_POS);
+    }
+
+    public boolean isAtAlgaeTransferPos() {
+        return isAtPosition(Constants.ClawArmConstants.ALGAE_TRANSFER_POS);
+    }
+
+    
+
+
 
 }
