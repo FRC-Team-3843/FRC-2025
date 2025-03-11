@@ -241,7 +241,8 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("New Auto");
+    return drivebase.getAutonomousCommand("LinearPath");
+    //trying to integrate pathplanner for LinearAuto (short, about three feet forward move)
   }
 
   public void setMotorBrake(boolean brake)
