@@ -43,7 +43,7 @@ public class ClawElevator extends SubsystemBase{
 
     }
 
-    private void setPos(double targetPosition) {
+    public void setPos(double targetPosition) {
          elevatorMM.withPosition(targetPosition);
          elevatorMotor.setControl(elevatorMM);
     }
@@ -52,7 +52,7 @@ public class ClawElevator extends SubsystemBase{
         return elevatorMotor.getPosition().getValue().magnitude();
     }
 
-    private boolean isAtPosition(double position){
+    public boolean isAtPosition(double position){
         if(Math.abs(getPosition() - position) < 2)
             return true;
         return false;

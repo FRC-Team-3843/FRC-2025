@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants;
 import frc.robot.subsystems.ClawArm;
 import frc.robot.subsystems.ClawElevator;
 import frc.robot.subsystems.ClawIntake;
@@ -17,16 +18,14 @@ public class StowedCommand extends SequentialCommandGroup{
         addRequirements(m_clawElevator);
         addRequirements(m_lifter);
         addRequirements(m_lifterIntake);
+        
         addCommands(
             Commands.runOnce(() -> m_lifterIntake.stop()),
             Commands.runOnce(() -> m_clawIntake.stop()),
-            Commands.runOnce(() -> m_lifter.moveClear()),
-            new WaitUntilCommand(() -> m_lifter.isClear()),
-            Commands.runOnce(() -> m_clawArm.moveStowedPos()),
-            Commands.runOnce(() -> m_clawElevator.moveStowedPos()),
+            new MotionManager(m_clawArm, Constants.ClawArmConstants.STOWED_POS, m_clawElevator, Constants.ClawElevatorConstants.STOWED_POS, m_lifter, Constants.LifterConstants.STOWED_POS),
             new WaitUntilCommand(() -> m_clawArm.isAtStowedPos()),
             new WaitUntilCommand(() -> m_clawElevator.isAtStowedPos()),
-            Commands.runOnce(() -> m_lifter.moveStowedPos())
+            new WaitUntilCommand(() -> m_lifter.isAtStowedPos())
         );
     }
 
