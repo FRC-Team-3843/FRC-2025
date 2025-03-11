@@ -17,7 +17,7 @@ public class CoralL1ScoreCommand extends SequentialCommandGroup{
         addRequirements(m_clawArm);
         addRequirements(m_clawElevator);
         addRequirements(m_clawIntake);
-
+        
         addCommands(
             new MotionManager(m_clawArm, Constants.ClawArmConstants.L1_CORAL_SCORING_POS, m_clawElevator, Constants.ClawElevatorConstants.L1_CORAL_SCORING_POS, m_lifter),
             new WaitUntilCommand(() -> m_clawArm.isAtL1CoralScoringPos()),
