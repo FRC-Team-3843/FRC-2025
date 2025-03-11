@@ -111,7 +111,7 @@ public class Lifter extends SubsystemBase {
     }
 
     public boolean isAtPosition(double position){
-        if(Math.abs(getMotorPosition() - position) < 2)
+        if(Math.abs(getPosition() - position) < 2)
             return true;
         return false;
     }
@@ -169,15 +169,9 @@ public class Lifter extends SubsystemBase {
     }
 
     public boolean isClear(){
-        if(getMotorPosition() > Constants.LifterConstants.ARM_CLEARANCE_POS)
+        if(getPosition() > Constants.LifterConstants.ARM_CLEARANCE_POS)
             return true;
         return false;
-    }
-
-    public void moveClear(){
-        if (isClear())
-            return;
-        moveClearancePos();
     }
 
 }
