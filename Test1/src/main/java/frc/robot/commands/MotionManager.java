@@ -1,19 +1,15 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.Constants;
 import frc.robot.subsystems.ClawArm;
 import frc.robot.subsystems.ClawElevator;
 import frc.robot.subsystems.Lifter;
-import java.awt.Point;
 import java.awt.geom.Area;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.geom.PathIterator;
@@ -94,76 +90,119 @@ public class MotionManager extends SequentialCommandGroup {
             System.err.println("Error: Set positions cannot be null.");
             return;
         }
-        else if(((clawElevatorCurrentPosition < 20 || clawElevatorSetPosition < 20) && isPointInArea(new Point2D.Double(liftSetPosition, clawArmSetPosition), elevator0NoAlgaeDangerPolygon)) || ((clawElevatorCurrentPosition >= 20 || clawElevatorSetPosition >= 20) &&(isPointInArea(new Point2D.Double(liftSetPosition, clawArmSetPosition), elevator20NoAlgaeDangerPolygon)))) {
+        else if(((clawElevatorCurrentPosition < 18 || clawElevatorSetPosition < 18) && isPointInArea(new Point2D.Double(liftSetPosition, clawArmSetPosition), elevator0NoAlgaeDangerPolygon)) || ((clawElevatorCurrentPosition >= 18 || clawElevatorSetPosition >= 18) &&(isPointInArea(new Point2D.Double(liftSetPosition, clawArmSetPosition), elevator20NoAlgaeDangerPolygon)))) {
             System.err.println("Error: The set position is in a danger zone.");
             return;
         }
-        else if(checkFullMotion(clawArmSetPosition, clawElevatorSetPosition, liftSetPosition, clawArmCurrentPosition, clawElevatorCurrentPosition, liftCurrentPosition)) {
+        else if(clawArmCurrentPosition == clawArmSetPosition && clawElevatorCurrentPosition == clawElevatorSetPosition && liftCurrentPosition == liftSetPosition) {
+            System.err.println("Error: Already at set position.");
+            return;
+        }
+        else if((clawElevatorCurrentPosition < 18 || clawElevatorSetPosition > 18) || (clawElevatorCurrentPosition > 18 || clawElevatorSetPosition < 18)){
+            if(m_lifter.isClear()) {
+                addCommands(
+                    Commands.runOnce(() -> m_clawElevator.setPos(clawElevatorSetPosition)),
+                    new WaitUntilCommand(() -> m_clawElevator.isAtPosition(clawElevatorSetPosition)),
+                    new MotionManager(m_clawArm, clawArmSetPosition, m_clawElevator, clawElevatorSetPosition, m_lifter, liftSetPosition)
+                );
+            }
+            else if(!m_lifter.isClear()){
+                addCommands(
+                    new LifterClearanceCommand(m_clawArm, m_clawElevator, m_lifter),
+                    new WaitUntilCommand(() -> m_lifter.isClear()),
+                    new MotionManager(m_clawArm, clawArmSetPosition, m_clawElevator, clawElevatorSetPosition, m_lifter, liftSetPosition)
+                );
+            }
+        }
+        else if(Math.abs(clawElevatorCurrentPosition - clawElevatorSetPosition) > 2){
+            addCommands(
+                Commands.runOnce(() -> m_clawElevator.setPos(clawElevatorSetPosition)),
+                new WaitUntilCommand(() -> m_clawElevator.isAtPosition(clawElevatorSetPosition)),
+                new MotionManager(m_clawArm, clawArmSetPosition, m_clawElevator, clawElevatorSetPosition, m_lifter, liftSetPosition)
+            );
+        }            
+        else if((Math.abs(clawArmCurrentPosition - clawArmSetPosition) > 2 && Math.abs(liftCurrentPosition - liftSetPosition) > 2) && checkFullMotion(clawArmSetPosition, liftSetPosition, clawArmCurrentPosition, liftCurrentPosition, clawElevatorCurrentPosition)){
             addCommands(
                 Commands.runOnce(() -> m_lifter.setPos(liftSetPosition)),
                 Commands.runOnce(() -> m_clawArm.setPos(clawArmSetPosition)),
                 Commands.runOnce(() -> m_clawElevator.setPos(clawElevatorSetPosition))
             );
+        }  
+        else if((Math.abs(liftCurrentPosition - liftSetPosition) > 2) && checkLiftMotion(clawArmSetPosition, liftSetPosition, clawArmCurrentPosition, liftCurrentPosition, clawElevatorCurrentPosition)) {
+            if(checkArmMotion(clawArmSetPosition, liftSetPosition, clawArmCurrentPosition, liftSetPosition, clawElevatorCurrentPosition)){
+                addCommands(
+                    Commands.runOnce(() -> m_lifter.setPos(liftSetPosition)),
+                    new WaitUntilCommand(() -> m_lifter.isAtPosition(liftSetPosition)),
+                    new MotionManager(m_clawArm, clawArmSetPosition, m_clawElevator, clawElevatorSetPosition, m_lifter, liftSetPosition)
+                );
+            }
+            else{
+                addCommands(
+                    new LifterClearanceCommand(m_clawArm, m_clawElevator, m_lifter),
+                    new WaitUntilCommand(() -> m_lifter.isClear()),
+                    Commands.runOnce(() -> m_clawArm.setPos(clawArmSetPosition)),
+                    new WaitUntilCommand(() -> m_clawArm.isAtPosition(clawArmSetPosition)),
+                    new MotionManager(m_clawArm, clawArmSetPosition, m_clawElevator, clawElevatorSetPosition, m_lifter, liftSetPosition)
+                );
+            }
         }
-        else if(checkLiftMotion(clawArmSetPosition, clawElevatorSetPosition, liftSetPosition, clawArmCurrentPosition, clawElevatorCurrentPosition, liftCurrentPosition)) {
-            addCommands(
-                Commands.runOnce(() -> m_lifter.setPos(liftSetPosition)),
-                new WaitUntilCommand(() -> m_lifter.isAtPosition(liftSetPosition)),
-                Commands.runOnce(() -> m_clawArm.setPos(clawArmSetPosition))
-            );
-        }
-        else if(checkArmMotion(clawArmSetPosition, clawElevatorSetPosition, liftSetPosition, clawArmCurrentPosition, clawElevatorCurrentPosition, liftCurrentPosition)) {
-            addCommands(
-                Commands.runOnce(() -> m_clawArm.setPos(clawArmSetPosition)),
-                new WaitUntilCommand(() -> m_clawArm.isAtPosition(clawArmSetPosition)),
-                Commands.runOnce(() -> m_lifter.setPos(liftSetPosition))
-            );
+        else if((Math.abs(clawArmCurrentPosition - clawArmSetPosition) > 2) && checkArmMotion(clawArmSetPosition, liftSetPosition, clawArmCurrentPosition, liftCurrentPosition, clawElevatorCurrentPosition)) {
+            if(checkLiftMotion(clawArmSetPosition, liftSetPosition, clawArmSetPosition, liftCurrentPosition, clawElevatorCurrentPosition)){
+                addCommands(
+                    Commands.runOnce(() -> m_clawArm.setPos(clawArmSetPosition)),
+                    new WaitUntilCommand(() -> m_clawArm.isAtPosition(clawArmSetPosition)),
+                    new MotionManager(m_clawArm, clawArmSetPosition, m_clawElevator, clawElevatorSetPosition, m_lifter, liftSetPosition)
+                );
+            }
+            else{
+                addCommands(
+                    new ArmClearanceCommand(m_clawArm, m_clawElevator, m_lifter),
+                    new WaitUntilCommand(() -> m_clawArm.isClear()),
+                    Commands.runOnce(() -> m_lifter.setPos(liftSetPosition)),
+                    new WaitUntilCommand(() -> m_lifter.isAtPosition(liftSetPosition)),
+                    new MotionManager(m_clawArm, clawArmSetPosition, m_clawElevator, clawElevatorSetPosition, m_lifter, liftSetPosition)
+                );
+            }
         }
         else {
-            System.err.println("Error: Can't move to set position.");
+            System.err.println("Error: Can't move to set position. ");
             return;
         }
 
         
     }
 
-    public boolean checkFullMotion(double m_clawArmSetPosition, double m_clawElevatorSetPosition, double m_liftSetPosition, double m_clawArmCurrentPosition, double m_clawElevatorCurrentPosition, double m_liftCurrentPosition) {
+    public boolean checkFullMotion(double m_clawArmSetPosition, double m_liftSetPosition, double m_clawArmCurrentPosition, double m_liftCurrentPosition, double m_clawElevatorCurrentPosition) {
 
         Path2D.Double motionPolygon = createPolygon(createQuadrilateral(m_liftCurrentPosition, m_clawArmCurrentPosition, m_liftSetPosition, m_clawArmSetPosition));
 
-        if((m_clawElevatorCurrentPosition < 20 && m_clawElevatorSetPosition < 20) && polygonsIntersect(motionPolygon, elevator0NoAlgaeDangerPolygon))
+        if((m_clawElevatorCurrentPosition < 18) && polygonsIntersect(motionPolygon, elevator0NoAlgaeDangerPolygon))
                 return false; 
-        else if((m_clawElevatorCurrentPosition >= 20 && m_clawElevatorSetPosition >= 20) && polygonsIntersect(motionPolygon, elevator20NoAlgaeDangerPolygon))
-                return false;
-        else if((m_clawElevatorCurrentPosition < 20 || m_clawElevatorSetPosition > 20) || (m_clawElevatorCurrentPosition > 20 || m_clawElevatorSetPosition < 20)) 
+        else if((m_clawElevatorCurrentPosition >= 18) && polygonsIntersect(motionPolygon, elevator20NoAlgaeDangerPolygon))
                 return false;
         return true;
 
     }
 
-    public boolean checkLiftMotion(double m_clawArmSetPosition, double m_clawElevatorSetPosition, double m_liftSetPosition, double m_clawArmCurrentPosition, double m_clawElevatorCurrentPosition, double m_liftCurrentPosition) {
+    public boolean checkLiftMotion(double m_clawArmSetPosition, double m_liftSetPosition, double m_clawArmCurrentPosition, double m_liftCurrentPosition, double m_clawElevatorCurrentPosition) {
 
         Line2D.Double motionLine = createLine(m_liftCurrentPosition, m_clawArmCurrentPosition, m_liftSetPosition, m_clawArmCurrentPosition);
 
-        if((m_clawElevatorCurrentPosition < 20 || m_clawElevatorSetPosition < 20) && (lineIntersectsPolygon(motionLine, elevator0NoAlgaeDangerPolygon))) 
+        if((m_clawElevatorCurrentPosition < 20) && (lineIntersectsPolygon(motionLine, elevator0NoAlgaeDangerPolygon))) 
                 return false;
-        else if((m_clawElevatorCurrentPosition >= 20 || m_clawElevatorSetPosition >= 20) && (lineIntersectsPolygon(motionLine, elevator20NoAlgaeDangerPolygon)))
-                return false;
-        else if((m_clawElevatorCurrentPosition < 20 || m_clawElevatorSetPosition > 20) || (m_clawElevatorCurrentPosition > 20 || m_clawElevatorSetPosition < 20)) 
+        else if((m_clawElevatorCurrentPosition >= 20) && (lineIntersectsPolygon(motionLine, elevator20NoAlgaeDangerPolygon)))
                 return false;
         return true;      
 
     }
 
-    public boolean checkArmMotion(double m_clawArmSetPosition, double m_clawElevatorSetPosition, double m_liftSetPosition, double m_clawArmCurrentPosition, double m_clawElevatorCurrentPosition, double m_liftCurrentPosition) {
+    public boolean checkArmMotion(double m_clawArmSetPosition, double m_liftSetPosition, double m_clawArmCurrentPosition, double m_liftCurrentPosition, double m_clawElevatorCurrentPosition) {
 
         Line2D.Double motionLine = createLine(m_liftCurrentPosition, m_clawArmCurrentPosition, m_liftCurrentPosition, m_clawArmSetPosition);
         
-        if((m_clawElevatorCurrentPosition < 20 || m_clawElevatorSetPosition < 20) && (lineIntersectsPolygon(motionLine, elevator0NoAlgaeDangerPolygon))) 
+        if((m_clawElevatorCurrentPosition < 20) && (lineIntersectsPolygon(motionLine, elevator0NoAlgaeDangerPolygon))) 
                 return false;
-        else if((m_clawElevatorCurrentPosition >= 20 || m_clawElevatorSetPosition >= 20) && (lineIntersectsPolygon(motionLine, elevator20NoAlgaeDangerPolygon)))
-                return false;
-        else if((m_clawElevatorCurrentPosition < 20 || m_clawElevatorSetPosition > 20) || (m_clawElevatorCurrentPosition > 20 || m_clawElevatorSetPosition < 20)) 
+        else if((m_clawElevatorCurrentPosition >= 20) && (lineIntersectsPolygon(motionLine, elevator20NoAlgaeDangerPolygon)))
                 return false;
         return true;     
     }

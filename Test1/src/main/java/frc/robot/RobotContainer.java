@@ -60,11 +60,11 @@ public class RobotContainer
 
   private final SwerveSubsystem drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
-  private CoralLifterIntakeCommand coralLifterIntakeCommand = new CoralLifterIntakeCommand(lifter, lifterIntake, 1);
-  private CoralLifterOuttakeCommand coralLifterOuttakeCommand = new CoralLifterOuttakeCommand(lifter, lifterIntake, 1);
+  //private CoralLifterIntakeCommand coralLifterIntakeCommand = new CoralLifterIntakeCommand(lifter, lifterIntake, 1);
+  //private CoralLifterOuttakeCommand coralLifterOuttakeCommand = new CoralLifterOuttakeCommand(lifter, lifterIntake, 1);
   private StowedCommand stowedCommand = new StowedCommand(clawIntake, clawArm, clawElevator, lifter, lifterIntake);
   private HangApproachCommand hangApproachCommand = new HangApproachCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
-  private HangCommand hangCommand = new HangCommand(lifter);
+ // private HangCommand hangCommand = new HangCommand(lifter);
 
 
   /**
@@ -150,16 +150,16 @@ public class RobotContainer
     // What buttons should connect to which things?
     driverXbox.a().onTrue(stowedCommand);
     driverXbox.x()
-      .onTrue(coralLifterIntakeCommand)
+      //.onTrue(coralLifterIntakeCommand)
       .onFalse(Commands.runOnce(() -> lifterIntake.stop()));
     driverXbox.y()
-      .onTrue(coralLifterOuttakeCommand)
+      //.onTrue(coralLifterOuttakeCommand)
       .onFalse(Commands.runOnce(() -> lifterIntake.stop()));
 
     
 
     driverXbox.start().onTrue(hangApproachCommand);
-    driverXbox.back().onTrue(hangCommand);
+    //driverXbox.back().onTrue(hangCommand);
 
     //driverXbox.b().onTrue(coralLifterOuttakeCommand);
     //driverXbox.x().onTrue(stowedCommand);

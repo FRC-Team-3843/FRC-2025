@@ -133,7 +133,7 @@ public class Lifter extends SubsystemBase {
     }
 
     public void moveClearancePos() {
-        setPos(Constants.LifterConstants.ARM_CLEARANCE_POS);
+        setPos(Constants.LifterConstants.CLEARANCE_POS);
     }
 
     public void moveCoralScorePos() {
@@ -169,7 +169,7 @@ public class Lifter extends SubsystemBase {
     }
 
     public boolean isClear(){
-        if(getPosition() > Constants.LifterConstants.ARM_CLEARANCE_POS)
+        if(getPosition() > Constants.LifterConstants.CLEARANCE_POS)
             return true;
         return false;
     }

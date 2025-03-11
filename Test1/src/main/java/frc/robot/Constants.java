@@ -52,6 +52,10 @@ public final class Constants
   public static class ClawIntakeConstants{
     public static final int MOTOR_ID = 33;
     public static final boolean MOTOR_INVERT = false;
+    public static final double ALAGE_INTAKE_SPEED = 0.5;
+    public static final double ALAGE_OUTTAKE_SPEED = 0.5;
+    public static final double CORAL_INTAKE_SPEED = 0.5;
+    public static final double CORAL_OUTTAKE_SPEED = 0.5;
   }
 
   public static class ClawArmConstants{
@@ -61,7 +65,7 @@ public final class Constants
     public static final double STOWED_POS = 0.77;//
     public static final double CLIMBING_APPROACH_POS = 0.77;//
     public static final double ALGAE_TRANSFER_POS = 10.47; //
-    public static final double MIN_ARM_POS = 19.2; //
+    public static final double CLEARANCE_POS = 19.2; //
     public static final double L1_CORAL_SCORING_POS = 22; //
     public static final double L2_CORAL_SCORING_POS = 20.6; //
     public static final double L1_ALGAE_INTAKE_POS = 24.7; //
@@ -73,7 +77,6 @@ public final class Constants
   public static class LifterConstants{
     public static final int LIFTER_RIGHT_MOTOR_ID = 31;
     public static final int LIFTER_LEFT_MOTOR_ID = 32;
-    public static final int LIFTER_INTAKE_MOTOR_ID = 35;
     public static final boolean LIFTER_RIGHT_MOTOR_INVERT = false;
     public static final boolean LIFTER_LEFT_MOTOR_INVERT = true;
     public static final double DRIVE_MOTOR_IZ = 0;
@@ -94,7 +97,7 @@ public final class Constants
     public static final double CORAL_SCORE_POS = 101; //
     public static final double ALGAE_INTAKE_POS = 125.1; //
     public static final double ALGAE_SCORE_POS = 125.1; //
-    public static final double ARM_CLEARANCE_POS = 118; 
+    public static final double CLEARANCE_POS = 118; 
     public static final double CORAL_INTAKE_POS = 198; //
     public static final double CLIMBING_APPROACH_POS = 198; //
 
@@ -117,7 +120,12 @@ public final class Constants
   }
 
   public static class LifterIntakeConstants{
+    public static final int MOTOR_ID = 35;
     public static InvertedValue LIFTER_MOTOR_INVERT = InvertedValue.Clockwise_Positive;
+    public static final double ALAGE_INTAKE_SPEED = 0.5;
+    public static final double ALAGE_OUTTAKE_SPEED = 0.5;
+    public static final double CORAL_INTAKE_SPEED = 0.5;
+    public static final double CORAL_OUTTAKE_SPEED = 0.5;
   }
 }
 

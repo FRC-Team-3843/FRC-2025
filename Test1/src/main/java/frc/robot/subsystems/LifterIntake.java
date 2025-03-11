@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class LifterIntake extends SubsystemBase{
-    TalonFX lifterIntakeMotor = new TalonFX(Constants.LifterConstants.LIFTER_INTAKE_MOTOR_ID);
+    TalonFX lifterIntakeMotor = new TalonFX(Constants.LifterIntakeConstants.MOTOR_ID);
     TalonFXConfiguration lifterIntakeConfig = new TalonFXConfiguration();
     
     public LifterIntake() {
