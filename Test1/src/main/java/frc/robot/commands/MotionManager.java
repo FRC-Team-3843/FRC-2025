@@ -88,7 +88,8 @@ public class MotionManager extends SequentialCommandGroup {
         Double liftCurrentPosition = m_lifter.getPosition();
 
         System.out.println("Starting Motion Manager");
-
+        
+        /*
         if(clawArmSetPosition == null || clawElevatorSetPosition == null || liftSetPosition == null) {
             System.err.println("Error: Set positions cannot be null.");
             return;
@@ -181,7 +182,7 @@ public class MotionManager extends SequentialCommandGroup {
             return;
         }
 
-        
+        */
     }
 
     public boolean checkFullMotion(double m_clawArmSetPosition, double m_liftSetPosition, double m_clawArmCurrentPosition, double m_liftCurrentPosition, double m_clawElevatorCurrentPosition) {

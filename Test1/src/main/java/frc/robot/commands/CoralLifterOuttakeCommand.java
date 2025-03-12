@@ -24,7 +24,7 @@ public CoralLifterOuttakeCommand(LifterIntake m_lifterIntake, ClawArm m_clawArm,
     addRequirements(m_clawElevator);
     addRequirements(m_clawIntake);
 
-    System.out.println("Coral Lifter Outtake");
+    //System.out.println("Coral Lifter Outtake");
 
     addCommands(
         new MoveLift(m_clawArm, m_clawElevator, m_lifter, Constants.LifterConstants.CORAL_SCORE_POS),

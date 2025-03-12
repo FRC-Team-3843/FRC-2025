@@ -15,7 +15,7 @@ public class LifterClearanceCommand extends SequentialCommandGroup{
         addRequirements(m_clawArm);
         addRequirements(m_clawElevator);
         
-        System.out.println("Moving Lifter to Clearance");
+        //System.out.println("Moving Lifter to Clearance");
 
         addCommands(
             new MoveLift(m_clawArm, m_clawElevator, m_lifter, Constants.LifterConstants.CLEARANCE_POS),

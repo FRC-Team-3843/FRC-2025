@@ -22,8 +22,9 @@ public class ClawArm extends SubsystemBase{
         fdb.SensorToMechanismRatio = 1;
 
         MotionMagicConfigs clawArmMMConfig = clawArmConfig.MotionMagic;
-        clawArmMMConfig.MotionMagicAcceleration = 100;
-        clawArmMMConfig.MotionMagicCruiseVelocity = 500;
+        //100-500
+        clawArmMMConfig.MotionMagicAcceleration = 10;
+        clawArmMMConfig.MotionMagicCruiseVelocity = 20;
         
 
         Slot0Configs clawArmSlot0Configs = clawArmConfig.Slot0;

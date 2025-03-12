@@ -18,7 +18,7 @@ public class HangApproachCommand extends SequentialCommandGroup{
         addRequirements(m_clawElevator);
         addRequirements(m_clawIntake);
 
-        System.out.println("Moving to Hange Approach");
+        //System.out.println("Moving to Hange Approach");
 
         addCommands(
             Commands.runOnce(() -> m_lifterIntake.stop()),

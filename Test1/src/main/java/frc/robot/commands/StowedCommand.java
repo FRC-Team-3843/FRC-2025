@@ -19,14 +19,16 @@ public class StowedCommand extends SequentialCommandGroup{
         addRequirements(m_lifter);
         addRequirements(m_lifterIntake);
         
-        System.out.println("Stowing");
+        //System.out.println("Stowing");
 
         addCommands(
             Commands.runOnce(() -> m_lifterIntake.stop()),
             Commands.runOnce(() -> m_clawIntake.stop()),
-            new MotionManager(m_clawArm, Constants.ClawArmConstants.STOWED_POS, m_clawElevator, Constants.ClawElevatorConstants.STOWED_POS, m_lifter, Constants.LifterConstants.STOWED_POS),
+            //new MoveElevator(m_clawArm, m_clawElevator, m_lifter, Constants.ClawElevatorConstants.STOWED_POS),
+            //new WaitUntilCommand(() -> m_clawElevator.isAtStowedPos()),
+            new MoveArm(m_clawArm, m_clawElevator, m_lifter, Constants.ClawArmConstants.STOWED_POS),
             new WaitUntilCommand(() -> m_clawArm.isAtStowedPos()),
-            new WaitUntilCommand(() -> m_clawElevator.isAtStowedPos()),
+            new MoveLift(m_clawArm, m_clawElevator, m_lifter, Constants.LifterConstants.STOWED_POS),
             new WaitUntilCommand(() -> m_lifter.isAtStowedPos())
         );
     }

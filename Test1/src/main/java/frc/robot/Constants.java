@@ -63,10 +63,11 @@ public final class Constants
     public static final int LEFT_MOTOR_ID = 32;
     public static final boolean RIGHT_MOTOR_INVERT = false;
     public static final boolean LEFT_MOTOR_INVERT = true;
-    public static final double MOTOR_MAX_VELOCITY = 6000;
+    //6000-8000
+    public static final double MOTOR_MAX_VELOCITY = 1000;
+    public static final double MOTOR_MAX_ACCELERATION = 2000;
     public static final double MOTOR_ALLOWED_ERROR = 0.5;
     public static final double MOTOR_MIN_OUTPUT = -1;
-    public static final double MOTOR_MAX_ACCELERATION = 8000;
     public static final double MOTOR_P = 0.4;
     public static final double MOTOR_I = 0;
     public static final double MOTOR_D = 0.001;
@@ -91,11 +92,11 @@ public final class Constants
     public static final double STOWED_POS = 0.77;//
     public static final double CLIMBING_APPROACH_POS = 0.77;//
     public static final double ALGAE_TRANSFER_POS = 10.47; //
-    public static final double CLEARANCE_POS = 19.2; //
     public static final double L1_CORAL_SCORING_POS = 22; //
     public static final double L2_CORAL_SCORING_POS = 20.6; //
     public static final double L1_ALGAE_INTAKE_POS = 24.7; //
     public static final double L2_ALGAE_INTAKE_POS = 19.8; //
+    public static final double CLEARANCE_POS = 28; //
     public static final double CORAL_HUMAN_POS = 37.6; //
     public static final double ALGAE_SCORE_POS = 48.8; //
   }

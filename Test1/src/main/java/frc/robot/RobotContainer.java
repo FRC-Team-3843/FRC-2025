@@ -168,7 +168,8 @@ public class RobotContainer
 
 
     // What buttons should connect to which things?
-    driverXbox.a().onTrue(new StowedCommand(clawIntake, clawArm, clawElevator, lifter, lifterIntake));
+    driverXbox.a()
+      .onTrue(new StowedCommand(clawIntake, clawArm, clawElevator, lifter, lifterIntake));
     driverXbox.b()
       .onTrue(new CoralLifterIntakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake))
       .onFalse(Commands.runOnce(() -> lifterIntake.stop()));

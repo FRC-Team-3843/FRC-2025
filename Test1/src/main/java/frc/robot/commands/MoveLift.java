@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.ClawArm;
 import frc.robot.subsystems.ClawElevator;
@@ -27,12 +28,14 @@ public class MoveLift extends SequentialCommandGroup{
         else if (clawArmCurrentPosition > (Constants.ClawArmConstants.ALGAE_TRANSFER_POS + 2)){
             addCommands(
                 Commands.runOnce(() -> m_clawArm.moveClear()),
+                new WaitUntilCommand(() -> m_lifter.isClear()),
                 Commands.runOnce(() -> m_lifter.setPos(position))
             );
         }
         else{
             addCommands(
                 Commands.runOnce(() -> m_clawArm.moveStowedPos()),
+                new WaitUntilCommand(() -> m_clawArm.isAtStowedPos()),
                 Commands.runOnce(() -> m_lifter.setPos(position))
             );
         }
