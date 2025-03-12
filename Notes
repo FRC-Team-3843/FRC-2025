@@ -4,17 +4,22 @@ Notes
 Pod Length : 25.25 in || 0.6413 m
 Pod Width : 19.25 in || 0.4889 m
 
-IMPORTANT!!! DO THIS WHEN POSSABLE:
+encoder positions for old bot:
+169.37 - backleft
+89.47 - backright
+331.215 - frontleft
+222.845 - frontright
+
+IMPORTANT!!! DO THIS WHEN POSSIBLE:
 
 TODO:
- - We need to configure Pathplanner
+ - We need to make a Path/Auto
  - Tune the bot.
  - Code the auto
  - Fix the bumpyness with the swerve drive.
- - Everything else.
- - Button Maping
+ - Button Mapping
  - Cut off bolt to prevent wire on KrakenX44 from falling out -> lifterIntakeMotor
- - Commands
+ - Commands, do MORE of them
  
  Fill Out This for PathPlanner (please, Harrison, please):
  Robot Mass (kg):
@@ -37,3 +42,27 @@ TODO:
  Back Left Y (m):
  Back Right X (m):
  Back Right Y (m):
+ 
+ Command Ideas: (16 Buttons total)
+ CoralLifterIntakeCommand (a)
+ CoralLifterScoreCommand (b)
+ CoralClawL1ScoreCommand (leftBumper + b)
+ CoralClawL2ScoreCommand (leftBumper+X)
+ CoralClawL3ScoreCommand
+ CoralClawIntakeCommand (right bumper + X)
+ AlgaeGroundIntakeCommand (X)
+ AlgaeL1IntakeCommand (Y)
+ AlgaeL2IntakeCommand (leftBumper + A)
+ AlgaeScoreProcessorCommand
+ AlgaeScoreNetCommand (leftBumper + Y)
+ HangCommand (back)
+ ApproachHangCommand
+ StowedCommand (RightBumper + Y)
+ DefenseCommand
+ 
+ Auto Ideas:
+ ScoreCoralTrough
+ StraightLeave
+ AlgaeGrab
+ ScoreCoralTrough
+ 

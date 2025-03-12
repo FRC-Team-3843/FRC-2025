@@ -19,6 +19,8 @@ public class StowedCommand extends SequentialCommandGroup{
         addRequirements(m_lifter);
         addRequirements(m_lifterIntake);
         
+        System.out.println("Stowing");
+
         addCommands(
             Commands.runOnce(() -> m_lifterIntake.stop()),
             Commands.runOnce(() -> m_clawIntake.stop()),

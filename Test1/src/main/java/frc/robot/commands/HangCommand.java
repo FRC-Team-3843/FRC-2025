@@ -18,6 +18,8 @@ public class HangCommand extends SequentialCommandGroup{
         addRequirements(m_clawArm);
         addRequirements(m_clawElevator);
         addRequirements(m_clawIntake);
+
+        System.out.println("Moving to Hange");
         
         addCommands(
             Commands.runOnce(() -> m_lifterIntake.stop()),

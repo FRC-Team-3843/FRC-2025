@@ -15,12 +15,16 @@ public Lifter lifter;
 public LifterIntake lifterIntake;
 public double speed;
 
+
+
 public CoralLifterOuttakeCommand(LifterIntake m_lifterIntake, ClawArm m_clawArm, ClawElevator m_clawElevator, Lifter m_lifter, ClawIntake m_clawIntake) {
     addRequirements(m_lifter);
     addRequirements(m_lifterIntake);
     addRequirements(m_clawArm);
     addRequirements(m_clawElevator);
     addRequirements(m_clawIntake);
+
+    System.out.println("Coral Lifter Outtake");
 
     addCommands(
         new MotionManager(m_clawArm, m_clawElevator, m_lifter, Constants.LifterConstants.CORAL_SCORE_POS),

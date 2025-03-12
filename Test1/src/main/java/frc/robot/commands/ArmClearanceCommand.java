@@ -14,6 +14,8 @@ public class ArmClearanceCommand extends SequentialCommandGroup{
         addRequirements(m_lifter);
         addRequirements(m_clawArm);
         addRequirements(m_clawElevator);
+
+        System.out.println("Moving Arm to Clearance");
         
         addCommands(
             new MotionManager(m_clawArm, Constants.ClawArmConstants.CLEARANCE_POS, m_clawElevator, m_lifter),

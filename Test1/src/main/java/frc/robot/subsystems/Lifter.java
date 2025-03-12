@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Lifter extends SubsystemBase {
-    SparkMax lifterRightMotor = new SparkMax(Constants.LifterConstants.LIFTER_RIGHT_MOTOR_ID, MotorType.kBrushless);
-    SparkMax lifterLeftMotor = new SparkMax(Constants.LifterConstants.LIFTER_LEFT_MOTOR_ID, MotorType.kBrushless);
+    SparkMax lifterRightMotor = new SparkMax(Constants.LifterConstants.RIGHT_MOTOR_ID, MotorType.kBrushless);
+    SparkMax lifterLeftMotor = new SparkMax(Constants.LifterConstants.LEFT_MOTOR_ID, MotorType.kBrushless);
     SparkClosedLoopController lifterRightClosedLoopController = lifterRightMotor.getClosedLoopController();
     SparkClosedLoopController lifterLeftClosedLoopController = lifterLeftMotor.getClosedLoopController();
     RelativeEncoder lifterRightEncoder = lifterRightMotor.getEncoder();
@@ -25,8 +25,8 @@ public class Lifter extends SubsystemBase {
     SparkMaxConfig lifterLeftConfig = new SparkMaxConfig();
 
     public Lifter(){
-        lifterRightConfig.inverted(Constants.LifterConstants.LIFTER_RIGHT_MOTOR_INVERT);
-        lifterLeftConfig.inverted(Constants.LifterConstants.LIFTER_LEFT_MOTOR_INVERT);
+        lifterRightConfig.inverted(Constants.LifterConstants.RIGHT_MOTOR_INVERT);
+        lifterLeftConfig.inverted(Constants.LifterConstants.LEFT_MOTOR_INVERT);
         lifterRightMotor.configure(lifterRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         lifterLeftMotor.configure(lifterLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -45,49 +45,35 @@ public class Lifter extends SubsystemBase {
 
 
         lifterRightConfig.closedLoop
-            .minOutput(Constants.LifterConstants.DRIVE_MOTOR_MIN_OUTPUT)
+            .minOutput(Constants.LifterConstants.MOTOR_MIN_OUTPUT)
             .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
             // Set PID values for position control. We don't need to pass a closed loop
             // slot, as it will default to slot 0.
-            .p(Constants.LifterConstants.LIFTER_RIGHT_P)
-            .i(Constants.LifterConstants.LIFTER_RIGHT_I)
-            .d(Constants.LifterConstants.LIFTER_RIGHT_D)
-            .outputRange(-1, 1)
-
-            // Set PID values for velocity control in slot 1
-            .p(0.0001, ClosedLoopSlot.kSlot1)
-            .i(0, ClosedLoopSlot.kSlot1)
-            .d(0, ClosedLoopSlot.kSlot1)
-            .velocityFF(1.0 / 5767, ClosedLoopSlot.kSlot1)
-            .outputRange(-1, 1, ClosedLoopSlot.kSlot1)
-
-            .iZone(Constants.LifterConstants.DRIVE_MOTOR_IZ)
-            .maxMotion.allowedClosedLoopError(Constants.LifterConstants.DRIVE_MOTOR_ALLOWED_ERROR)
-            .maxVelocity(Constants.LifterConstants.DRIVE_MOTOR_MAX_VELOCITY)
-            .maxAcceleration(Constants.LifterConstants.DRIVE_MOTOR_MAX_ACCELERATION);
+            .p(Constants.LifterConstants.MOTOR_P)
+            .i(Constants.LifterConstants.MOTOR_I)
+            .d(Constants.LifterConstants.MOTOR_D)
+            .outputRange(-1, 1);
+        
+        lifterRightConfig.closedLoop.maxMotion
+            .allowedClosedLoopError(Constants.LifterConstants.MOTOR_ALLOWED_ERROR)
+            .maxVelocity(Constants.LifterConstants.MOTOR_MAX_VELOCITY)
+            .maxAcceleration(Constants.LifterConstants.MOTOR_MAX_ACCELERATION);
     
 
         lifterLeftConfig.closedLoop
-            .minOutput(Constants.LifterConstants.DRIVE_MOTOR_MIN_OUTPUT)
+            .minOutput(Constants.LifterConstants.MOTOR_MIN_OUTPUT)
             .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
             // Set PID values for position control. We don't need to pass a closed loop
             // slot, as it will default to slot 0.
-            .p(Constants.LifterConstants.LIFTER_LEFT_P)
-            .i(Constants.LifterConstants.LIFTER_LEFT_I)
-            .d(Constants.LifterConstants.LIFTER_LEFT_D)
-            .outputRange(-1, 1)
-
-            // Set PID values for velocity control in slot 1
-            .p(0.0001, ClosedLoopSlot.kSlot1)
-            .i(0, ClosedLoopSlot.kSlot1)
-            .d(0, ClosedLoopSlot.kSlot1)
-            .velocityFF(1.0 / 5767, ClosedLoopSlot.kSlot1)
-            .outputRange(-1, 1, ClosedLoopSlot.kSlot1)
-
-            .iZone(Constants.LifterConstants.DRIVE_MOTOR_IZ)
-            .maxMotion.allowedClosedLoopError(Constants.LifterConstants.DRIVE_MOTOR_ALLOWED_ERROR)
-            .maxVelocity(Constants.LifterConstants.DRIVE_MOTOR_MAX_VELOCITY)
-            .maxAcceleration(Constants.LifterConstants.DRIVE_MOTOR_MAX_ACCELERATION);
+            .p(Constants.LifterConstants.MOTOR_P)
+            .i(Constants.LifterConstants.MOTOR_I)
+            .d(Constants.LifterConstants.MOTOR_D)
+            .outputRange(-1, 1);
+        
+        lifterLeftConfig.closedLoop.maxMotion
+            .allowedClosedLoopError(Constants.LifterConstants.MOTOR_ALLOWED_ERROR)
+            .maxVelocity(Constants.LifterConstants.MOTOR_MAX_VELOCITY)
+            .maxAcceleration(Constants.LifterConstants.MOTOR_MAX_ACCELERATION);
 
         lifterRightMotor.configure(lifterRightConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         lifterLeftMotor.configure(lifterLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);

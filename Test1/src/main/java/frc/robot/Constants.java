@@ -75,21 +75,18 @@ public final class Constants
   }
 
   public static class LifterConstants{
-    public static final int LIFTER_RIGHT_MOTOR_ID = 31;
-    public static final int LIFTER_LEFT_MOTOR_ID = 32;
-    public static final boolean LIFTER_RIGHT_MOTOR_INVERT = false;
-    public static final boolean LIFTER_LEFT_MOTOR_INVERT = true;
-    public static final double DRIVE_MOTOR_IZ = 0;
-    public static final double DRIVE_MOTOR_MAX_VELOCITY = 8000;
-    public static final double DRIVE_MOTOR_ALLOWED_ERROR = 0;
-    public static final double DRIVE_MOTOR_MIN_OUTPUT = -1;
-    public static final double DRIVE_MOTOR_MAX_ACCELERATION = 8000;
-    public static final double LIFTER_RIGHT_P = 0.15;
-    public static final double LIFTER_RIGHT_I = 0;
-    public static final double LIFTER_RIGHT_D = 0.001;
-    public static final double LIFTER_LEFT_P = 0.15;
-    public static final double LIFTER_LEFT_I = 0;
-    public static final double LIFTER_LEFT_D = 0.001;
+    public static final int RIGHT_MOTOR_ID = 31;
+    public static final int LEFT_MOTOR_ID = 32;
+    public static final boolean RIGHT_MOTOR_INVERT = false;
+    public static final boolean LEFT_MOTOR_INVERT = true;
+    public static final double MOTOR_MAX_VELOCITY = 6000;
+    public static final double MOTOR_ALLOWED_ERROR = 0.5;
+    public static final double MOTOR_MIN_OUTPUT = -1;
+    public static final double MOTOR_MAX_ACCELERATION = 8000;
+    public static final double MOTOR_P = 0.4;
+    public static final double MOTOR_I = 0;
+    public static final double MOTOR_D = 0.001;
+
 
     // Lifter Positions
     public static final double STOWED_POS = 10; //

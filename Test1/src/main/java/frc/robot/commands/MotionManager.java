@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants;
 import frc.robot.subsystems.ClawArm;
 import frc.robot.subsystems.ClawElevator;
 import frc.robot.subsystems.Lifter;
@@ -86,6 +87,8 @@ public class MotionManager extends SequentialCommandGroup {
         Double clawElevatorCurrentPosition = m_clawElevator.getPosition();
         Double liftCurrentPosition = m_lifter.getPosition();
 
+        System.out.println("Starting Motion Manager");
+
         if(clawArmSetPosition == null || clawElevatorSetPosition == null || liftSetPosition == null) {
             System.err.println("Error: Set positions cannot be null.");
             return;
@@ -98,7 +101,10 @@ public class MotionManager extends SequentialCommandGroup {
             System.err.println("Error: Already at set position.");
             return;
         }
-        else if((clawElevatorCurrentPosition < 18 || clawElevatorSetPosition > 18) || (clawElevatorCurrentPosition > 18 || clawElevatorSetPosition < 18)){
+        else if((clawElevatorCurrentPosition < 18 && clawElevatorSetPosition > 18) || (clawElevatorCurrentPosition > 18 && clawElevatorSetPosition < 18)){
+            System.out.println("Starting Elevator Transfer Motion");
+            System.out.println(clawElevatorCurrentPosition);
+            System.out.println(clawElevatorSetPosition);
             if(m_lifter.isClear()) {
                 addCommands(
                     Commands.runOnce(() -> m_clawElevator.setPos(clawElevatorSetPosition)),
@@ -115,6 +121,7 @@ public class MotionManager extends SequentialCommandGroup {
             }
         }
         else if(Math.abs(clawElevatorCurrentPosition - clawElevatorSetPosition) > 2){
+            System.out.println("Starting Elevator Motion");
             addCommands(
                 Commands.runOnce(() -> m_clawElevator.setPos(clawElevatorSetPosition)),
                 new WaitUntilCommand(() -> m_clawElevator.isAtPosition(clawElevatorSetPosition)),
@@ -122,6 +129,7 @@ public class MotionManager extends SequentialCommandGroup {
             );
         }            
         else if((Math.abs(clawArmCurrentPosition - clawArmSetPosition) > 2 && Math.abs(liftCurrentPosition - liftSetPosition) > 2) && checkFullMotion(clawArmSetPosition, liftSetPosition, clawArmCurrentPosition, liftCurrentPosition, clawElevatorCurrentPosition)){
+            System.out.println("Making double move");
             addCommands(
                 Commands.runOnce(() -> m_lifter.setPos(liftSetPosition)),
                 Commands.runOnce(() -> m_clawArm.setPos(clawArmSetPosition)),
@@ -129,14 +137,17 @@ public class MotionManager extends SequentialCommandGroup {
             );
         }  
         else if((Math.abs(liftCurrentPosition - liftSetPosition) > 2) && checkLiftMotion(clawArmSetPosition, liftSetPosition, clawArmCurrentPosition, liftCurrentPosition, clawElevatorCurrentPosition)) {
+            System.out.println("Moving Lift0");
             if(checkArmMotion(clawArmSetPosition, liftSetPosition, clawArmCurrentPosition, liftSetPosition, clawElevatorCurrentPosition)){
+                System.out.println("Moving Lift1");
                 addCommands(
                     Commands.runOnce(() -> m_lifter.setPos(liftSetPosition)),
                     new WaitUntilCommand(() -> m_lifter.isAtPosition(liftSetPosition)),
-                    new MotionManager(m_clawArm, clawArmSetPosition, m_clawElevator, clawElevatorSetPosition, m_lifter, liftSetPosition)
+                    Commands.runOnce(() -> m_clawArm.setPos(clawArmSetPosition))
                 );
             }
             else{
+                System.out.println("Moving Lift2");
                 addCommands(
                     new LifterClearanceCommand(m_clawArm, m_clawElevator, m_lifter),
                     new WaitUntilCommand(() -> m_lifter.isClear()),
@@ -147,11 +158,12 @@ public class MotionManager extends SequentialCommandGroup {
             }
         }
         else if((Math.abs(clawArmCurrentPosition - clawArmSetPosition) > 2) && checkArmMotion(clawArmSetPosition, liftSetPosition, clawArmCurrentPosition, liftCurrentPosition, clawElevatorCurrentPosition)) {
+            System.out.println("Moving Arm");
             if(checkLiftMotion(clawArmSetPosition, liftSetPosition, clawArmSetPosition, liftCurrentPosition, clawElevatorCurrentPosition)){
                 addCommands(
                     Commands.runOnce(() -> m_clawArm.setPos(clawArmSetPosition)),
                     new WaitUntilCommand(() -> m_clawArm.isAtPosition(clawArmSetPosition)),
-                    new MotionManager(m_clawArm, clawArmSetPosition, m_clawElevator, clawElevatorSetPosition, m_lifter, liftSetPosition)
+                    Commands.runOnce(() -> m_lifter.setPos(liftSetPosition))
                 );
             }
             else{

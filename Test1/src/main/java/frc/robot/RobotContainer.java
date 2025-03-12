@@ -71,21 +71,21 @@ public class RobotContainer
 
   private final SwerveSubsystem drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
-  private CoralLifterIntakeCommand coralLifterIntakeCommand = new CoralLifterIntakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
-  private CoralL1ScoreCommand coralL1ScoreCommand = new CoralL1ScoreCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
-  private CoralL2ScoreCommand coralL2ScoreCommand = new CoralL2ScoreCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
+  //private CoralLifterIntakeCommand coralLifterIntakeCommand = new CoralLifterIntakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
+  //private CoralL1ScoreCommand coralL1ScoreCommand = new CoralL1ScoreCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
+  //private CoralL2ScoreCommand coralL2ScoreCommand = new CoralL2ScoreCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
   //private CoralClawIntakeCommand coralClawIntakeCommand = new CoralClawIntakeCommand();
-  private CoralLifterOuttakeCommand coralLifterOuttakeCommand = new CoralLifterOuttakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
-  private AlgaeGroundIntakeCommand algaeGroundIntakeCommand = new AlgaeGroundIntakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
-  private AlgaeL1IntakeCommand algaeL1IntakeCommand = new AlgaeL1IntakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
-  private AlgaeL2IntakeCommand algaeL2IntakeCommand = new AlgaeL2IntakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
-  private AlgaeScoreNetCommand algaeScoreNetCommand = new AlgaeScoreNetCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
+  //private CoralLifterOuttakeCommand coralLifterOuttakeCommand = new CoralLifterOuttakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
+  //private AlgaeGroundIntakeCommand algaeGroundIntakeCommand = new AlgaeGroundIntakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
+  //private AlgaeL1IntakeCommand algaeL1IntakeCommand = new AlgaeL1IntakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
+  //private AlgaeL2IntakeCommand algaeL2IntakeCommand = new AlgaeL2IntakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
+  //private AlgaeScoreNetCommand algaeScoreNetCommand = new AlgaeScoreNetCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
   //private AlgaeScoreProcessorCommand algaeScoreProcessorCommand = new AlgaeScoreProcessorCommand();
-  private HangCommand hangCommand = new HangCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
-  private StowedCommand stowedCommand = new StowedCommand(clawIntake, clawArm, clawElevator, lifter, lifterIntake);
-  private HangApproachCommand hangApproachCommand = new HangApproachCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
-  private LifterClearanceCommand lifterClearanceCommand = new LifterClearanceCommand(clawArm, clawElevator, lifter);
-  private ArmClearanceCommand armClearanceCommand = new ArmClearanceCommand(clawArm, clawElevator, lifter);
+  //private HangCommand hangCommand = new HangCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
+  //private StowedCommand stowedCommand = new StowedCommand(clawIntake, clawArm, clawElevator, lifter, lifterIntake);
+  //private HangApproachCommand hangApproachCommand = new HangApproachCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake);
+  //private LifterClearanceCommand lifterClearanceCommand = new LifterClearanceCommand(clawArm, clawElevator, lifter);
+  //private ArmClearanceCommand armClearanceCommand = new ArmClearanceCommand(clawArm, clawElevator, lifter);
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -168,35 +168,35 @@ public class RobotContainer
 
 
     // What buttons should connect to which things?
-    driverXbox.a().onTrue(stowedCommand);
+    driverXbox.a().onTrue(new StowedCommand(clawIntake, clawArm, clawElevator, lifter, lifterIntake));
     driverXbox.b()
-    .onTrue(coralLifterIntakeCommand)
-    .onFalse(Commands.runOnce(() -> lifterIntake.stop()));
+      .onTrue(new CoralLifterIntakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake))
+      .onFalse(Commands.runOnce(() -> lifterIntake.stop()));
 
     driverXbox.y()
-      //.onTrue(coralLifterOuttakeCommand)
+      .onTrue(new CoralLifterOuttakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake))
       .onFalse(Commands.runOnce(() -> lifterIntake.stop()));
 
     
 
-    driverXbox.start().onTrue(hangApproachCommand);
-    driverXbox.back().onTrue(hangCommand);
+    driverXbox.start().onTrue(new HangApproachCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake));
+    driverXbox.back().onTrue(new HangCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake));
 
-    driverXbox.povDown().onTrue(lifterClearanceCommand);
-    driverXbox.povUp().onTrue(armClearanceCommand);
+    driverXbox.povDown().onTrue(new LifterClearanceCommand(clawArm, clawElevator, lifter));
+    driverXbox.povUp().onTrue(new ArmClearanceCommand(clawArm, clawElevator, lifter));
 
     
     if (driverXboxController.getRightBumper()) {
-      driverXbox.a().onTrue(algaeL1IntakeCommand);
-      driverXbox.b().onTrue(algaeL2IntakeCommand);
-      driverXbox.y().onTrue(algaeScoreNetCommand);
-      driverXbox.x().onTrue(algaeGroundIntakeCommand);
+      //driverXbox.a().onTrue(algaeL1IntakeCommand);
+      //driverXbox.b().onTrue(algaeL2IntakeCommand);
+      //driverXbox.y().onTrue(algaeScoreNetCommand);
+      //driverXbox.x().onTrue(algaeGroundIntakeCommand);
     }
 
     if (driverXboxController.getLeftBumper()) {
-      driverXbox.a().onTrue(coralL1ScoreCommand);
-      driverXbox.b().onTrue(coralL2ScoreCommand);
-      driverXbox.y().onTrue(coralLifterOuttakeCommand);
+      //driverXbox.a().onTrue(coralL1ScoreCommand);
+      //driverXbox.b().onTrue(coralL2ScoreCommand);
+      //driverXbox.y().onTrue(coralLifterOuttakeCommand);
 
     }
 
