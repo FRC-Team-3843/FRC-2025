@@ -21,7 +21,7 @@ public class CoralLifterIntakeCommand extends SequentialCommandGroup {
         System.out.println("Coral LifterIntake");
 
         addCommands(
-            new MotionManager(m_clawArm, m_clawElevator, m_lifter, Constants.LifterConstants.CORAL_INTAKE_POS),
+            new MoveLift(m_clawArm, m_clawElevator, m_lifter, Constants.LifterConstants.CORAL_INTAKE_POS),
             new WaitUntilCommand(() -> m_lifter.isAtCoralIntakePos()),
             Commands.runOnce(() -> m_lifterIntake.intake(Constants.LifterIntakeConstants.CORAL_INTAKE_SPEED))
         );

@@ -131,6 +131,10 @@ public class ClawArm extends SubsystemBase{
         return isAtPosition(Constants.ClawArmConstants.ALGAE_TRANSFER_POS);
     }
 
+    public void moveClear(){
+        setPos(Constants.ClawArmConstants.CLEARANCE_POS);
+    }
+
     public boolean isClear(){
         if(getPosition() > Constants.ClawArmConstants.CLEARANCE_POS)
             return true;

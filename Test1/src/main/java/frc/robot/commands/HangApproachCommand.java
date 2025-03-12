@@ -23,7 +23,9 @@ public class HangApproachCommand extends SequentialCommandGroup{
         addCommands(
             Commands.runOnce(() -> m_lifterIntake.stop()),
             Commands.runOnce(() -> m_clawIntake.stop()),
-            new MotionManager(m_clawArm, Constants.ClawArmConstants.CLIMBING_APPROACH_POS, m_clawElevator, Constants.ClawElevatorConstants.CLIMBING_APPROACH_POS, m_lifter, Constants.LifterConstants.CLIMBING_APPROACH_POS),
+            new MoveLift(m_clawArm, m_clawElevator, m_lifter, Constants.LifterConstants.CLIMBING_APPROACH_POS),
+            new MoveElevator(m_clawArm, m_clawElevator, m_lifter, Constants.ClawElevatorConstants.CLIMBING_APPROACH_POS),
+            new MoveArm(m_clawArm, m_clawElevator, m_lifter, Constants.ClawArmConstants.CLIMBING_APPROACH_POS),
             new WaitUntilCommand(() -> m_clawArm.isAtClimbingApproachPos()),
             new WaitUntilCommand(() -> m_clawElevator.isAtClimbingApproachPos()),
             new WaitUntilCommand(() -> m_lifter.isAtClimbingApproachPos())

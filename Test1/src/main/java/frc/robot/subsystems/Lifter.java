@@ -118,7 +118,7 @@ public class Lifter extends SubsystemBase {
         setPos(Constants.LifterConstants.ALGAE_INTAKE_POS);
     }
 
-    public void moveClearancePos() {
+    public void moveClear() {
         setPos(Constants.LifterConstants.CLEARANCE_POS);
     }
 

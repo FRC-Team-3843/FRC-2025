@@ -58,22 +58,6 @@ public final class Constants
     public static final double CORAL_OUTTAKE_SPEED = 0.5;
   }
 
-  public static class ClawArmConstants{
-    public static final int MOTOR_ID = 34;
-    
-    // Claw Arm Positions
-    public static final double STOWED_POS = 0.77;//
-    public static final double CLIMBING_APPROACH_POS = 0.77;//
-    public static final double ALGAE_TRANSFER_POS = 10.47; //
-    public static final double CLEARANCE_POS = 19.2; //
-    public static final double L1_CORAL_SCORING_POS = 22; //
-    public static final double L2_CORAL_SCORING_POS = 20.6; //
-    public static final double L1_ALGAE_INTAKE_POS = 24.7; //
-    public static final double L2_ALGAE_INTAKE_POS = 19.8; //
-    public static final double CORAL_HUMAN_POS = 37.6; //
-    public static final double ALGAE_SCORE_POS = 48.8; //
-  }
-
   public static class LifterConstants{
     public static final int RIGHT_MOTOR_ID = 31;
     public static final int LEFT_MOTOR_ID = 32;
@@ -92,12 +76,28 @@ public final class Constants
     public static final double STOWED_POS = 10; //
     public static final double HANG_POS = 15; //
     public static final double CORAL_SCORE_POS = 101; //
+    public static final double CLEARANCE_POS = 118; 
     public static final double ALGAE_INTAKE_POS = 125.1; //
     public static final double ALGAE_SCORE_POS = 125.1; //
-    public static final double CLEARANCE_POS = 118; 
     public static final double CORAL_INTAKE_POS = 198; //
     public static final double CLIMBING_APPROACH_POS = 198; //
 
+  }
+
+  public static class ClawArmConstants{
+    public static final int MOTOR_ID = 34;
+    
+    // Claw Arm Positions
+    public static final double STOWED_POS = 0.77;//
+    public static final double CLIMBING_APPROACH_POS = 0.77;//
+    public static final double ALGAE_TRANSFER_POS = 10.47; //
+    public static final double CLEARANCE_POS = 19.2; //
+    public static final double L1_CORAL_SCORING_POS = 22; //
+    public static final double L2_CORAL_SCORING_POS = 20.6; //
+    public static final double L1_ALGAE_INTAKE_POS = 24.7; //
+    public static final double L2_ALGAE_INTAKE_POS = 19.8; //
+    public static final double CORAL_HUMAN_POS = 37.6; //
+    public static final double ALGAE_SCORE_POS = 48.8; //
   }
 
   public static class ClawElevatorConstants{

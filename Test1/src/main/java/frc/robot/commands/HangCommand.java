@@ -24,7 +24,7 @@ public class HangCommand extends SequentialCommandGroup{
         addCommands(
             Commands.runOnce(() -> m_lifterIntake.stop()),
             Commands.runOnce(() -> m_clawIntake.stop()),
-            new MotionManager(m_clawArm, m_clawElevator, m_lifter, Constants.LifterConstants.HANG_POS),
+            new MoveLift(m_clawArm, m_clawElevator, m_lifter, Constants.LifterConstants.HANG_POS),
             new WaitUntilCommand(() -> m_lifter.isAtHangPos())
         );
         
