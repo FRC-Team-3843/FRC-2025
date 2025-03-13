@@ -9,11 +9,9 @@ import frc.robot.subsystems.Lifter;
 
 public class MoveElevator extends SequentialCommandGroup{
 
-    public MoveElevator(ClawArm m_clawArm, ClawElevator m_clawElevator, Lifter m_lifter, Double position){
+    public MoveElevator(ClawArm m_clawArm, ClawElevator m_clawElevator, Lifter m_lifter, double position){
         
-        addRequirements(m_clawArm);
-        addRequirements(m_clawElevator);
-        addRequirements(m_lifter);
+        addRequirements(m_clawArm, m_clawElevator, m_lifter);
         
         //Double clawArmCurrentPosition = m_clawArm.getPosition();
         Double clawElevatorCurrentPosition = m_clawElevator.getPosition();

@@ -97,7 +97,7 @@ public class Lifter extends SubsystemBase {
     }
 
     public boolean isAtPosition(double position){
-        if(Math.abs(getPosition() - position) < 2)
+        if(Math.abs(getPosition() - position) < 15)
             return true;
         return false;
     }

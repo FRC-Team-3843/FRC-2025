@@ -1,71 +1,91 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.ClawArm;
+import frc.robot.subsystems.Lifter;
+import frc.robot.Constants;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.Constants;
-import frc.robot.subsystems.ClawArm;
 import frc.robot.subsystems.ClawElevator;
-import frc.robot.subsystems.Lifter;
 
-public class MoveArm extends SequentialCommandGroup{
-    
-    public MoveArm(ClawArm m_clawArm, ClawElevator m_clawElevator, Lifter m_lifter, Double position){
-        
-        addRequirements(m_clawArm);
-        addRequirements(m_clawElevator);
-        addRequirements(m_lifter);
 
-        Double clawArmCurrentPosition = m_clawArm.getPosition();
-        //Double clawElevatorCurrentPosition = m_clawElevator.getPosition();
-        Double liftCurrentPosition = m_lifter.getPosition();
+public class MoveArm extends Command {
 
-        DriverStation.reportError("Staring Arm Movement", false);
+    private final ClawArm m_clawArm;
+    private final ClawElevator m_clawElevator;
+    private final Lifter m_lifter;
+    private final double position;
+    private final double positionVariation = 4.0;
 
-        if((liftCurrentPosition > Constants.LifterConstants.CLEARANCE_POS) || (clawArmCurrentPosition > Constants.ClawArmConstants.CLEARANCE_POS && position > Constants.ClawArmConstants.CLEARANCE_POS)){
-            DriverStation.reportError("Moving Arm - Free Motion", false);
-            addCommands(
+    public MoveArm(ClawArm m_clawArm, ClawElevator m_clawElevator, Lifter m_lifter, double position) {
+        this.m_clawArm = m_clawArm;
+        this.m_clawElevator = m_clawElevator;
+        this.m_lifter = m_lifter;
+        this.position = position;
+
+        addRequirements(m_clawArm, m_clawElevator, m_lifter);
+    }
+
+    @Override
+    public void initialize() {
+        // Initialize any variables or states if needed (this method can be empty if not required)
+    }
+
+    @Override
+    public void execute() {
+        // Get the current positions of the arm and lifter during the execution
+        double clawArmCurrentPosition = m_clawArm.getPosition();
+        double liftCurrentPosition = m_lifter.getPosition();
+
+        SequentialCommandGroup commandGroup = new SequentialCommandGroup();
+
+        if ((liftCurrentPosition > Constants.LifterConstants.CLEARANCE_POS) ||
+            (clawArmCurrentPosition > Constants.ClawArmConstants.CLEARANCE_POS && position > Constants.ClawArmConstants.CLEARANCE_POS)) {
+            // Free motion
+            commandGroup.addCommands(
+                new WarningLogCommand("Moving Arm - Free Motion"),
                 Commands.runOnce(() -> m_clawArm.setPos(position))
             );
         }
-        else if(clawArmCurrentPosition < (Constants.ClawArmConstants.ALGAE_TRANSFER_POS + 2)){
-            DriverStation.reportError("Arm Low", false);
-            if(position <= (Constants.ClawArmConstants.ALGAE_TRANSFER_POS)){
-                DriverStation.reportError("Position Low", false);
-                if(liftCurrentPosition > (Constants.LifterConstants.ALGAE_INTAKE_POS - 2)){
-                    DriverStation.reportError("Free Arm Movement", false);
-                    addCommands(
+        else if (clawArmCurrentPosition < (Constants.ClawArmConstants.ALGAE_TRANSFER_POS + positionVariation)) {
+            // Low position handling
+            if (position <= (Constants.ClawArmConstants.ALGAE_TRANSFER_POS)) {
+                if (liftCurrentPosition > (Constants.LifterConstants.ALGAE_INTAKE_POS - positionVariation)) {
+                    commandGroup.addCommands(
+                        new WarningLogCommand("Moving Arm - Low - Free Movement"),
                         Commands.runOnce(() -> m_clawArm.setPos(position))
                     );
                 }
-                if(position == Constants.ClawArmConstants.STOWED_POS){
-                    DriverStation.reportError("Moving Arm to Stowed Position", false);
-                    addCommands(
+                else if (position == Constants.ClawArmConstants.STOWED_POS) {
+                    commandGroup.addCommands(
+                        new WarningLogCommand("Moving Arm - Low - Stowed Position"),
                         Commands.runOnce(() -> m_clawArm.setPos(position))
                     );
                 }
-                else{
-                    DriverStation.reportError("Lifter too close, Moving out, Then Low movement", false);
-                    addCommands(
+                else {
+                    commandGroup.addCommands(
+                        new WarningLogCommand("Moving Arm - Low - Lifter too close, moving out"),
                         Commands.runOnce(() -> m_lifter.moveAlgaeIntakePos()),
                         new WaitUntilCommand(() -> m_lifter.isAtAlgaeIntakePos()),
                         Commands.runOnce(() -> m_clawArm.setPos(position))
                     );
                 }
             }
-            else{
-                DriverStation.reportError("Position High", false);
-                if(position >= Constants.ClawArmConstants.CLEARANCE_POS){
-                    DriverStation.reportError("Moving Lifter then going high", false);
-                    addCommands(
+            else {
+                // Higher position handling
+                if (position >= Constants.ClawArmConstants.CLEARANCE_POS) {
+                    commandGroup.addCommands(
+                        new WarningLogCommand("Moving Arm - High - Lifter too close moving out"),
+                        new WarningLogCommand(String.valueOf(liftCurrentPosition)),
                         Commands.runOnce(() -> m_lifter.moveClear()),
                         new WaitUntilCommand(() -> m_lifter.isClear()),
                         Commands.runOnce(() -> m_clawArm.setPos(position))
                     );
-                }else{
-                    DriverStation.reportError("Moving Lifter out, then moving clear, then stowing lifter, then moving", false);
-                    addCommands(
+                }
+                else {
+                    commandGroup.addCommands(
+                        new WarningLogCommand("Moving Arm - Med - Lifter too close moving out"),
                         Commands.runOnce(() -> m_lifter.moveClear()),
                         new WaitUntilCommand(() -> m_lifter.isClear()),
                         Commands.runOnce(() -> m_clawArm.moveClear()),
@@ -75,12 +95,12 @@ public class MoveArm extends SequentialCommandGroup{
                         Commands.runOnce(() -> m_clawArm.setPos(position))
                     );
                 }
-
             }
         }
-        else{
-            DriverStation.reportError("Stowing lifter, then moving", false);
-            addCommands(
+        else {
+            // Default (Med) handling
+            commandGroup.addCommands(
+                new WarningLogCommand("Moving Arm - Med - Lifter too close moving in"),
                 Commands.runOnce(() -> m_clawArm.moveClear()),
                 new WaitUntilCommand(() -> m_clawArm.isClear()),
                 Commands.runOnce(() -> m_lifter.moveStowedPos()),
@@ -88,8 +108,9 @@ public class MoveArm extends SequentialCommandGroup{
                 Commands.runOnce(() -> m_clawArm.setPos(position))
             );
         }
+
+        // Schedule the command group during execute
+        commandGroup.schedule();
     }
-
-
 
 }

@@ -53,7 +53,7 @@ public class ClawElevator extends SubsystemBase{
     }
 
     public boolean isAtPosition(double position){
-        if(Math.abs(getPosition() - position) < 2)
+        if(Math.abs(getPosition() - position) < 4)
             return true;
         return false;
     }

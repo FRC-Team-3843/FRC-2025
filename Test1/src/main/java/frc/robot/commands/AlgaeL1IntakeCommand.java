@@ -13,16 +13,16 @@ import frc.robot.subsystems.LifterIntake;
 public class AlgaeL1IntakeCommand extends SequentialCommandGroup {
 
     public AlgaeL1IntakeCommand(LifterIntake m_lifterIntake, ClawArm m_clawArm, ClawElevator m_clawElevator, Lifter m_lifter, ClawIntake m_clawIntake){
-        addRequirements(m_lifter);
-        addRequirements(m_lifterIntake);
-        addRequirements(m_clawArm);
-        addRequirements(m_clawElevator);
-        addRequirements(m_clawIntake);
+        
+        addRequirements(m_lifter, m_lifterIntake, m_clawArm, m_clawElevator, m_clawIntake);
 
         addCommands(
-            new MotionManager(m_clawArm, Constants.ClawArmConstants.L1_ALGAE_INTAKE_POS, m_clawElevator, Constants.ClawElevatorConstants.L1_ALGAE_INTAKE_POS, m_lifter),
-            new WaitUntilCommand(() -> m_clawArm.isAtL1AlgaeIntakePos()),
+            Commands.runOnce(() -> m_lifterIntake.stop()),
+            Commands.runOnce(() -> m_clawIntake.stop()),
+            new MoveElevator(m_clawArm, m_clawElevator, m_lifter, Constants.ClawElevatorConstants.L1_ALGAE_INTAKE_POS),
             new WaitUntilCommand(() -> m_clawElevator.isAtL1AlgaeIntakePos()),
+            new MoveArm(m_clawArm, m_clawElevator, m_lifter, Constants.ClawArmConstants.L1_ALGAE_INTAKE_POS),
+            new WaitUntilCommand(() -> m_clawArm.isAtL1AlgaeIntakePos()),
             Commands.runOnce(() -> m_clawIntake.intake(Constants.ClawIntakeConstants.ALAGE_INTAKE_SPEED))
         );
     }

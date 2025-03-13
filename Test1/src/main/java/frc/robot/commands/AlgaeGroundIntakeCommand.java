@@ -13,14 +13,11 @@ import frc.robot.subsystems.LifterIntake;
 public class AlgaeGroundIntakeCommand extends SequentialCommandGroup {
 
     public AlgaeGroundIntakeCommand(LifterIntake m_lifterIntake, ClawArm m_clawArm, ClawElevator m_clawElevator, Lifter m_lifter, ClawIntake m_clawIntake) {
-        addRequirements(m_lifter);
-        addRequirements(m_lifterIntake);
-        addRequirements(m_clawArm);
-        addRequirements(m_clawElevator);
-        addRequirements(m_clawIntake);
+        
+        addRequirements(m_lifter, m_lifterIntake, m_clawArm, m_clawElevator, m_clawIntake);
 
         addCommands(
-            new MotionManager(m_clawArm, Constants.ClawArmConstants.ALGAE_TRANSFER_POS, m_clawElevator, Constants.ClawElevatorConstants.ALGAE_TRANSFER_POS, m_lifter, Constants.LifterConstants.ALGAE_INTAKE_POS),
+            
             new WaitUntilCommand(() -> m_clawArm.isAtAlgaeTransferPos()),
             new WaitUntilCommand(() -> m_clawElevator.isAtAlgaeTransferPos()),
             new WaitUntilCommand(() -> m_lifter.isAtAlgaeIntakePos()),

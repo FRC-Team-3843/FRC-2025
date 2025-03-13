@@ -66,7 +66,7 @@ public final class Constants
     //6000-8000
     public static final double MOTOR_MAX_VELOCITY = 1000;
     public static final double MOTOR_MAX_ACCELERATION = 2000;
-    public static final double MOTOR_ALLOWED_ERROR = 0.5;
+    public static final double MOTOR_ALLOWED_ERROR = 0.2;
     public static final double MOTOR_MIN_OUTPUT = -1;
     public static final double MOTOR_P = 0.4;
     public static final double MOTOR_I = 0;
