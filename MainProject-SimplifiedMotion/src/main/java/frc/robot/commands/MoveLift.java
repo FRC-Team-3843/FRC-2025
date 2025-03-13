@@ -36,43 +36,41 @@ public class MoveLift extends Command {
     @Override
     public void execute() {
         // Get the current positions of the claw arm and lifter
-        Double clawArmCurrentPosition = m_clawArm.getPosition();
-        Double liftCurrentPosition = m_lifter.getPosition();
+        double clawArmCurrentPosition = m_clawArm.getPosition();
+        double liftCurrentPosition = m_lifter.getPosition();
 
-        // Command group variable
-        var commandGroup = new SequentialCommandGroup();
 
         // Check for the arm and lifter positions and set the command group accordingly
-        if (clawArmCurrentPosition > Constants.ClawArmConstants.CLEARANCE_POS ||
-            (liftCurrentPosition > Constants.LifterConstants.CLEARANCE_POS && position > Constants.LifterConstants.CLEARANCE_POS) ||
-            m_clawArm.isAtStowedPos()) {
-            
-            // If the claw arm is at a safe position, move the lifter
-            commandGroup.addCommands(
-                Commands.runOnce(() -> m_lifter.setPos(position))
-            );
+        if(position >=  Constants.LifterConstants.CLEARANCE_POS){
+            if(m_lifter.isClear() || m_clawArm.isClear() || m_clawArm.isAtStowedPos()){
+                Commands.runOnce(() -> m_lifter.setPos(position));
+            }
+            else if((clawArmCurrentPosition + 2) > Constants.ClawArmConstants.ALGAE_TRANSFER_POS){
+                Commands.runOnce(() -> m_clawArm.moveClear());
+            }
+            else{
+                Commands.runOnce(() -> m_lifter.setPos(position));
+            }
+
         }
-        else if (clawArmCurrentPosition > (Constants.ClawArmConstants.ALGAE_TRANSFER_POS + positionVariation)) {
-            
-            // If the claw arm is high enough, move it out of the way
-            commandGroup.addCommands(
-                Commands.runOnce(() -> m_clawArm.moveClear()), // Move arm to clear position
-                new WaitUntilCommand(() -> m_lifter.isClear()), // Wait for lifter to clear
-                Commands.runOnce(() -> m_lifter.setPos(position)) // Move lifter to target position
-            );
-        }
-        else {
-            
-            // If the claw arm is not high enough, move it to stowed position
-            commandGroup.addCommands(
-                Commands.runOnce(() -> m_clawArm.moveStowedPos()), // Move arm to stowed position
-                new WaitUntilCommand(() -> m_clawArm.isAtStowedPos()), // Wait for the arm to be stowed
-                Commands.runOnce(() -> m_lifter.setPos(position)) // Move lifter to target position
-            );
+        else{
+            if(m_clawArm.isClear() || m_clawArm.isAtStowedPos()){
+                Commands.runOnce(() -> m_lifter.setPos(position));
+            }
+            else if((clawArmCurrentPosition + 2) > Constants.ClawArmConstants.ALGAE_TRANSFER_POS){
+                Commands.runOnce(() -> m_clawArm.moveClear());
+            }
+            else{
+                Commands.runOnce(() ->  m_clawArm.moveStowedPos());
+            }
         }
 
-        // Schedule the command group
-        commandGroup.schedule();
+    }
+
+    @Override
+    public boolean isFinished() {
+        // Check if the command is finished
+        return m_lifter.isAtPosition(position);
     }
 
 

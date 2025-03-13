@@ -97,7 +97,7 @@ public class Lifter extends SubsystemBase {
     }
 
     public boolean isAtPosition(double position){
-        if(Math.abs(getPosition() - position) < 15)
+        if(Math.abs(getPosition() - position) < 8)
             return true;
         return false;
     }
@@ -155,7 +155,7 @@ public class Lifter extends SubsystemBase {
     }
 
     public boolean isClear(){
-        if(getPosition() > Constants.LifterConstants.CLEARANCE_POS)
+        if((getPosition() + 8) > Constants.LifterConstants.CLEARANCE_POS)
             return true;
         return false;
     }

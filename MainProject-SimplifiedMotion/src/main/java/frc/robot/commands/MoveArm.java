@@ -38,79 +38,89 @@ public class MoveArm extends Command {
         double clawArmCurrentPosition = m_clawArm.getPosition();
         double liftCurrentPosition = m_lifter.getPosition();
 
-        SequentialCommandGroup commandGroup = new SequentialCommandGroup();
+        if(position >= Constants.ClawArmConstants.CORAL_HUMAN_POS){            
+            if (m_lifter.isClear()){
+                new WarningLogCommand("Moving Arm - High - Lift Clear");
+                Commands.runOnce(() -> m_clawArm.setPos(position));
+            }
+            else if((liftCurrentPosition - 8) < (Constants.LifterConstants.ALGAE_INTAKE_POS)){
+                new WarningLogCommand("Moving Arm - High - Lifter too close, moving out");
+                Commands.runOnce(() -> m_lifter.moveClear());
+            }
+            else{
+                new WarningLogCommand("Moving Arm - High - Arm Clear");
+                Commands.runOnce(() -> m_clawArm.setPos(position));
+            }
+        }
+        else if(position > Constants.ClawArmConstants.ALGAE_TRANSFER_POS && position < Constants.ClawArmConstants.CORAL_HUMAN_POS){
+            if((clawArmCurrentPosition - 2) < Constants.ClawArmConstants.ALGAE_TRANSFER_POS){   
+                if(!m_lifter.isClear()){
+                    new WarningLogCommand("Moving Arm - Med - Lift too close, moving out");
+                    Commands.runOnce(() -> m_lifter.moveClear());
+                }
+                else {
+                    new WarningLogCommand("Moving Arm - Med - Arm in, moving clear for lifter");
+                    Commands.runOnce(() -> m_clawArm.moveClear());
+                }
 
-        if ((liftCurrentPosition > Constants.LifterConstants.CLEARANCE_POS) ||
-            (clawArmCurrentPosition > Constants.ClawArmConstants.CLEARANCE_POS && position > Constants.ClawArmConstants.CLEARANCE_POS)) {
-            // Free motion
-            commandGroup.addCommands(
-                new WarningLogCommand("Moving Arm - Free Motion"),
-                Commands.runOnce(() -> m_clawArm.setPos(position))
-            );
-        }
-        else if (clawArmCurrentPosition < (Constants.ClawArmConstants.ALGAE_TRANSFER_POS + positionVariation)) {
-            // Low position handling
-            if (position <= (Constants.ClawArmConstants.ALGAE_TRANSFER_POS)) {
-                if (liftCurrentPosition > (Constants.LifterConstants.ALGAE_INTAKE_POS - positionVariation)) {
-                    commandGroup.addCommands(
-                        new WarningLogCommand("Moving Arm - Low - Free Movement"),
-                        Commands.runOnce(() -> m_clawArm.setPos(position))
-                    );
+            }
+            else if(!m_lifter.isAtStowedPos()){
+                if(!m_clawArm.isClear()){
+                    new WarningLogCommand("Moving Arm - Med - Arm not clear, moving out");
+                    Commands.runOnce(() -> m_clawArm.moveClear());
                 }
-                else if (position == Constants.ClawArmConstants.STOWED_POS) {
-                    commandGroup.addCommands(
-                        new WarningLogCommand("Moving Arm - Low - Stowed Position"),
-                        Commands.runOnce(() -> m_clawArm.setPos(position))
-                    );
-                }
-                else {
-                    commandGroup.addCommands(
-                        new WarningLogCommand("Moving Arm - Low - Lifter too close, moving out"),
-                        Commands.runOnce(() -> m_lifter.moveAlgaeIntakePos()),
-                        new WaitUntilCommand(() -> m_lifter.isAtAlgaeIntakePos()),
-                        Commands.runOnce(() -> m_clawArm.setPos(position))
-                    );
+                else{
+                    new WarningLogCommand("Moving Arm - Med - Lifter out, moving in");
+                    Commands.runOnce(() -> m_lifter.moveStowedPos());
                 }
             }
-            else {
-                // Higher position handling
-                if (position >= Constants.ClawArmConstants.CLEARANCE_POS) {
-                    commandGroup.addCommands(
-                        new WarningLogCommand("Moving Arm - High - Lifter too close moving out"),
-                        new WarningLogCommand(String.valueOf(liftCurrentPosition)),
-                        Commands.runOnce(() -> m_lifter.moveClear()),
-                        new WaitUntilCommand(() -> m_lifter.isClear()),
-                        Commands.runOnce(() -> m_clawArm.setPos(position))
-                    );
-                }
-                else {
-                    commandGroup.addCommands(
-                        new WarningLogCommand("Moving Arm - Med - Lifter too close moving out"),
-                        Commands.runOnce(() -> m_lifter.moveClear()),
-                        new WaitUntilCommand(() -> m_lifter.isClear()),
-                        Commands.runOnce(() -> m_clawArm.moveClear()),
-                        new WaitUntilCommand(() -> m_clawArm.isClear()),
-                        Commands.runOnce(() -> m_lifter.moveStowedPos()),
-                        new WaitUntilCommand(() -> m_lifter.isAtStowedPos()),
-                        Commands.runOnce(() -> m_clawArm.setPos(position))
-                    );
-                }
+            else{
+                new WarningLogCommand("Moving Arm - Med - Arm Clear - Lift stowed");
+                Commands.runOnce(() -> m_clawArm.setPos(position));
             }
-        }
+        }    
         else {
-            // Default (Med) handling
-            commandGroup.addCommands(
-                new WarningLogCommand("Moving Arm - Med - Lifter too close moving in"),
-                Commands.runOnce(() -> m_clawArm.moveClear()),
-                new WaitUntilCommand(() -> m_clawArm.isClear()),
-                Commands.runOnce(() -> m_lifter.moveStowedPos()),
-                new WaitUntilCommand(() -> m_lifter.isAtStowedPos()),
-                Commands.runOnce(() -> m_clawArm.setPos(position))
-            );
+            // Low position handling
+            
+            if(m_lifter.isClear()){
+                new WarningLogCommand("Moving Arm - Low - lift clear");
+                Commands.runOnce(() -> m_clawArm.setPos(position));
+            }
+            else if((clawArmCurrentPosition + 2) > (Constants.ClawArmConstants.ALGAE_TRANSFER_POS)){
+                if(m_clawArm.isClear()){
+                    new WarningLogCommand("Moving Arm - Low - lift in, moving out");
+                    Commands.runOnce(() -> m_lifter.moveClear());
+                }else{
+                    new WarningLogCommand("Moving Arm - Low - lift in, arm too low, moving out");
+                    Commands.runOnce(() -> m_clawArm.moveClear());
+                }
+            }
+            else{
+                if(position < Constants.ClawArmConstants.ALGAE_TRANSFER_POS){
+                    new WarningLogCommand("Moving Arm - Low - Arm in - lift clear");
+                    Commands.runOnce(() -> m_clawArm.setPos(position));
+                }
+                else if((liftCurrentPosition - 8) < Constants.LifterConstants.ALGAE_INTAKE_POS){
+                    new WarningLogCommand("Moving Arm - Low - Arm in, lift too close, moving out");
+                    Commands.runOnce(() -> m_lifter.moveAlgaeIntakePos());
+                }
+                else{
+                    new WarningLogCommand("Moving Arm - Low - Out - lift clear");
+                    Commands.runOnce(() -> m_clawArm.setPos(position));
+                }
+            }
         }
 
-        // Schedule the command group during execute
-        commandGroup.schedule();
     }
+
+    @Override
+    public boolean isFinished() {
+        if((position > Constants.ClawArmConstants.ALGAE_TRANSFER_POS && position < Constants.ClawArmConstants.CORAL_HUMAN_POS) && m_clawArm.isAtPosition(position))
+            return true;
+        else if(m_lifter.isAtStowedPos() && m_clawArm.isAtPosition(position))
+            return true;
+        return true;
+    }
+
 
 }

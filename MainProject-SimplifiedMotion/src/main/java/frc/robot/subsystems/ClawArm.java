@@ -137,7 +137,7 @@ public class ClawArm extends SubsystemBase{
     }
 
     public boolean isClear(){
-        if(getPosition() > Constants.ClawArmConstants.CLEARANCE_POS)
+        if((getPosition() + 2) > Constants.ClawArmConstants.CLEARANCE_POS)
             return true;
         return false;
     }
