@@ -11,6 +11,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -23,6 +24,8 @@ public class Lifter extends SubsystemBase {
     RelativeEncoder lifterLeftEncoder = lifterLeftMotor.getEncoder();
     SparkMaxConfig lifterRightConfig = new SparkMaxConfig();
     SparkMaxConfig lifterLeftConfig = new SparkMaxConfig();
+    Servo leftBreak = new Servo(0);
+    Servo rightBreak = new Servo(1);
 
     public Lifter(){
         lifterRightConfig.inverted(Constants.LifterConstants.RIGHT_MOTOR_INVERT);
@@ -30,6 +33,8 @@ public class Lifter extends SubsystemBase {
         lifterRightMotor.configure(lifterRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         lifterLeftMotor.configure(lifterLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+        
+        
         lifterRightConfig.encoder
             .positionConversionFactor(1)
             .velocityConversionFactor(1);
@@ -89,6 +94,22 @@ public class Lifter extends SubsystemBase {
         
      // System.out.println(targetPosition);
         
+    }
+
+    public void setBreak(){
+        leftBreak.set(0.75);
+        rightBreak.set(0.75);
+    }
+
+
+    public void releaseBreak(){
+        leftBreak.set(0);
+        rightBreak.set(0);
+    }
+
+    public void stopMotor(){
+        lifterLeftMotor.set(0);
+        lifterRightMotor.set(0);
     }
 
     public double getPosition() {

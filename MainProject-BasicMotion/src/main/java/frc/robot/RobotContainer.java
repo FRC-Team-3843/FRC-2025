@@ -5,10 +5,16 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
@@ -60,10 +66,10 @@ import swervelib.SwerveInputStream;
 public class RobotContainer
 {
 
-  private static CommandXboxController driverXbox = new CommandXboxController(0);
-  private static XboxController driverXboxController = new XboxController(0);
-  private static CommandXboxController operatorXbox = new CommandXboxController(1);
-  private static XboxController operatorXboxController = new XboxController(1);
+  private static CommandXboxController driverXbox = new CommandXboxController(2);
+  private static XboxController driverXboxController = new XboxController(2);
+  private static CommandXboxController operatorXbox = new CommandXboxController(3);
+  private static XboxController operatorXboxController = new XboxController(3);
 
 
   // The robot's subsystems and commands are defined here...
@@ -75,6 +81,9 @@ public class RobotContainer
   private static ClawArm clawArm = new ClawArm();
 
   private final SwerveSubsystem drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+
+ SendableChooser<Command> autoChooser;
+  //LOOK HERE AUTO
 
   
 
@@ -137,6 +146,12 @@ public class RobotContainer
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
     NamedCommands.registerCommand("test", Commands.print("I EXIST"));
+
+   autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+    autoChooser.addOption("LinearAuto", LinearAuto()); 
+    autoChooser.addOption("CrookedAuto", CrookedAuto());
+    //autoChooser.addOption("CrookedAuto", NewAuto());
   }
 
   /**
@@ -158,32 +173,6 @@ public class RobotContainer
     Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleKeyboard);
 
 
-    
-
-    // Right Bumper with A, B, X, Y
-    Trigger rightBumperAndAButton = new Trigger(() -> (driverXboxController.getRightBumper() && driverXboxController.getAButton()));
-    rightBumperAndAButton.onTrue(Commands.runOnce(() -> clawArm.moveL1CoralScoringPos()));
-
-    Trigger rightBumperAndBButton = new Trigger(() -> (driverXboxController.getRightBumper() && driverXboxController.getBButton()));
-    rightBumperAndBButton.onTrue(Commands.runOnce(() -> clawArm.moveL1AlgaeIntakePos()));
-
-    Trigger rightBumperAndXButton = new Trigger(() -> driverXboxController.getRightBumper() && driverXboxController.getXButton());
-    rightBumperAndXButton.onTrue(Commands.runOnce(() -> clawArm.moveL2CoralScoringPos()));
-
-    Trigger rightBumperAndYButton = new Trigger(() -> driverXboxController.getRightBumper() && driverXboxController.getYButton());
-    rightBumperAndYButton.onTrue(Commands.runOnce(() -> clawArm.moveL2AlgaeIntakePos()));
-
-    // Left Bumper with A, B, X, Y
-    Trigger leftBumperAndAButton = new Trigger(() -> driverXboxController.getLeftBumper() && driverXboxController.getAButton());
-    leftBumperAndAButton.onTrue(Commands.runOnce(() -> clawArm.moveCoralHumanPos()));
-
-    Trigger leftBumperAndBButton = new Trigger(() -> driverXboxController.getLeftBumper() && driverXboxController.getBButton());
-
-    Trigger leftBumperAndXButton = new Trigger(() -> driverXboxController.getLeftBumper() && driverXboxController.getXButton());
-
-    Trigger leftBumperAndYButton = new Trigger(() -> driverXboxController.getLeftBumper() && driverXboxController.getYButton());
-    leftBumperAndYButton.onTrue(Commands.runOnce(() -> clawArm.moveAlgaeScorePos()));
-
 
     operatorXbox.a().onTrue(Commands.runOnce(() -> clawArm.moveStowedPos()));
     operatorXbox.b().onTrue(Commands.runOnce(() -> lifter.moveAlgaeIntakePos()));
@@ -196,15 +185,26 @@ public class RobotContainer
     operatorXbox.povLeft().onTrue(Commands.runOnce(() -> lifter.moveCoralScorePos()));
     operatorXbox.povUp().onTrue(Commands.runOnce(() -> lifter.moveClear()));
 
-    
+    operatorXbox.rightBumper().and(operatorXbox.a()).onTrue(Commands.runOnce(() -> clawArm.moveL1CoralScoringPos()));
+    operatorXbox.rightBumper().and(operatorXbox.b()).onTrue(Commands.runOnce(() -> clawArm.moveL2CoralScoringPos()));
+    operatorXbox.rightBumper().and(operatorXbox.x()).onTrue(Commands.runOnce(() -> clawArm.moveL1AlgaeIntakePos()));
+    operatorXbox.rightBumper().and(operatorXbox.y()).onTrue(Commands.runOnce(() -> clawArm.moveL2AlgaeIntakePos()));
+
+    operatorXbox.leftBumper().and(operatorXbox.a()).onTrue(Commands.runOnce(() -> clawArm.moveCoralHumanPos()));
+    //operatorXbox.leftBumper().and(operatorXbox.b()).onTrue(Commands.runOnce(() -> ()));
+    //operatorXbox.leftBumper().and(operatorXbox.x()).onTrue(Commands.runOnce(() -> ()));
+    operatorXbox.leftBumper().and(operatorXbox.y()).onTrue(Commands.runOnce(() -> clawArm.moveAlgaeScorePos()));
 
     operatorXbox.start().onTrue(Commands.runOnce(() ->  clawElevator.moveStowedPos()));
     operatorXbox.back().onTrue(Commands.runOnce(() -> clawElevator.moveTopPos()));
 
     
     
-    driverXbox.start().onTrue(Commands.runOnce(() ->  lifter.moveHangPos()));
-    driverXbox.back().onTrue(Commands.runOnce(() ->  lifter.moveClimbingApproachPos()));
+    driverXbox.rightBumper()
+      .onTrue(new HangCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake))
+      .onFalse(Commands.runOnce(() -> lifter.releaseBreak()));
+    driverXbox.leftBumper().onTrue(Commands.runOnce(() ->  lifter.moveClimbingApproachPos()));
+    
 
     driverXbox.a()
       .onTrue(Commands.runOnce(() -> lifterIntake.intake(Constants.LifterIntakeConstants.CORAL_INTAKE_SPEED)))
@@ -214,10 +214,10 @@ public class RobotContainer
       .onFalse(Commands.runOnce(() -> lifterIntake.stop()));
     driverXbox.x()
       .onTrue(Commands.runOnce(() -> clawIntake.intake(Constants.ClawIntakeConstants.CORAL_INTAKE_SPEED)))
-      .onFalse(Commands.runOnce(() -> lifterIntake.stop()));
+      .onFalse(Commands.runOnce(() -> clawIntake.stop()));
     driverXbox.y()
       .onTrue(Commands.runOnce(() -> clawIntake.outtake(Constants.ClawIntakeConstants.CORAL_OUTTAKE_SPEED)))
-      .onFalse(Commands.runOnce(() -> lifterIntake.stop()));
+      .onFalse(Commands.runOnce(() -> clawIntake.stop()));
 
     
  
@@ -248,16 +248,16 @@ public class RobotContainer
       driverXbox.rightBumper().onTrue(Commands.none());
     } 
     else{ 
-      //driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+      driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       //driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
       //driverXbox.b().whileTrue(
       //    drivebase.driveToPose(
       //        new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
       //                        );
-      driverXbox.start().whileTrue(Commands.none());
-      driverXbox.back().whileTrue(Commands.none());
-      driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.rightBumper().onTrue(Commands.none());
+      //driverXbox.start().whileTrue(Commands.none());
+      //driverXbox.back().whileTrue(Commands.none());
+      //driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+      //driverXbox.rightBumper().onTrue(Commands.none());
     } 
 
   }
@@ -270,9 +270,19 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("LinearPath");
+  return autoChooser.getSelected();
+    //return drivebase.getAutonomousCommand("LinearPath");
     //trying to integrate pathplanner for LinearAuto (short, about three feet forward move)
   }
+  
+  public Command LinearAuto() {
+  return new PathPlannerAuto("LinearAuto");
+  } 
+
+  public Command CrookedAuto() {
+    return new PathPlannerAuto("CrookedAuto");
+  }
+   
 
   public void setMotorBrake(boolean brake)
   {
