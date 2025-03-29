@@ -124,7 +124,7 @@ public final class Constants
     public static final double ALAGE_INTAKE_SPEED = 1;
     public static final double ALAGE_OUTTAKE_SPEED = 1;
     public static final double CORAL_INTAKE_SPEED = 1;
-    public static final double CORAL_OUTTAKE_SPEED = 0.75;
+    public static final double CORAL_OUTTAKE_SPEED = 1;
   }
 }
 
