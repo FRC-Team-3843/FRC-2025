@@ -5,18 +5,15 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
-<<<<<<< HEAD
 //import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.cameraserver.CameraServer;
-=======
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.auto.AutoBuilder;
 
->>>>>>> a5a1ecab6ed83afc35dc37752668c7ba5f500344
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 //import edu.wpi.first.math.geometry.Translation2d;
@@ -124,19 +121,11 @@ public class RobotContainer
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
     NamedCommands.registerCommand("test", Commands.print("I EXIST"));
-<<<<<<< HEAD
-   CameraServer.startAutomaticCapture();
-=======
->>>>>>> a5a1ecab6ed83afc35dc37752668c7ba5f500344
 
    autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     autoChooser.addOption("LinearAuto", LinearAuto()); 
-<<<<<<< HEAD
-    //autoChooser.addOption("CrookedAuto", CrookedAuto());
-=======
     autoChooser.addOption("CrookedAuto", CrookedAuto());
->>>>>>> a5a1ecab6ed83afc35dc37752668c7ba5f500344
     //autoChooser.addOption("CrookedAuto", NewAuto());
   }
 
@@ -265,15 +254,9 @@ public class RobotContainer
   return new PathPlannerAuto("LinearAuto");
   } 
 
-<<<<<<< HEAD
-  /*public Command CrookedAuto() {
-    return new PathPlannerAuto("CrookedAuto");
-  } */
-=======
   public Command CrookedAuto() {
     return new PathPlannerAuto("CrookedAuto");
   }
->>>>>>> a5a1ecab6ed83afc35dc37752668c7ba5f500344
    
 
   public void setMotorBrake(boolean brake)
