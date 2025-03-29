@@ -5,48 +5,40 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
+<<<<<<< HEAD
+//import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.cameraserver.CameraServer;
+=======
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.auto.AutoBuilder;
 
+>>>>>>> a5a1ecab6ed83afc35dc37752668c7ba5f500344
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+//import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.ClawArm;
 import frc.robot.subsystems.ClawElevator;
 import frc.robot.subsystems.ClawIntake;
 import frc.robot.subsystems.Lifter;
 import frc.robot.subsystems.LifterIntake;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.commands.AlgaeGroundIntakeCommand;
-import frc.robot.commands.AlgaeL1IntakeCommand;
-import frc.robot.commands.AlgaeL2IntakeCommand;
-import frc.robot.commands.AlgaeScoreNetCommand;
-import frc.robot.commands.AlgaeScoreProcessorCommand;
-import frc.robot.commands.ArmClearanceCommand;
-import frc.robot.commands.CoralClawIntakeCommand;
-import frc.robot.commands.CoralL1ScoreCommand;
-import frc.robot.commands.CoralL2ScoreCommand;
-import frc.robot.commands.CoralLifterIntakeCommand;
-import frc.robot.commands.CoralLifterOuttakeCommand;
-import frc.robot.commands.HangApproachCommand;
+
 import frc.robot.commands.HangCommand;
-import frc.robot.commands.LifterClearanceCommand;
-import frc.robot.commands.StowedCommand;
-import frc.robot.commands.WarningLogCommand;
+
 
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -120,22 +112,8 @@ public class RobotContainer
                                                                     .scaleTranslation(0.8)
                                                                     .allianceRelativeControl(true);
   // Derive the heading axis with math!
-  SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.copy()
-                                                                               .withControllerHeadingAxis(() ->
-                                                                                                              Math.sin(
-                                                                                                                  driverXbox.getRawAxis(
-                                                                                                                      2) *
-                                                                                                                  Math.PI) *
-                                                                                                              (Math.PI *
-                                                                                                               2),
-                                                                                                          () ->
-                                                                                                              Math.cos(
-                                                                                                                  driverXbox.getRawAxis(
-                                                                                                                      2) *
-                                                                                                                  Math.PI) *
-                                                                                                              (Math.PI *
-                                                                                                               2))
-                                                                               .headingWhile(true);
+  SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.copy() 
+    .withControllerHeadingAxis(() -> Math.sin(driverXbox.getRawAxis(2) * Math.PI) * (Math.PI * 2), () -> Math.cos(driverXbox.getRawAxis(2) * Math.PI) * (Math.PI * 2)).headingWhile(true);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -146,11 +124,19 @@ public class RobotContainer
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
     NamedCommands.registerCommand("test", Commands.print("I EXIST"));
+<<<<<<< HEAD
+   CameraServer.startAutomaticCapture();
+=======
+>>>>>>> a5a1ecab6ed83afc35dc37752668c7ba5f500344
 
    autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     autoChooser.addOption("LinearAuto", LinearAuto()); 
+<<<<<<< HEAD
+    //autoChooser.addOption("CrookedAuto", CrookedAuto());
+=======
     autoChooser.addOption("CrookedAuto", CrookedAuto());
+>>>>>>> a5a1ecab6ed83afc35dc37752668c7ba5f500344
     //autoChooser.addOption("CrookedAuto", NewAuto());
   }
 
@@ -279,9 +265,15 @@ public class RobotContainer
   return new PathPlannerAuto("LinearAuto");
   } 
 
+<<<<<<< HEAD
+  /*public Command CrookedAuto() {
+    return new PathPlannerAuto("CrookedAuto");
+  } */
+=======
   public Command CrookedAuto() {
     return new PathPlannerAuto("CrookedAuto");
   }
+>>>>>>> a5a1ecab6ed83afc35dc37752668c7ba5f500344
    
 
   public void setMotorBrake(boolean brake)
