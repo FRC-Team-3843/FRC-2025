@@ -5,14 +5,11 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
-//import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.auto.AutoBuilder;
+//import com.pathplanner.lib.path.PathPlannerPath;
+//import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -56,9 +53,8 @@ public class RobotContainer
 {
 
   private static CommandXboxController driverXbox = new CommandXboxController(2);
-  private static XboxController driverXboxController = new XboxController(2);
   private static CommandXboxController operatorXbox = new CommandXboxController(3);
-  private static XboxController operatorXboxController = new XboxController(3);
+ 
 
 
   // The robot's subsystems and commands are defined here...
