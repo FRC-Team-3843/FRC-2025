@@ -44,7 +44,6 @@ public class MoveArm extends Command {
             (clawArmCurrentPosition > Constants.ClawArmConstants.CLEARANCE_POS && position > Constants.ClawArmConstants.CLEARANCE_POS)) {
             // Free motion
             commandGroup.addCommands(
-                new WarningLogCommand("Moving Arm - Free Motion"),
                 Commands.runOnce(() -> m_clawArm.setPos(position))
             );
         }
@@ -53,19 +52,16 @@ public class MoveArm extends Command {
             if (position <= (Constants.ClawArmConstants.ALGAE_TRANSFER_POS)) {
                 if (liftCurrentPosition > (Constants.LifterConstants.ALGAE_INTAKE_POS - positionVariation)) {
                     commandGroup.addCommands(
-                        new WarningLogCommand("Moving Arm - Low - Free Movement"),
                         Commands.runOnce(() -> m_clawArm.setPos(position))
                     );
                 }
                 else if (position == Constants.ClawArmConstants.STOWED_POS) {
                     commandGroup.addCommands(
-                        new WarningLogCommand("Moving Arm - Low - Stowed Position"),
                         Commands.runOnce(() -> m_clawArm.setPos(position))
                     );
                 }
                 else {
                     commandGroup.addCommands(
-                        new WarningLogCommand("Moving Arm - Low - Lifter too close, moving out"),
                         Commands.runOnce(() -> m_lifter.moveAlgaeIntakePos()),
                         new WaitUntilCommand(() -> m_lifter.isAtAlgaeIntakePos()),
                         Commands.runOnce(() -> m_clawArm.setPos(position))
@@ -76,8 +72,6 @@ public class MoveArm extends Command {
                 // Higher position handling
                 if (position >= Constants.ClawArmConstants.CLEARANCE_POS) {
                     commandGroup.addCommands(
-                        new WarningLogCommand("Moving Arm - High - Lifter too close moving out"),
-                        new WarningLogCommand(String.valueOf(liftCurrentPosition)),
                         Commands.runOnce(() -> m_lifter.moveClear()),
                         new WaitUntilCommand(() -> m_lifter.isClear()),
                         Commands.runOnce(() -> m_clawArm.setPos(position))
@@ -85,7 +79,6 @@ public class MoveArm extends Command {
                 }
                 else {
                     commandGroup.addCommands(
-                        new WarningLogCommand("Moving Arm - Med - Lifter too close moving out"),
                         Commands.runOnce(() -> m_lifter.moveClear()),
                         new WaitUntilCommand(() -> m_lifter.isClear()),
                         Commands.runOnce(() -> m_clawArm.moveClear()),
@@ -100,7 +93,6 @@ public class MoveArm extends Command {
         else {
             // Default (Med) handling
             commandGroup.addCommands(
-                new WarningLogCommand("Moving Arm - Med - Lifter too close moving in"),
                 Commands.runOnce(() -> m_clawArm.moveClear()),
                 new WaitUntilCommand(() -> m_clawArm.isClear()),
                 Commands.runOnce(() -> m_lifter.moveStowedPos()),

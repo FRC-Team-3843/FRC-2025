@@ -64,9 +64,10 @@ public final class Constants
     public static final boolean RIGHT_MOTOR_INVERT = false;
     public static final boolean LEFT_MOTOR_INVERT = true;
     //6000-8000
-    public static final double MOTOR_MAX_VELOCITY = 6000;
-    public static final double MOTOR_MAX_ACCELERATION = 8000;
-    public static final double MOTOR_ALLOWED_ERROR = 0.2;
+    public static final double MOTOR_MAX_VELOCITY = 8000;
+    public static final double MOTOR_MAX_ACCELERATION = 24000;
+    public static final double MOTOR_ALLOWED_ERROR = 0.8;
+
     public static final double MOTOR_MIN_OUTPUT = -1;
     public static final double MOTOR_P = 0.4;
     public static final double MOTOR_I = 0;
@@ -77,10 +78,10 @@ public final class Constants
     public static final double STOWED_POS = 10; 
     public static final double HANG_POS = 10; 
     public static final double CORAL_SCORE_POS = 101; 
-    public static final double CLEARANCE_POS = 116; //118 
-    public static final double ALGAE_INTAKE_POS = 128; 
+    public static final double CLEARANCE_POS = 118; //118 
+    public static final double ALGAE_INTAKE_POS = 125; //128
     public static final double ALGAE_SCORE_POS = 128; //125.1
-    public static final double CORAL_INTAKE_POS = 198; 
+    public static final double CORAL_INTAKE_POS = 193; 
     public static final double CLIMBING_APPROACH_POS = 198; 
 
   }
@@ -96,7 +97,7 @@ public final class Constants
     public static final double L2_CORAL_SCORING_POS = 36.47; //20.6
     public static final double L1_ALGAE_INTAKE_POS = 25.55; //24.7 //22.77 //lifter hits on way back in
     public static final double L2_ALGAE_INTAKE_POS = 33.98; //19.8 //34.14
-    public static final double CLEARANCE_POS = 27.6; //28
+    public static final double CLEARANCE_POS = 29; //28 //27.6
     public static final double CORAL_HUMAN_POS = 30; //37.6
     public static final double ALGAE_SCORE_POS = 48.9; //48.8
   }
@@ -105,7 +106,7 @@ public final class Constants
     public static final int MOTOR_ID = 50;
     
     // Elevator Positions
-    public static final double STOWED_POS = 0.75; //0 //2 //check with Harrison
+    public static final double STOWED_POS = -0.75; //0 //2 //check with Harrison
     public static final double L1_CORAL_SCORING_POS = 0; 
     public static final double L1_ALGAE_INTAKE_POS = 0; 
     public static final double CORAL_HUMAN_POS = 0; 
@@ -114,7 +115,7 @@ public final class Constants
     public static final double L2_CORAL_SCORING_POS = 28; 
     public static final double L2_ALGAE_INTAKE_POS = 28; 
     public static final double ALGAE_SCORE_POS = 28; //28
-    public static final double TOP_POS = 46.81; //28 //49
+    public static final double TOP_POS = -46.81; //28 //49
 
   }
 

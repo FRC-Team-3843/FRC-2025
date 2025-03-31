@@ -17,13 +17,8 @@ public class AlgaeL1IntakeCommand extends SequentialCommandGroup {
         addRequirements(m_lifter, m_lifterIntake, m_clawArm, m_clawElevator, m_clawIntake);
 
         addCommands(
-            Commands.runOnce(() -> m_lifterIntake.stop()),
-            Commands.runOnce(() -> m_clawIntake.stop()),
-            new MoveElevator(m_clawArm, m_clawElevator, m_lifter, Constants.ClawElevatorConstants.L1_ALGAE_INTAKE_POS),
-            new WaitUntilCommand(() -> m_clawElevator.isAtL1AlgaeIntakePos()),
-            new MoveArm(m_clawArm, m_clawElevator, m_lifter, Constants.ClawArmConstants.L1_ALGAE_INTAKE_POS),
-            new WaitUntilCommand(() -> m_clawArm.isAtL1AlgaeIntakePos()),
-            Commands.runOnce(() -> m_clawIntake.intake(Constants.ClawIntakeConstants.ALAGE_INTAKE_SPEED))
+            Commands.runOnce(() -> m_clawElevator.moveL1AlgaeIntakePos()),
+            Commands.runOnce(() -> m_clawArm.moveL1AlgaeIntakePos())
         );
     }
 
