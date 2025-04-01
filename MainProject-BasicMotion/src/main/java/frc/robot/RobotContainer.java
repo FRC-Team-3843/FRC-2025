@@ -30,9 +30,15 @@ import frc.robot.subsystems.ClawIntake;
 import frc.robot.subsystems.Lifter;
 import frc.robot.subsystems.LifterIntake;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-
+import frc.robot.commands.AlgaeGroundIntakeCommand;
+import frc.robot.commands.AlgaeL1IntakeCommand;
+import frc.robot.commands.AlgaeL2IntakeCommand;
+import frc.robot.commands.AlgaeScoreNetCommand;
+import frc.robot.commands.AutoCoralScoreCommand;
+import frc.robot.commands.HangApproachCommand;
 import frc.robot.commands.HangCommand;
-
+import frc.robot.commands.SwapToClawCommand;
+import frc.robot.commands.SwapToLifterCommand;
 
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -117,11 +123,13 @@ public class RobotContainer
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
     NamedCommands.registerCommand("test", Commands.print("I EXIST"));
+    NamedCommands.registerCommand("AutoCoralScore", new AutoCoralScoreCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake));
 
    autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     autoChooser.addOption("LinearAuto", LinearAuto()); 
     autoChooser.addOption("CrookedAuto", CrookedAuto());
+    autoChooser.addOption("ScoreCoralCenterAuto", ScoreCoralCenter());
     //autoChooser.addOption("CrookedAuto", NewAuto());
   }
 
@@ -142,11 +150,31 @@ public class RobotContainer
     Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
     Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
     Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleKeyboard);
+    
+    
+    operatorXbox.a()
+      .onTrue(new AlgaeGroundIntakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake));
+    operatorXbox.b()
+      .onTrue(new AlgaeL1IntakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake));
+    operatorXbox.x()
+      .onTrue(new AlgaeL2IntakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake));
+    operatorXbox.y()
+      .onTrue(new AlgaeScoreNetCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake));
 
+    operatorXbox.leftBumper()
+      .onTrue(new SwapToLifterCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake));
+    operatorXbox.rightBumper()
+      .onTrue(new SwapToClawCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake));
 
+    operatorXbox.povDown().onTrue(Commands.runOnce(() -> lifter.moveStowedPos()));
+    operatorXbox.povRight().onTrue(Commands.runOnce(() -> lifter.moveCoralIntakePos()));
+    operatorXbox.povLeft().onTrue(Commands.runOnce(() -> lifter.moveCoralScorePos()));
+    operatorXbox.povUp().onTrue(Commands.runOnce(() -> lifter.moveClear()));
 
+/* 
     operatorXbox.a().onTrue(Commands.runOnce(() -> clawArm.moveStowedPos()));
-    operatorXbox.b().onTrue(Commands.runOnce(() -> lifter.moveAlgaeIntakePos()));
+    //operatorXbox.b().onTrue(Commands.runOnce(() -> lifter.moveAlgaeIntakePos()));
+    
     operatorXbox.x().onTrue(Commands.runOnce(() -> clawArm.moveAlgaeTransferPos()));
     operatorXbox.y().onTrue(Commands.runOnce(() -> clawArm.moveClear()));
 
@@ -158,9 +186,11 @@ public class RobotContainer
 
     operatorXbox.rightBumper().and(operatorXbox.a()).onTrue(Commands.runOnce(() -> clawArm.moveL1CoralScoringPos()));
     operatorXbox.rightBumper().and(operatorXbox.b()).onTrue(Commands.runOnce(() -> clawArm.moveL2CoralScoringPos()));
-    operatorXbox.rightBumper().and(operatorXbox.x()).onTrue(Commands.runOnce(() -> clawArm.moveL1AlgaeIntakePos()));
-    operatorXbox.rightBumper().and(operatorXbox.y()).onTrue(Commands.runOnce(() -> clawArm.moveL2AlgaeIntakePos()));
-
+    
+    
+    //operatorXbox.rightBumper().and(operatorXbox.x()).onTrue(Commands.runOnce(() -> clawArm.moveL1AlgaeIntakePos()));
+    //operatorXbox.rightBumper().and(operatorXbox.y()).onTrue(Commands.runOnce(() -> clawArm.moveL2AlgaeIntakePos()));
+    
     operatorXbox.leftBumper().and(operatorXbox.a()).onTrue(Commands.runOnce(() -> clawArm.moveCoralHumanPos()));
     //operatorXbox.leftBumper().and(operatorXbox.b()).onTrue(Commands.runOnce(() -> ()));
     //operatorXbox.leftBumper().and(operatorXbox.x()).onTrue(Commands.runOnce(() -> ()));
@@ -168,13 +198,14 @@ public class RobotContainer
 
     operatorXbox.start().onTrue(Commands.runOnce(() ->  clawElevator.moveStowedPos()));
     operatorXbox.back().onTrue(Commands.runOnce(() -> clawElevator.moveTopPos()));
-
+*/
     
     
     driverXbox.rightBumper()
       .onTrue(new HangCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake))
       .onFalse(Commands.runOnce(() -> lifter.releaseBreak()));
-    driverXbox.leftBumper().onTrue(Commands.runOnce(() ->  lifter.moveClimbingApproachPos()));
+    driverXbox.leftBumper()
+    .onTrue(new HangApproachCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake));
     
 
     driverXbox.a()
@@ -252,6 +283,10 @@ public class RobotContainer
 
   public Command CrookedAuto() {
     return new PathPlannerAuto("CrookedAuto");
+  }
+
+  public Command ScoreCoralCenter() {
+    return new PathPlannerAuto("ScoreCoralCenter");
   }
    
 

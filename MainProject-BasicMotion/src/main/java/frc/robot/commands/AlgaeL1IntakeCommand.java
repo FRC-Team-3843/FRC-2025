@@ -2,8 +2,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.Constants;
 import frc.robot.subsystems.ClawArm;
 import frc.robot.subsystems.ClawElevator;
 import frc.robot.subsystems.ClawIntake;
@@ -17,7 +15,7 @@ public class AlgaeL1IntakeCommand extends SequentialCommandGroup {
         addRequirements(m_lifter, m_lifterIntake, m_clawArm, m_clawElevator, m_clawIntake);
 
         addCommands(
-            Commands.runOnce(() -> m_clawElevator.moveL1AlgaeIntakePos()),
+            Commands.runOnce(() -> m_clawElevator.moveStowedPos()),
             Commands.runOnce(() -> m_clawArm.moveL1AlgaeIntakePos())
         );
     }

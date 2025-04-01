@@ -28,9 +28,14 @@ public class Lifter extends SubsystemBase {
     Servo rightBreak = new Servo(1);
 
     public Lifter(){
-        lifterRightConfig.inverted(Constants.LifterConstants.RIGHT_MOTOR_INVERT);
-        lifterLeftConfig.inverted(Constants.LifterConstants.LEFT_MOTOR_INVERT);
-        lifterRightMotor.configure(lifterRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        lifterRightConfig
+            .inverted(Constants.LifterConstants.RIGHT_MOTOR_INVERT)
+            .smartCurrentLimit(20, 30, 120);
+        lifterLeftConfig
+            .inverted(Constants.LifterConstants.LEFT_MOTOR_INVERT)
+            .smartCurrentLimit(20, 30, 120);
+        
+            lifterRightMotor.configure(lifterRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         lifterLeftMotor.configure(lifterLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         
@@ -180,5 +185,7 @@ public class Lifter extends SubsystemBase {
             return true;
         return false;
     }
+
+
 
 }

@@ -91,13 +91,13 @@ public final class Constants
     
     // Claw Arm Positions
     public static final double STOWED_POS = 0.77; //0.2
-    public static final double CLIMBING_APPROACH_POS = 0.77;
+    public static final double CLIMBING_APPROACH_POS = 0;
     public static final double ALGAE_TRANSFER_POS = 10.76; 
     public static final double L1_CORAL_SCORING_POS = 23.26; //22
     public static final double L2_CORAL_SCORING_POS = 36.47; //20.6
     public static final double L1_ALGAE_INTAKE_POS = 25.55; //24.7 //22.77 //lifter hits on way back in
     public static final double L2_ALGAE_INTAKE_POS = 33.98; //19.8 //34.14
-    public static final double CLEARANCE_POS = 29; //28 //27.6
+    public static final double CLEARANCE_POS = 30; //28 //27.6
     public static final double CORAL_HUMAN_POS = 30; //37.6
     public static final double ALGAE_SCORE_POS = 48.9; //48.8
   }
@@ -112,9 +112,9 @@ public final class Constants
     public static final double CORAL_HUMAN_POS = 0; 
     public static final double CLIMBING_APPROACH_POS = 0; 
     public static final double ALGAE_TRANSFER_POS = 0;  
-    public static final double L2_CORAL_SCORING_POS = 28; 
-    public static final double L2_ALGAE_INTAKE_POS = 28; 
-    public static final double ALGAE_SCORE_POS = 28; //28
+    public static final double L2_CORAL_SCORING_POS = -28; 
+    public static final double L2_ALGAE_INTAKE_POS = -28; 
+    public static final double ALGAE_SCORE_POS = -28; //28
     public static final double TOP_POS = -46.81; //28 //49
 
   }
