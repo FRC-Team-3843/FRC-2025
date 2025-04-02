@@ -129,7 +129,9 @@ public class RobotContainer
     SmartDashboard.putData("Auto Chooser", autoChooser);
     autoChooser.addOption("LinearAuto", LinearAuto()); 
     autoChooser.addOption("CrookedAuto", CrookedAuto());
-    autoChooser.addOption("ScoreCoralCenterAuto", ScoreCoralCenter());
+    autoChooser.addOption("ScoreCoralCenter", ScoreCoralCenter());
+    autoChooser.addOption("ScoreCoralLeft", ScoreCoralLeft());
+    autoChooser.addOption("ScoreCoralRight", ScoreCoralRight());
     //autoChooser.addOption("CrookedAuto", NewAuto());
   }
 
@@ -216,7 +218,7 @@ public class RobotContainer
       .onFalse(Commands.runOnce(() -> lifterIntake.stop()));
     driverXbox.x()
       .onTrue(Commands.runOnce(() -> clawIntake.intake(Constants.ClawIntakeConstants.CORAL_INTAKE_SPEED)))
-      .onFalse(Commands.runOnce(() -> clawIntake.stop()));
+      .onFalse(Commands.runOnce(() -> clawIntake.intake(Constants.ClawIntakeConstants.ALGAE_HOLD_SPEED)));
     driverXbox.y()
       .onTrue(Commands.runOnce(() -> clawIntake.outtake(Constants.ClawIntakeConstants.CORAL_OUTTAKE_SPEED)))
       .onFalse(Commands.runOnce(() -> clawIntake.stop()));
@@ -287,6 +289,14 @@ public class RobotContainer
 
   public Command ScoreCoralCenter() {
     return new PathPlannerAuto("ScoreCoralCenter");
+  }
+
+  public Command ScoreCoralLeft() {
+    return new PathPlannerAuto("ScoreCoralLeft");
+  }
+
+  public Command ScoreCoralRight() {
+    return new PathPlannerAuto("ScoreCoralRight");
   }
    
 

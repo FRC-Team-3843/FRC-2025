@@ -19,7 +19,7 @@ public class HangApproachCommand extends SequentialCommandGroup{
         //System.out.println("Moving to Hang Approach");
 
         addCommands(
-            Commands.runOnce(() -> m_clawElevator.moveStowedPos()),
+            Commands.runOnce(() -> m_clawElevator.moveClimbingApproachPos()),
             Commands.runOnce(() -> m_clawArm.moveClimbingApproachPos()),
             Commands.runOnce(() -> m_lifter.moveClimbingApproachPos())
         );

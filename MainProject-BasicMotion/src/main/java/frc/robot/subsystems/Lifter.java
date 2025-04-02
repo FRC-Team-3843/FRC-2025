@@ -186,6 +186,4 @@ public class Lifter extends SubsystemBase {
         return false;
     }
 
-
-
 }

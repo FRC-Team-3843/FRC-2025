@@ -23,8 +23,8 @@ public class ClawArm extends SubsystemBase{
 
         MotionMagicConfigs clawArmMMConfig = clawArmConfig.MotionMagic;
         //100-500
-        clawArmMMConfig.MotionMagicAcceleration = 10;
-        clawArmMMConfig.MotionMagicCruiseVelocity = 20;
+        clawArmMMConfig.MotionMagicAcceleration = 120;
+        clawArmMMConfig.MotionMagicCruiseVelocity = 60;
         
 
         Slot0Configs clawArmSlot0Configs = clawArmConfig.Slot0;
@@ -137,7 +137,7 @@ public class ClawArm extends SubsystemBase{
     }
 
     public boolean isClear(){
-        if(getPosition() > Constants.ClawArmConstants.CLEARANCE_POS)
+        if(getPosition() > Constants.ClawArmConstants.CLEARANCE_POS - 2)
             return true;
         return false;
     }

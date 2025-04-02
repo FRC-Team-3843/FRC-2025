@@ -12,7 +12,7 @@ import frc.robot.subsystems.LifterIntake;
 public class SwapToLifterCommand extends SequentialCommandGroup{
 
         public SwapToLifterCommand(LifterIntake m_lifterIntake, ClawArm m_clawArm, ClawElevator m_clawElevator, Lifter m_lifter, ClawIntake m_clawIntake){
-        
+            System.out.println("Swap to Lifter Command Running...");
         addRequirements(m_lifter, m_lifterIntake, m_clawArm, m_clawElevator, m_clawIntake);
 
         addCommands(
@@ -25,5 +25,6 @@ public class SwapToLifterCommand extends SequentialCommandGroup{
 
             //check with harrison
         );
+        System.out.println("Swap to Lifter Command Complete!");
     }
 }
