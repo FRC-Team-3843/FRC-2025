@@ -14,7 +14,6 @@ import frc.robot.subsystems.LifterIntake;
 public class HangCommand extends SequentialCommandGroup{
     
     public HangCommand(LifterIntake m_lifterIntake, ClawArm m_clawArm, ClawElevator m_clawElevator, Lifter m_lifter, ClawIntake m_clawIntake) {
-        System.out.println("Hang Command Running...");
         addRequirements(m_lifter, m_lifterIntake, m_clawArm, m_clawElevator, m_clawIntake);
         
         addCommands(
@@ -26,6 +25,5 @@ public class HangCommand extends SequentialCommandGroup{
             new WaitCommand(1),
             Commands.runOnce(() -> m_lifter.stopMotor())
         );
-        System.out.println("Hang Command Complete!");
     }
 }

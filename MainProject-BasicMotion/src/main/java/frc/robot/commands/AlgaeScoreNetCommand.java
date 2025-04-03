@@ -11,14 +11,12 @@ import frc.robot.subsystems.LifterIntake;
 public class AlgaeScoreNetCommand extends SequentialCommandGroup{
 
     public AlgaeScoreNetCommand(LifterIntake m_lifterIntake, ClawArm m_clawArm, ClawElevator m_clawElevator, Lifter m_lifter, ClawIntake m_clawIntake){
-        System.out.println("Algae Score Net Command Running...");
         addRequirements(m_lifter, m_lifterIntake, m_clawArm, m_clawElevator, m_clawIntake);
 
         addCommands(
             Commands.runOnce(() -> m_clawElevator.moveTopPos()),
             Commands.runOnce(() -> m_clawArm.moveAlgaeScorePos())
         );
-        System.out.println("Algae Score Net Command Complete!");
     }
 
 

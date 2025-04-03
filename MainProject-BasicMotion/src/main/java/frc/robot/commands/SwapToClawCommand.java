@@ -13,7 +13,6 @@ public class SwapToClawCommand extends SequentialCommandGroup{
 
 
     public SwapToClawCommand(LifterIntake m_lifterIntake, ClawArm m_clawArm, ClawElevator m_clawElevator, Lifter m_lifter, ClawIntake m_clawIntake){
-        System.out.println("Swap to Claw Command Running...");
         addRequirements(m_lifter, m_lifterIntake, m_clawArm, m_clawElevator, m_clawIntake);
 
         addCommands(
@@ -23,7 +22,6 @@ public class SwapToClawCommand extends SequentialCommandGroup{
             new WaitUntilCommand(() -> m_clawArm.isClear()),
             Commands.runOnce(() -> m_lifter.moveStowedPos())
         );
-        System.out.println("Swap to Claw Complete!");
     }
 
 }

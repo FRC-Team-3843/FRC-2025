@@ -17,12 +17,8 @@ public class AutoCoralScoreCommand extends SequentialCommandGroup {
 
         addRequirements(m_lifter, m_lifterIntake, m_clawArm, m_clawElevator, m_clawIntake);
 
-        //System.out.println("Coral Lifter Outtake");
-
         addCommands(
-            
-           // new MoveLift(m_clawArm, m_clawElevator, m_lifter, Constants.LifterConstants.CORAL_SCORE_POS),
-           Commands.runOnce(() -> m_lifter.moveCoralScorePos()),
+            Commands.runOnce(() -> m_lifter.moveCoralScorePos()),
             new WaitUntilCommand(() -> m_lifter.isAtCoralScorePos()),
             Commands.runOnce(() -> m_lifterIntake.outtake(Constants.LifterIntakeConstants.AUTO_CORAL_OUTTAKE_SPEED)),
             new WaitCommand(1),
