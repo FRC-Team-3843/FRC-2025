@@ -12,7 +12,7 @@ import frc.robot.subsystems.LifterIntake;
 public class AlgaeGroundIntakeCommand extends SequentialCommandGroup {
 
     public AlgaeGroundIntakeCommand(LifterIntake m_lifterIntake, ClawArm m_clawArm, ClawElevator m_clawElevator, Lifter m_lifter, ClawIntake m_clawIntake) {
-        
+        System.out.println("Algae Ground Intake Command Running...");
         addRequirements(m_lifter, m_lifterIntake, m_clawArm, m_clawElevator, m_clawIntake);
 
         addCommands(
@@ -23,6 +23,7 @@ public class AlgaeGroundIntakeCommand extends SequentialCommandGroup {
             Commands.runOnce(() -> m_clawElevator.moveStowedPos()),
             new WaitUntilCommand(() -> m_clawElevator.isAtStowedPos())
         );
+        System.out.println("Algae Ground Intake Command Complete!");
 
     }
 

@@ -13,7 +13,7 @@ import frc.robot.subsystems.LifterIntake;
 public class HangApproachCommand extends SequentialCommandGroup{
     
     public HangApproachCommand(LifterIntake m_lifterIntake, ClawArm m_clawArm, ClawElevator m_clawElevator, Lifter m_lifter, ClawIntake m_clawIntake) {
-        
+        System.out.println("Hang Approach Command Running...");
         addRequirements(m_lifter, m_lifterIntake, m_clawArm, m_clawElevator, m_clawIntake);
 
         //System.out.println("Moving to Hang Approach");
@@ -23,7 +23,7 @@ public class HangApproachCommand extends SequentialCommandGroup{
             Commands.runOnce(() -> m_clawArm.moveClimbingApproachPos()),
             Commands.runOnce(() -> m_lifter.moveClimbingApproachPos())
         );
-        
+        System.out.println("Hang Approach Command Complete!");
     }
 
 }

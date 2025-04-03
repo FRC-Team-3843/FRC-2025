@@ -14,7 +14,7 @@ import frc.robot.subsystems.LifterIntake;
 public class AutoCoralScoreCommand extends SequentialCommandGroup {
 
     public AutoCoralScoreCommand(LifterIntake m_lifterIntake, ClawArm m_clawArm, ClawElevator m_clawElevator, Lifter m_lifter, ClawIntake m_clawIntake) {
-        
+
         addRequirements(m_lifter, m_lifterIntake, m_clawArm, m_clawElevator, m_clawIntake);
 
         //System.out.println("Coral Lifter Outtake");
