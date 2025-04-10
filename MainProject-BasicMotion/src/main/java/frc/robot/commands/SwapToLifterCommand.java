@@ -16,6 +16,7 @@ public class SwapToLifterCommand extends SequentialCommandGroup{
         addRequirements(m_lifter, m_lifterIntake, m_clawArm, m_clawElevator, m_clawIntake);
 
         addCommands(
+            //new WaitUntilCommand(() -> m_lifter.isClear()),
             Commands.runOnce(() -> m_clawArm.moveClear()),
             new WaitUntilCommand(() -> m_clawArm.isClear()),
             Commands.runOnce(() -> m_clawElevator.moveStowedPos()),

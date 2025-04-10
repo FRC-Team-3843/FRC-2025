@@ -96,6 +96,10 @@ public class ClawArm extends SubsystemBase{
         setPos(Constants.ClawArmConstants.ALGAE_TRANSFER_POS);
     }
 
+    public void moveDeployLineUpPos() {
+        setPos(Constants.ClawArmConstants.DEPLOY_LINE_UP_POS);
+    }
+
     public boolean isAtStowedPos() {
         return isAtPosition(Constants.ClawArmConstants.STOWED_POS);
     }
@@ -130,6 +134,10 @@ public class ClawArm extends SubsystemBase{
 
     public boolean isAtAlgaeTransferPos() {
         return isAtPosition(Constants.ClawArmConstants.ALGAE_TRANSFER_POS);
+    }
+
+    public boolean isAtDeployLineUpPos() {
+        return isAtPosition(Constants.ClawArmConstants.DEPLOY_LINE_UP_POS);
     }
 
     public void moveClear(){

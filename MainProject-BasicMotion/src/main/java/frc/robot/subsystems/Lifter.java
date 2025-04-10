@@ -24,8 +24,8 @@ public class Lifter extends SubsystemBase {
     RelativeEncoder lifterLeftEncoder = lifterLeftMotor.getEncoder();
     SparkMaxConfig lifterRightConfig = new SparkMaxConfig();
     SparkMaxConfig lifterLeftConfig = new SparkMaxConfig();
-    Servo leftBreak = new Servo(0);
-    Servo rightBreak = new Servo(1);
+    Servo motorBreak = new Servo(0);
+    Servo lineUp = new Servo(1);
 
     public Lifter(){
         lifterRightConfig
@@ -102,14 +102,12 @@ public class Lifter extends SubsystemBase {
     }
 
     public void setBreak(){
-        leftBreak.set(0.75);
-        rightBreak.set(0.75);
+        motorBreak.set(0.75);
     }
 
 
     public void releaseBreak(){
-        leftBreak.set(0);
-        rightBreak.set(0);
+        motorBreak.set(0);
     }
 
     public void stopMotor(){
@@ -117,6 +115,9 @@ public class Lifter extends SubsystemBase {
         lifterRightMotor.set(0);
     }
 
+    public void deployLineUp(){
+        lineUp.set(1);
+    }
     public double getPosition() {
         // Get the average position of the motor in revolutions
         return ((lifterRightEncoder.getPosition() + lifterLeftEncoder.getPosition()) / 2);

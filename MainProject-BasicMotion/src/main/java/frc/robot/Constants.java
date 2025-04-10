@@ -53,7 +53,7 @@ public final class Constants
     public static final int MOTOR_ID = 33;
     public static final InvertedValue MOTOR_INVERT = InvertedValue.Clockwise_Positive;
     public static final double ALGAE_INTAKE_SPEED = 1;
-    public static final double ALGAE_HOLD_SPEED = 0.05;
+    public static final double ALGAE_HOLD_SPEED = 0.07;
     public static final double ALGAE_OUTTAKE_SPEED = 1;
     public static final double CORAL_INTAKE_SPEED = 0.5;
     public static final double CORAL_OUTTAKE_SPEED = 0.5;
@@ -93,14 +93,15 @@ public final class Constants
     // Claw Arm Positions
     public static final double STOWED_POS = 0.77; //0.2
     public static final double CLIMBING_APPROACH_POS = 0;
-    public static final double ALGAE_TRANSFER_POS = 10.76; 
+    public static final double ALGAE_TRANSFER_POS = 12.76; //10.76
     public static final double L1_CORAL_SCORING_POS = 23.26; //22
-    public static final double L2_CORAL_SCORING_POS = 36.47; //20.6
-    public static final double L1_ALGAE_INTAKE_POS = 25.55; //24.7 //22.77 //lifter hits on way back in
-    public static final double L2_ALGAE_INTAKE_POS = 33.98; //19.8 //34.14
+    public static final double L2_CORAL_SCORING_POS = 44; //20.6 //36.47 //38
+    public static final double L1_ALGAE_INTAKE_POS = 26.55; //25.55 //24.7 //22.77 //lifter hits on way back in
+    public static final double L2_ALGAE_INTAKE_POS = 38; //33.89 //19.8 //34.14
     public static final double CLEARANCE_POS = 30; //28 //27.6
     public static final double CORAL_HUMAN_POS = 30; //37.6
-    public static final double ALGAE_SCORE_POS = 48.9; //48.8
+    public static final double ALGAE_SCORE_POS = 53; //48.9
+    public static final double DEPLOY_LINE_UP_POS = 6.37;
   }
 
   public static class ClawElevatorConstants{
@@ -113,10 +114,10 @@ public final class Constants
     public static final double CORAL_HUMAN_POS = 0; 
     public static final double CLIMBING_APPROACH_POS = 0; 
     public static final double ALGAE_TRANSFER_POS = 0;  
-    public static final double L2_CORAL_SCORING_POS = -28; 
-    public static final double L2_ALGAE_INTAKE_POS = -28; 
+    public static final double L2_CORAL_SCORING_POS = -28;  
+    public static final double L2_ALGAE_INTAKE_POS = -28;
     public static final double ALGAE_SCORE_POS = -28; //28
-    public static final double TOP_POS = -46; //28 //49
+    public static final double TOP_POS = -46; //28 //49 //46
 
   }
 
