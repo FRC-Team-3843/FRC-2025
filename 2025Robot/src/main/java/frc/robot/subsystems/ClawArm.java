@@ -23,8 +23,8 @@ public class ClawArm extends SubsystemBase{
 
         MotionMagicConfigs clawArmMMConfig = clawArmConfig.MotionMagic;
         //100-500
-        clawArmMMConfig.MotionMagicAcceleration = 10;
-        clawArmMMConfig.MotionMagicCruiseVelocity = 20;
+        clawArmMMConfig.MotionMagicAcceleration = 120;
+        clawArmMMConfig.MotionMagicCruiseVelocity = 60;
         
 
         Slot0Configs clawArmSlot0Configs = clawArmConfig.Slot0;
@@ -96,6 +96,10 @@ public class ClawArm extends SubsystemBase{
         setPos(Constants.ClawArmConstants.ALGAE_TRANSFER_POS);
     }
 
+    public void moveDeployLineUpPos() {
+        setPos(Constants.ClawArmConstants.DEPLOY_LINE_UP_POS);
+    }
+
     public boolean isAtStowedPos() {
         return isAtPosition(Constants.ClawArmConstants.STOWED_POS);
     }
@@ -132,12 +136,16 @@ public class ClawArm extends SubsystemBase{
         return isAtPosition(Constants.ClawArmConstants.ALGAE_TRANSFER_POS);
     }
 
+    public boolean isAtDeployLineUpPos() {
+        return isAtPosition(Constants.ClawArmConstants.DEPLOY_LINE_UP_POS);
+    }
+
     public void moveClear(){
         setPos(Constants.ClawArmConstants.CLEARANCE_POS);
     }
 
     public boolean isClear(){
-        if(getPosition() > Constants.ClawArmConstants.CLEARANCE_POS)
+        if(getPosition() > Constants.ClawArmConstants.CLEARANCE_POS - 2)
             return true;
         return false;
     }

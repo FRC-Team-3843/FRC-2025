@@ -1,16 +1,19 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ClawIntake extends SubsystemBase {
-    TalonSRX clawIntakeMotor = new TalonSRX(Constants.ClawIntakeConstants.MOTOR_ID);
+    TalonFX clawIntakeMotor = new TalonFX(Constants.ClawIntakeConstants.MOTOR_ID);
+     TalonFXConfiguration clawIntakeConfig = new TalonFXConfiguration();
+
+
 
     public ClawIntake() {
-        clawIntakeMotor.setInverted(Constants.ClawIntakeConstants.MOTOR_INVERT);
+        clawIntakeConfig.MotorOutput.Inverted = Constants.ClawIntakeConstants.MOTOR_INVERT;
     }
 
     public void periodic() {
@@ -18,8 +21,8 @@ public class ClawIntake extends SubsystemBase {
     }
 
     private void setMotor(double speed, boolean direction) {
-        if (direction) clawIntakeMotor.set(TalonSRXControlMode.PercentOutput, -speed);
-        else clawIntakeMotor.set(TalonSRXControlMode.PercentOutput, speed);
+        if (direction) clawIntakeMotor.set(speed);
+        else clawIntakeMotor.set( -speed);
     }
 
     public void intake(double speed) {

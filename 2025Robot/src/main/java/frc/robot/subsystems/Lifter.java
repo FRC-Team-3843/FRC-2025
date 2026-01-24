@@ -11,6 +11,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -23,13 +24,22 @@ public class Lifter extends SubsystemBase {
     RelativeEncoder lifterLeftEncoder = lifterLeftMotor.getEncoder();
     SparkMaxConfig lifterRightConfig = new SparkMaxConfig();
     SparkMaxConfig lifterLeftConfig = new SparkMaxConfig();
+    Servo motorBreak = new Servo(0);
+    Servo lineUp = new Servo(1);
 
     public Lifter(){
-        lifterRightConfig.inverted(Constants.LifterConstants.RIGHT_MOTOR_INVERT);
-        lifterLeftConfig.inverted(Constants.LifterConstants.LEFT_MOTOR_INVERT);
-        lifterRightMotor.configure(lifterRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        lifterRightConfig
+            .inverted(Constants.LifterConstants.RIGHT_MOTOR_INVERT)
+            .smartCurrentLimit(20, 30, 120);
+        lifterLeftConfig
+            .inverted(Constants.LifterConstants.LEFT_MOTOR_INVERT)
+            .smartCurrentLimit(20, 30, 120);
+        
+            lifterRightMotor.configure(lifterRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         lifterLeftMotor.configure(lifterLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+        
+        
         lifterRightConfig.encoder
             .positionConversionFactor(1)
             .velocityConversionFactor(1);
@@ -91,6 +101,23 @@ public class Lifter extends SubsystemBase {
         
     }
 
+    public void setBreak(){
+        motorBreak.set(0.75);
+    }
+
+
+    public void releaseBreak(){
+        motorBreak.set(0);
+    }
+
+    public void stopMotor(){
+        lifterLeftMotor.set(0);
+        lifterRightMotor.set(0);
+    }
+
+    public void deployLineUp(){
+        lineUp.set(1);
+    }
     public double getPosition() {
         // Get the average position of the motor in revolutions
         return ((lifterRightEncoder.getPosition() + lifterLeftEncoder.getPosition()) / 2);

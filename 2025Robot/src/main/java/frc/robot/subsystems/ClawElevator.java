@@ -94,6 +94,14 @@ public class ClawElevator extends SubsystemBase{
         setPos(Constants.ClawElevatorConstants.ALGAE_SCORE_POS);
     }   
 
+    public void moveTopPos() {
+        setPos(Constants.ClawElevatorConstants.TOP_POS);
+    }
+
+    public boolean isAtTopPos() {
+        return isAtPosition(Constants.ClawElevatorConstants.TOP_POS);
+    }
+
     public boolean isAtStowedPos() {
         return isAtPosition(Constants.ClawElevatorConstants.STOWED_POS);
     }
