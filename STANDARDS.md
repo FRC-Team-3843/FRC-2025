@@ -23,7 +23,7 @@ This repository has **three branches** in different states:
 - **Architecture:** Command-based but with old APIs
 - **Use For:** Historical reference only
 
-### `offseason` Branch (DEPRECATED)
+### `2025_Offseason_archive` Branch (DEPRECATED)
 - **Status:** Offseason experimentation code (deprecated)
 - **Motor APIs:** Old `CANSparkMax` API (removed in 2026)
 - **Use For:** Historical reference only

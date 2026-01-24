@@ -13,7 +13,7 @@ This file is for Codex-specific behavior when working in the FRC-2025 repository
 **READ THIS FIRST:** `FRC-2025\STANDARDS.md`
 
 That file contains technical rules for FRC-2025:
-- Branch guide (main, 2025_Archive, offseason)
+- Branch guide (main, 2025_Archive, 2025_Offseason_archive)
 - Motor API status (updated on main branch)
 - Architecture status (needs command factory refactor)
 - Build commands

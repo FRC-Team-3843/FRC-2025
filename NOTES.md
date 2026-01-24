@@ -19,7 +19,6 @@
 ### TODOs
 - [ ] Tune the bot
 - [ ] Fix the bumpiness with the swerve drive
-- [ ] Bring melatonin
 - [ ] Resolve error code (see below)
 
 ## Error Log / Troubleshooting
