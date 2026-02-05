@@ -2,6 +2,14 @@
 
 FRC Team 3843 - 2025 Season
 
+> **Documentation Guide:**
+> - **This file (README):** Project overview and quick start
+> - **NOTES.md:** Setup procedures, tuning values, troubleshooting
+> - **STANDARDS.md:** Coding standards and architecture rules (references FRC-2026)
+
+## Competition Season
+The 2025 Reefscape game requires manipulation of two game piece types (Algae and Coral) with scoring at multiple levels. This robot was designed for versatile multi-level scoring with fast cycling and reliable autonomous routines.
+
 ## Overview
 Team 3843's robot for the 2025 Reefscape game. Features a swerve drive system powered by YAGSL (Yet Another Generic Swerve Library) with advanced autonomous capabilities via PathPlanner. The robot includes a complex superstructure with multiple mechanisms for manipulating both Algae and Coral game pieces.
 
@@ -14,11 +22,19 @@ Team 3843's robot for the 2025 Reefscape game. Features a swerve drive system po
 - **Control:** Field-centric with gyro-assisted navigation
 
 ### Mechanisms
-- **Lifter:** Dual-motor vertical lift system (SparkMax motors)
-- **Claw Intake:** Game piece manipulation (TalonFX)
-- **Claw Arm:** Multi-position articulated arm (position-controlled)
-- **Claw Elevator:** Extension mechanism for reach
-- **Lifter Intake:** Secondary intake system (TalonFX)
+- **Lifter:** Multi-purpose dual-motor lift system with three functions:
+  - Algae intake (works with claw arm, elevator, and claw intake to pull ball into claw for barge scoring)
+  - Coral intake and scoring into bottom tray of reef
+  - Climbing by hooking onto cage and lifting robot
+  - Can also hold algae for low goal scoring
+  - Includes servo-driven parking brakes to prevent backdriving when powered off
+- **Lifter Intake:** Roller mechanism on lifter for pulling in algae and coral.
+- **Claw Intake:** Primary algae intake system
+  - Forward: pulls algae from lifter or directly off reef
+  - Reverse: pushes algae out to score in barge
+  - Can pass ball back to lifter for low goal scoring
+- **Claw Arm:** Multi-position articulated arm for positioning mechanisms at different scoring/intake heights
+- **Claw Elevator:** Vertical extension mechanism providing additional height needed for barge scoring
 
 ## Software Stack
 - WPILib 2025
@@ -28,57 +44,7 @@ Team 3843's robot for the 2025 Reefscape game. Features a swerve drive system po
 - Phoenix6 (TalonFX)
 - PhotonVision (Vision processing)
 
-## CAN ID Assignments
-
-### Drive System
-| Device | CAN ID | Description |
-|--------|--------|-------------|
-| Swerve Modules | 1-12 | Drive motors, steer motors, CANCoders |
-
-### Mechanisms
-| Device | CAN ID | Description |
-|--------|--------|-------------|
-| Right Lifter Motor | 31 | Lifter right side |
-| Left Lifter Motor | 32 | Lifter left side |
-| Claw Intake Motor | 33 | Intake/outtake control |
-| Claw Arm Motor | 34 | Arm positioning |
-| Lifter Intake Motor | 35 | Secondary intake |
-| Claw Elevator Motor | 50 | Vertical extension |
-
-## Subsystems
-- **Swerve Drive:** YAGSL-powered swerve with odometry and vision fusion
-- **Lifter:** Dual-motor lift with MAXMotion position control
-- **Claw Intake:** Game piece intake/outtake for Algae and Coral
-- **Claw Arm:** Multi-position arm for scoring and intake
-- **Claw Elevator:** Extension mechanism for reach
-- **Lifter Intake:** Secondary intake system
-
-## Key Positions
-
-### Lifter Positions (encoder rotations)
-- Stowed: 10
-- Hang: 10
-- Coral Score: 101
-- Clearance: 130
-- Algae Intake: 130
-- Algae Score: 128
-- Coral Intake: 193
-- Climbing Approach: 198
-
-### Claw Arm Positions (rotations)
-- Stowed: 0.77
-- L1 Coral Scoring: 23.26
-- L2 Coral Scoring: 44
-- L1 Algae Intake: 26.55
-- L2 Algae Intake: 38
-- Algae Score: 53
-
-### Claw Elevator Positions (rotations)
-- Stowed: -0.75
-- L2 Coral Scoring: -28
-- L2 Algae Intake: -28
-- Algae Score: -28
-- Top: -46
+*See NOTES.md for CAN bus assignments and mechanism positions*
 
 ## Building and Deploying
 ```bash
@@ -88,12 +54,11 @@ cd 2025Robot
 ```
 
 ## Autonomous
-PathPlanner-based autonomous with pre-planned trajectories and on-the-fly pathfinding. Requires proper configuration of:
-- Robot mass and MOI
-- Bumper dimensions
-- Wheel radius and gearing
-- Drive motor current limits
-- Module positions
+PathPlanner-based autonomous routines:
+- **ScoreCoralTrough:** Score pre-loaded coral in trough and exit starting zone
+- **StraightLeave:** Simple mobility auto - drive straight out of starting zone
+- **AlgaeGrab:** Acquire algae game piece from field during auto
 
-## Competition Season
-The 2025 Reefscape game requires manipulation of two game piece types (Algae and Coral) with scoring at multiple levels. This robot was designed for versatile multi-level scoring with fast cycling and reliable autonomous routines.
+*See NOTES.md for PathPlanner configuration and tuning details*
+
+

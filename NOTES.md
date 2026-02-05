@@ -1,5 +1,54 @@
 # Working Notes - FRC-2025
 
+> **Documentation Guide:**
+> - **This file (NOTES):** Setup, tuning, troubleshooting, TODOs
+> - **README.md:** Project overview and quick start
+> - **STANDARDS.md:** Coding standards (references FRC-2026\STANDARDS.md)
+
+## CAN Bus Assignments
+
+### Drive System
+| Device | CAN ID | Description |
+|--------|--------|-------------|
+| Swerve Modules | 1-12 | Drive motors, steer motors, CANCoders |
+
+### Mechanisms
+| Device | CAN ID | Description |
+|--------|--------|-------------|
+| Right Lifter Motor | 31 | Lifter right side |
+| Left Lifter Motor | 32 | Lifter left side |
+| Claw Intake Motor | 33 | Intake/outtake control |
+| Claw Arm Motor | 34 | Arm positioning |
+| Lifter Intake Motor | 35 | Secondary intake |
+| Claw Elevator Motor | 50 | Vertical extension |
+
+## Key Positions
+
+### Lifter Positions (encoder rotations)
+- Stowed: 10
+- Hang: 10
+- Coral Score: 101
+- Clearance: 130
+- Algae Intake: 130
+- Algae Score: 128
+- Coral Intake: 193
+- Climbing Approach: 198
+
+### Claw Arm Positions (rotations)
+- Stowed: 0.77
+- L1 Coral Scoring: 23.26
+- L2 Coral Scoring: 44
+- L1 Algae Intake: 26.55
+- L2 Algae Intake: 38
+- Algae Score: 53
+
+### Claw Elevator Positions (rotations)
+- Stowed: -0.75
+- L2 Coral Scoring: -28
+- L2 Algae Intake: -28
+- Algae Score: -28
+- Top: -46
+
 ## Robot Dimensions
 - Pod Length: 25.25 in (0.6413 m)
 - Pod Width: 19.25 in (0.4889 m)
