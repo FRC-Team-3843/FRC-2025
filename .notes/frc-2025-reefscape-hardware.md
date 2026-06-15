@@ -1,8 +1,7 @@
 ---
 id: frc-2025-reefscape-hardware
 title: FRC-2025 Reefscape Robot Hardware Configuration
-type: reference
-schema_version: 1
+schema_version: 2
 created: 2026-06-14T12:35:00Z
 updated: 2026-06-14T12:35:00Z
 valid_until: null
@@ -24,6 +23,10 @@ provenance:
   recall-extract: claude-sonnet-4-6
   find-missing: claude-sonnet-4-6
   precision-judge: claude-sonnet-4-6
+lifecycle: active
+artifact_kind: memory
+memory_class: semantic
+semantic_kind: entity_profile
 ---
 
 # FRC-2025 Reefscape Robot Hardware Configuration

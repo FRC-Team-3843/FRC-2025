@@ -1,8 +1,7 @@
 ---
 id: frc-2025-servo-parking-brake
 title: FRC-2025 Servo Parking Brake Pattern
-type: feedback
-schema_version: 1
+schema_version: 2
 created: 2026-06-14T12:35:00Z
 updated: 2026-06-14T12:35:00Z
 valid_until: null
@@ -24,6 +23,9 @@ provenance:
   recall-extract: claude-sonnet-4-6
   find-missing: claude-sonnet-4-6
   precision-judge: claude-sonnet-4-6
+artifact_kind: memory
+memory_class: procedural
+enforceability: preferred
 ---
 
 # FRC-2025 Servo Parking Brake Pattern

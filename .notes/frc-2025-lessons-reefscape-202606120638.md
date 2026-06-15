@@ -1,8 +1,7 @@
 ---
 id: frc-2025-lessons-reefscape-202606120638
 title: FRC-2025 Reefscape — durable lessons for FRC-2026
-type: note
-schema_version: 1
+schema_version: 2
 created: 2026-06-12T06:38:00Z
 updated: 2026-06-12T06:38:00Z
 valid_until: null
@@ -17,6 +16,10 @@ source_basis: conversation
 human_edited: false
 sensitivity: normal
 decisions: []
+artifact_kind: memory
+memory_class: semantic
+model: unattributed
+model_basis: unattributed
 ---
 
 # FRC-2025 Reefscape — durable lessons for FRC-2026
