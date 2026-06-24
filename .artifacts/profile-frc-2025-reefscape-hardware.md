@@ -76,7 +76,7 @@ Team 3843's 2025 REEFSCAPE robot uses a mixed motor controller stack: REV SparkM
 
 ## Relations
 
-- relates-to [[frc-2025-source-202606120638]] (this hardware lives in that repo)
+- relates-to [[frc-2025-source]] (this hardware lives in that repo)
 - relates-to [[frc-2025-reefscape-game]] (hardware designed for this game's constraints)
 - relates-to [[frc-2026]] (compare hardware choices; 2026 moved to different swerve hardware)
 - relates-to [[yagsl]] (drivetrain control library, see FRC-2026 note)

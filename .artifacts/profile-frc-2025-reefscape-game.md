@@ -45,7 +45,7 @@ Team 3843's 2025 robot was designed for multi-level scoring of both game pieces:
 - [registry] Two game piece types: Coral (hollow ring, reef branch scoring) and Algae (rubber ball, barge/processor scoring) #game-pieces
 - [registry] Scoring zones: Reef (4 branch levels L1–L4), Barge (elevated net, algae only), Processor (floor-level, algae only), Cage (hang zone, end-game) #field
 - [registry] End-game: robots hang on Cage by hooking and lifting themselves — Team 3843 implemented via Lifter mechanism with climbing-approach and hang command sequence #endgame
-- [registry] Autonomous period (first 15s): alliance-specific field orientation matters; alliance-relative control and gyro-zero binding are safety-critical (see alliance-control pitfall in frc-2025-lessons-reefscape-202606120638) #autonomous
+- [registry] Autonomous period (first 15s): alliance-specific field orientation matters; alliance-relative control and gyro-zero binding are safety-critical (see alliance-control pitfall in frc-2025-lessons-reefscape) #autonomous
 - [lore] The dual-game-piece requirement drove the multi-context mechanism architecture: separate intake paths (ClawIntake for algae, LifterIntake for coral), operator bumper mode-switch, and one-press sequence commands per game-piece + level combination #design-rationale
 
 ## Open Questions
@@ -54,6 +54,6 @@ Team 3843's 2025 robot was designed for multi-level scoring of both game pieces:
 
 ## Relations
 
-- relates-to [[frc-2025-source-202606120638]] (season robot built for this game)
-- relates-to [[frc-2025-lessons-reefscape-202606120638]] (control lessons derive from game constraints)
+- relates-to [[frc-2025-source]] (season robot built for this game)
+- relates-to [[frc-2025-lessons-reefscape]] (control lessons derive from game constraints)
 - relates-to [[frc-team-3843]] (Team 3843 competed in this season)

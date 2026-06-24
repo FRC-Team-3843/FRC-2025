@@ -66,5 +66,5 @@ The local workflow for the FRC-2025 repository, extracted from `.protocol.md` (n
 
 - relates-to [[frc-2025-critical-rules]] (the @always guardrails that gate any work here)
 - relates-to [[frc-2025-branch-guide]] (which branch to reference; build commands)
-- relates-to [[frc-2025-source-202606120638]] (repo orientation)
+- relates-to [[frc-2025-source]] (repo orientation)
 - relates-to [[frc-team-3843]] [[wpilib-build-env]]

@@ -31,12 +31,12 @@ The @always critical rules for the FRC-2025 repository, extracted from `.protoco
 - [constraint] To build, set `JAVA_HOME="C:/Users/Public/wpilib/2026/jdk"` (WPILib JDK 17) — system Java is Java 8 and will fail. Build from the `FRC-2025/2025Robot/` sub-directory. #build (see [[wpilib-build-env]])
 - [constraint] Reference code from the `main` branch only; `2025_Archive` and `2025_Offseason_archive` branches are deprecated (old `CANSparkMax` API, not valid for 2026+). #branch
 - [constraint] When pulling lessons forward to FRC-2026: verify motor API currency — architecture patterns (command factories) are incomplete on `main`. #lesson-port
-- [constraint] Read the lessons note [[frc-2025-lessons-reefscape-202606120638]] before making any FRC-2026 control/swerve decision. #lesson-port
+- [constraint] Read the lessons note [[frc-2025-lessons-reefscape]] before making any FRC-2026 control/swerve decision. #lesson-port
 
 ## Relations
 
-- relates-to [[frc-2025-lessons-reefscape-202606120638]] (lessons to consult before FRC-2026 control/swerve work — do not duplicate; read there)
-- relates-to [[frc-2025-source-202606120638]] (repo orientation; main-vs-deprecated branch summary)
+- relates-to [[frc-2025-lessons-reefscape]] (lessons to consult before FRC-2026 control/swerve work — do not duplicate; read there)
+- relates-to [[frc-2025-source]] (repo orientation; main-vs-deprecated branch summary)
 - relates-to [[frc-2025-branch-guide]] (per-branch detail)
 - relates-to [[frc-2025-local-workflow]] (the local workflow these rules gate)
 - relates-to [[frc-2026]] [[frc-team-3843]] [[wpilib-build-env]]

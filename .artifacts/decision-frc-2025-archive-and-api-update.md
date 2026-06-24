@@ -39,5 +39,5 @@ Recent decisions for the FRC-2025 repository, extracted from `.context.md` Recen
 
 - relates-to [[frc-2025-branch-guide]] (per-branch state detail)
 - relates-to [[frc-2025-critical-rules]] (the archive guard + reference-main-only rule these decisions justify)
-- relates-to [[frc-2025-source-202606120638]] (repo orientation)
+- relates-to [[frc-2025-source]] (repo orientation)
 - relates-to [[frc-2026]] [[frc-team-3843]]

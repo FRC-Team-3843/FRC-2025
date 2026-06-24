@@ -48,5 +48,5 @@ The FRC-2025 repository follows FRC-2026 standards (the complete coding-standard
 - relates-to [[frc-2025-what-to-reference]] (which patterns are safe to copy from `main`)
 - relates-to [[frc-2025-critical-rules]] (reference `main` only; build rule)
 - relates-to [[frc-2025-reefscape-hardware]] (the motor/vendor stack on `main`)
-- relates-to [[frc-2025-source-202606120638]] (repo orientation)
+- relates-to [[frc-2025-source]] (repo orientation)
 - relates-to [[frc-2026]] [[frc-team-3843]] [[wpilib-build-env]]

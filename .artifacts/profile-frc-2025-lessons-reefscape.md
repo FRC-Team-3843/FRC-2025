@@ -1,5 +1,5 @@
 ---
-id: frc-2025-lessons-reefscape-202606120638
+id: frc-2025-lessons-reefscape
 title: FRC-2025 Reefscape — durable lessons for FRC-2026
 schema_version: 2
 created: 2026-06-12T06:38:00Z
@@ -8,7 +8,7 @@ valid_until: null
 author: claude
 session: phase7-onboarding-20260612
 tags: [frc, robotics, swerve, controls, lessons-learned, decision]
-aliases: [frc 2025 lessons, reefscape lessons, alliance control pitfall, competition control preferences]
+aliases: [frc-2025-lessons-reefscape-202606120638, frc 2025 lessons, reefscape lessons, alliance control pitfall, competition control preferences]
 status: active
 supersedes: null
 confidence: 55
@@ -81,4 +81,4 @@ The control layout documented here is a working baseline confirmed in 2025 compe
 
 ## Relations
 
-[[frc-2026]] [[frc-team-3843]] [[frc-2025-source-202606120638]] [[wpilib-build-env]]
+[[frc-2026]] [[frc-team-3843]] [[frc-2025-source]] [[wpilib-build-env]]

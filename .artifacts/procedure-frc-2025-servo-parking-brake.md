@@ -53,5 +53,5 @@ The FRC-2025 REEFSCAPE robot's Lifter mechanism uses two standard WPILib `edu.wp
 ## Relations
 
 - relates-to [[frc-2025-reefscape-hardware]] (servo PWM assignments are part of hardware map)
-- relates-to [[frc-2025-source-202606120638]] (implementation in Lifter.java)
-- relates-to [[frc-2025-lessons-reefscape-202606120638]] (competition-proven mechanism patterns)
+- relates-to [[frc-2025-source]] (implementation in Lifter.java)
+- relates-to [[frc-2025-lessons-reefscape]] (competition-proven mechanism patterns)

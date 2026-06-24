@@ -46,7 +46,7 @@ Guidance — from `.context.md` and `.standards.md` §What to Reference — on w
 ## Relations
 
 - relates-to [[frc-2025-branch-guide]] (reference `main` only; current-state detail)
-- relates-to [[frc-2025-lessons-reefscape-202606120638]] (the durable control lessons — alliance-control pitfall, POV presets, bumper-chord swap)
+- relates-to [[frc-2025-lessons-reefscape]] (the durable control lessons — alliance-control pitfall, POV presets, bumper-chord swap)
 - relates-to [[frc-2025-reefscape-hardware]] (the specific motor configs to verify before copying)
-- relates-to [[frc-2025-source-202606120638]] (repo orientation)
+- relates-to [[frc-2025-source]] (repo orientation)
 - relates-to [[frc-2026]] [[frc-team-3843]]
