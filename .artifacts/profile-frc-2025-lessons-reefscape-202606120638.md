@@ -3,7 +3,7 @@ id: frc-2025-lessons-reefscape-202606120638
 title: FRC-2025 Reefscape — durable lessons for FRC-2026
 schema_version: 2
 created: 2026-06-12T06:38:00Z
-updated: 2026-06-12T06:38:00Z
+updated: 2026-06-23T21:30:00Z
 valid_until: null
 author: claude
 session: phase7-onboarding-20260612
@@ -35,7 +35,7 @@ FRC Team 3843's 2025 REEFSCAPE robot (`C:\GitHub\FRC-2025`, `main` branch) compe
 
 ### Alliance-control pitfall (CONFIRMED IN CODE)
 
-`allianceRelativeControl(true)` is present in the main `SwerveInputStream` for field-oriented drive (source: `2025Robot/src/main/java/frc/robot/RobotContainer.java` line 87). The driver's Start button is bound to `drivebase::zeroGyro` (bare zero, no alliance flip) in both the normal and test-mode paths (lines 246, 252). `SwerveSubsystem` also provides a separate `zeroGyroWithAlliance()` method that applies a 180° odometry reset for red alliance (source: `SwerveSubsystem.java` lines 585–596).
+`allianceRelativeControl(true)` is present in the main `SwerveInputStream` for field-oriented drive (source: `2025Robot/src/main/java/frc/robot/RobotContainer.java` line 87). The driver's Start button is bound to `drivebase::zeroGyro` (bare zero, no alliance flip) in both the normal and test-mode paths (lines 246, 252). `SwerveSubsystem` also provides a separate `zeroGyroWithAlliance()` method that applies a 180° odometry reset for red alliance (source: `2025Robot/.../subsystems/swervedrive/SwerveSubsystem.java` lines 586–597).
 
 **The pitfall:** if `allianceRelativeControl(true)` AND `zeroGyroWithAlliance()` are both active, the alliance flip is applied twice — once by YAGSL internally via `allianceRelativeControl`, and once by the driver's explicit reset. The result is double-compensation: a Red alliance driver's inputs are rotated 180° by YAGSL, and then the odometry is also flipped 180° by the gyro-zero call, causing wildly incorrect field orientation. The 2025 robot avoids this because it uses bare `zeroGyro()` (no alliance flip) on the reset binding — but the safe pattern is to choose one compensation path and delete the other.
 
@@ -59,7 +59,7 @@ Active operator binding layout from `2025Robot/src/main/java/frc/robot/RobotCont
 
 ## Observations
 
-- [decision] Use `allianceRelativeControl(true)` OR `zeroGyroWithAlliance()` — never both. The 2025 robot uses `allianceRelativeControl(true)` + bare `zeroGyro()` reset; this is the safer default. #swerve #controls (double-compensation causes incorrect field orientation; source: RobotContainer.java line 87 + SwerveSubsystem.java lines 564–596)
+- [decision] Use `allianceRelativeControl(true)` OR `zeroGyroWithAlliance()` — never both. The 2025 robot uses `allianceRelativeControl(true)` + bare `zeroGyro()` reset; this is the safer default. #swerve #controls (double-compensation causes incorrect field orientation; source: RobotContainer.java line 87 + SwerveSubsystem.java lines 586–597)
 - [constraint] When porting swerve config to FRC-2026: verify the gyro-zero binding does NOT call `zeroGyroWithAlliance()` if `allianceRelativeControl(true)` is set. #swerve (audit both places; they are independent API calls)
 - [decision] POV/D-pad for discrete position presets is competition-proven and ergonomically preferable to adding more face-button chords. #controls (used for lifter stow/intake/score/clear; source: RobotContainer.java lines 168–171)
 - [decision] Bumper-as-mode-switch (left=lifter context, right=claw context) reduces total button count vs separate bank per mechanism. #controls (confirmed working in competition; source: RobotContainer.java lines 163–166)

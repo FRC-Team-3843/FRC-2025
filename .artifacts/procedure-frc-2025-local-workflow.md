@@ -6,7 +6,7 @@ enforceability: preferred
 schema_version: 2
 title: FRC-2025 Local Workflow
 created: 2026-06-23T19:00:00Z
-updated: 2026-06-23T19:00:00Z
+updated: 2026-06-23T21:30:00Z
 author: claude
 model: claude-opus-4-8
 model_basis: confirmed
@@ -33,9 +33,9 @@ The local workflow for the FRC-2025 repository, extracted from `.protocol.md` (n
 
 ### During work
 
-- [constraint] Follow `.standards.md` (the repo follows FRC-2026 standards — see [[frc-2025-branch-guide]] and the FRC-2026 standards reference). #during-work
+- [constraint] Follow FRC-2026 coding standards — the repo follows them (the standalone `.standards.md` was decomposed; see [[frc-2025-branch-guide]] and the FRC-2026 standards reference in `FRC-2026\.standards.md`). #during-work
 - [constraint] Check `.changelog.md` before overlapping work to avoid conflicting edits. #during-work
-- [constraint] Keep `.project-context.md` current when project state changes. #during-work
+- [constraint] Repo is archived (no active development), so project-state tracking is historical; current scope state lives in the `.artifacts\` scope_entry artifacts, not a `.project-context.md` (that monolith was decomposed). #during-work
 
 ### Changelog logging format
 
@@ -59,7 +59,7 @@ The local workflow for the FRC-2025 repository, extracted from `.protocol.md` (n
 
 ### Incomplete work tracking
 
-- [constraint] Track incomplete work in `.project-context.md`: `TODO` for actionable follow-up, `Pending Decisions` for unresolved choices. #incomplete-work
+- [constraint] Incomplete-work tracking (historical): the original `.project-context.md` held `TODO` for actionable follow-up and `Pending Decisions` for unresolved choices; that monolith was decomposed and the repo is archived, so any residual scope state now lives in the `.artifacts\` scope_entry artifacts. #incomplete-work
 - [registry] Sub-projects in this repo: `2025Robot` (competition code, `main` branch) and `2025Robot-SimplifiedMotion` (simplified drivetrain variant) — both archived, no active development. #sub-projects
 
 ## Relations
