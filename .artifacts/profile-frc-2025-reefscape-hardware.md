@@ -27,6 +27,7 @@ lifecycle: active
 artifact_kind: memory
 memory_class: semantic
 semantic_kind: entity_profile
+scope: FRC-2025
 ---
 
 # FRC-2025 Reefscape Robot Hardware Configuration

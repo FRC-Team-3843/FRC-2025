@@ -14,6 +14,7 @@ artifact_kind: reference
 model: unattributed
 model_basis: unattributed
 author: claude
+scope: FRC-2025
 ---
 
 # FRC-2025 Repository Source

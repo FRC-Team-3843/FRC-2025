@@ -26,6 +26,7 @@ provenance:
 artifact_kind: memory
 memory_class: procedural
 enforceability: preferred
+scope: FRC-2025
 ---
 
 # FRC-2025 Servo Parking Brake Pattern

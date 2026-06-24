@@ -20,6 +20,7 @@ artifact_kind: memory
 memory_class: semantic
 model: unattributed
 model_basis: unattributed
+scope: FRC-2025
 ---
 
 # FRC-2025 Reefscape — durable lessons for FRC-2026
