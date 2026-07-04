@@ -82,10 +82,12 @@ public final class Constants
     // TO-VERIFY on bench (blip test, ~3% output in Tuner): positive output must move BOTH sides
     // toward deploy AND count BOTH sensors up. On Phoenix 5, setInverted does NOT flip the quad
     // sensor — phase must be validated per side. Wrong phase on one side = the sides fight.
+    // Bench-verified 2026-07-04: positive output moves both sides out; right sensor counted up,
+    // left counted DOWN (divergence fault right +54 / left -65 ticks) -> left phase flipped.
     public static final boolean RIGHT_MOTOR_INVERT = false;
     public static final boolean LEFT_MOTOR_INVERT = true;
     public static final boolean RIGHT_SENSOR_PHASE = true;
-    public static final boolean LEFT_SENSOR_PHASE = false;
+    public static final boolean LEFT_SENSOR_PHASE = true;
 
     public static final double TICKS_PER_DEGREE = 6733.0 / 180.0; // ~37.4
 
@@ -130,16 +132,18 @@ public final class Constants
     // Hardware: TalonSRX + quad encoder. Measured range: 0 - 795000 ticks = 128 degrees.
     // Encoder zeroed at boot — arm MUST be at stow before power-on.
     public static final int MOTOR_ID = 34;
-    // TO-VERIFY on bench (blip test): positive output must move toward deploy and count the sensor up.
+    // Bench-verified 2026-07-04: positive output moves arm the correct direction, but the
+    // encoder counted DOWN (recorded -260k ticks over 7s at +0.2 duty) -> phase flipped true.
     public static final boolean MOTOR_INVERT = false;
-    public static final boolean SENSOR_PHASE = false;
+    public static final boolean SENSOR_PHASE = true;
 
     public static final double TICKS_PER_DEGREE = 795000.0 / 128.0; // ~6211
 
     // Motion Magic, Phoenix 5 native units (ticks/100ms, ticks/100ms/s). BENCH: ~5 deg/s.
     public static final double MOTOR_MAX_VELOCITY = 3100;
     public static final double MOTOR_MAX_ACCELERATION = 6200;
-    public static final double MOTOR_F = 0; // measure: duty * 1023 / velocity(ticks/100ms)
+    // Measured 2026-07-04: 0.2 duty -> ~3660 ticks/100ms => kF = 0.2*1023/3660 ~= 0.056
+    public static final double MOTOR_F = 0.056;
     public static final double MOTOR_P = 0.05;
     public static final double MOTOR_I = 0;
     public static final double MOTOR_D = 0;

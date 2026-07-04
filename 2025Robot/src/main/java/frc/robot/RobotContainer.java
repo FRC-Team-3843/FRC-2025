@@ -223,7 +223,8 @@ public class RobotContainer
     operatorXbox.start().onTrue(Commands.runOnce(() -> clawArm.zeroEncoder(), clawArm));
 
     // Small closed-loop test moves (Motion Magic latches — Back or disable to stop).
-    operatorXbox.a().onTrue(Commands.runOnce(() -> lifter.setPos(10), lifter));
+    // A = lifter to clearance so the arm can be exercised without the two colliding.
+    operatorXbox.a().onTrue(Commands.runOnce(() -> lifter.setPos(Constants.LifterConstants.CLEARANCE_POS), lifter));
     operatorXbox.b().onTrue(Commands.runOnce(() -> lifter.setPos(0), lifter));
     operatorXbox.x().onTrue(Commands.runOnce(() -> clawElevator.setPos(2), clawElevator));
     operatorXbox.y().onTrue(Commands.runOnce(() -> clawElevator.setPos(0), clawElevator));
