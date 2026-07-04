@@ -190,11 +190,13 @@ public class RobotContainer
             () -> lifter.jog(-operatorXbox.getLeftY() * Constants.LifterConstants.JOG_MAX_OUTPUT),
             () -> lifter.stopMotor(), lifter));
 
-    // Elevator jog: right stick Y, push up = positive output.
+    // Elevator jog: right stick Y, push up = positive output. On release it HOLDS position
+    // closed-loop instead of going neutral — the carriage free-falls at 0 output.
+    // Back (panic) or disable still gives true neutral.
     operatorXbox.axisMagnitudeGreaterThan(XboxController.Axis.kRightY.value, 0.2)
         .whileTrue(Commands.runEnd(
-            () -> clawElevator.jog(-operatorXbox.getRightY() * Constants.ClawElevatorConstants.JOG_MAX_OUTPUT),
-            () -> clawElevator.stop(), clawElevator));
+            () -> clawElevator.jog(-operatorXbox.getRightY() * Constants.ClawElevatorConstants.JOG_MAX_UP),
+            () -> clawElevator.holdPosition(), clawElevator));
 
     // Arm homing jog: POV up = positive output, POV down = negative, while held. The arm is
     // backdriven and can't be positioned by hand, so this bypasses soft limits while held
@@ -237,6 +239,41 @@ public class RobotContainer
       clawElevator.stop();
       clawArm.stop();
     }, lifter, clawElevator, clawArm));
+
+    // Parade demo cycle, toggleable in teleop. Press again (or Back) to stop.
+    operatorXbox.povRight().toggleOnTrue(buildDemoCycleCommand());
+  }
+
+  /**
+   * 2026-07-04 parade demo: continuously cycle lifter -> arm -> elevator out and back.
+   * The two collision gates (lifter up before the arm moves, arm stowed before the lifter
+   * descends) have no timeout: if a mechanism stalls or the lifter divergence watchdog
+   * latches, the cycle freezes in a safe pose instead of driving into a collision.
+   */
+  private Command buildDemoCycleCommand()
+  {
+    return Commands.sequence(
+        // Out: lifter first — the arm collides with the lifter unless it's raised.
+        Commands.runOnce(() -> lifter.setPos(Constants.DemoConstants.LIFTER_POS), lifter),
+        Commands.waitUntil(() -> lifter.isAtPosition(Constants.DemoConstants.LIFTER_POS)), // collision gate
+        Commands.waitSeconds(Constants.DemoConstants.PAUSE_SECONDS),
+        Commands.runOnce(() -> clawArm.setPos(Constants.DemoConstants.ARM_POS), clawArm),
+        Commands.waitUntil(() -> clawArm.isAtPosition(Constants.DemoConstants.ARM_POS))
+            .withTimeout(Constants.DemoConstants.ARM_STAGE_TIMEOUT),
+        Commands.runOnce(() -> clawElevator.setPos(Constants.DemoConstants.ELEVATOR_POS), clawElevator),
+        Commands.waitUntil(() -> clawElevator.isAtPosition(Constants.DemoConstants.ELEVATOR_POS))
+            .withTimeout(Constants.DemoConstants.ELEVATOR_STAGE_TIMEOUT),
+        Commands.waitSeconds(Constants.DemoConstants.PAUSE_SECONDS),
+        // Back: exact reverse order.
+        Commands.runOnce(() -> clawElevator.setPos(0), clawElevator),
+        Commands.waitUntil(() -> clawElevator.isAtPosition(0))
+            .withTimeout(Constants.DemoConstants.ELEVATOR_STAGE_TIMEOUT),
+        Commands.runOnce(() -> clawArm.moveStowedPos(), clawArm),
+        Commands.waitUntil(() -> clawArm.isAtStowedPos()), // collision gate
+        Commands.runOnce(() -> lifter.setPos(Constants.LifterConstants.STOWED_POS), lifter),
+        Commands.waitUntil(() -> lifter.isAtPosition(Constants.LifterConstants.STOWED_POS)),
+        Commands.waitSeconds(Constants.DemoConstants.PAUSE_SECONDS)
+    ).repeatedly();
   }
 
   private void configureCompetitionBindings()
@@ -319,7 +356,8 @@ public class RobotContainer
    */
     public Command getAutonomousCommand()
   {
-    return Commands.none();
+    // Parade demo: enabling autonomous runs the mechanism cycle continuously.
+    return buildDemoCycleCommand();
   }
 
   public void setMotorBrake(boolean brake)

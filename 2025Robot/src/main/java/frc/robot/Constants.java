@@ -24,6 +24,20 @@ public final class Constants
   // Set false to restore competition bindings for the demo once mechanisms are verified.
   public static final boolean BENCH_TEST_MODE = true;
 
+  // 2026-07-04 parade demo cycle: lifter up -> arm out -> elevator up -> reverse, repeating.
+  // Runs as the autonomous command; in bench mode POV-right also toggles it in teleop.
+  public static class DemoConstants {
+    public static final double LIFTER_POS = 120;                                          // deg
+    public static final double ARM_POS = ClawArmConstants.MAX_POS_DEGREES - 5;            // 123 deg
+    public static final double ELEVATOR_POS = ClawElevatorConstants.MAX_POS_INCHES - 2;   // 21.25 in
+    public static final double PAUSE_SECONDS = 0.75;
+    // Fallback timeouts on non-collision stages so a stall can't hang the show;
+    // the two collision gates (lifter-up before arm, arm-stowed before lifter-down)
+    // intentionally have NO timeout — a stall there freezes the cycle in a safe pose.
+    public static final double ARM_STAGE_TIMEOUT = 25;
+    public static final double ELEVATOR_STAGE_TIMEOUT = 15;
+  }
+
   public static class SubsystemEnables {
     public static final boolean BRAKES_ENABLED = false; // Brakes/servos
     public static final boolean CLAW_INTAKE_ENABLED = false;
@@ -139,17 +153,18 @@ public final class Constants
 
     public static final double TICKS_PER_DEGREE = 795000.0 / 128.0; // ~6211
 
-    // Motion Magic, Phoenix 5 native units (ticks/100ms, ticks/100ms/s). BENCH: ~5 deg/s.
-    public static final double MOTOR_MAX_VELOCITY = 3100;
-    public static final double MOTOR_MAX_ACCELERATION = 6200;
+    // Motion Magic, Phoenix 5 native units (ticks/100ms, ticks/100ms/s). ~8 deg/s for the
+    // parade demo cycle (bench-tested at 5 deg/s first; cruise duty = 5000*kF/1023 ~= 0.27).
+    public static final double MOTOR_MAX_VELOCITY = 5000;
+    public static final double MOTOR_MAX_ACCELERATION = 10000;
     // Measured 2026-07-04: 0.2 duty -> ~3660 ticks/100ms => kF = 0.2*1023/3660 ~= 0.056
     public static final double MOTOR_F = 0.056;
     public static final double MOTOR_P = 0.05;
     public static final double MOTOR_I = 0;
     public static final double MOTOR_D = 0;
 
-    // Bring-up safety clamps
-    public static final double PEAK_OUTPUT = 0.2;
+    // Bring-up safety clamps. Peak raised 0.2 -> 0.4 for the demo-cycle cruise headroom.
+    public static final double PEAK_OUTPUT = 0.4;
     public static final int CONTINUOUS_CURRENT_LIMIT = 10;
     public static final int PEAK_CURRENT_LIMIT = 20;
     public static final int PEAK_CURRENT_DURATION_MS = 200;
@@ -177,29 +192,40 @@ public final class Constants
     // Hardware: TalonSRX + quad encoder, CAN 36 (re-ID'd from the old 50 — NOTES.md updated).
     // Measured range: 0 - 3214 ticks = 23.25 inches. Encoder zeroed at boot — start at bottom.
     public static final int MOTOR_ID = 36;
-    // TO-VERIFY on bench (blip test): positive output must move UP and count the sensor up.
-    // The old TalonFX code had up = NEGATIVE; direction on the new wiring is unverified.
-    public static final boolean MOTOR_INVERT = false;
-    public static final boolean SENSOR_PHASE = false;
+    // Bench 2026-07-04: positive command drove the elevator DOWN -> invert true. Retest
+    // showed ticks counting NEGATIVE while moving up (invert does NOT flip the quad sensor)
+    // -> phase flipped true. Elevator free-falls at 0 output; it only lifts at ~0.25 duty.
+    public static final boolean MOTOR_INVERT = true;
+    public static final boolean SENSOR_PHASE = true;
 
-    public static final double TICKS_PER_INCH = 3214.0 / 23.25; // ~138.2
+    // Calibrated 2026-07-04: full physical travel measured at 3178 ticks top, exactly 0 back
+    // at bottom (old assumed 3214 was within 1% — kept the measured value).
+    public static final double TICKS_PER_INCH = 3178.0 / 23.25; // ~136.7
 
-    // Motion Magic, Phoenix 5 native units (ticks/100ms, ticks/100ms/s). BENCH: ~7 in/s.
-    public static final double MOTOR_MAX_VELOCITY = 100;
-    public static final double MOTOR_MAX_ACCELERATION = 200;
-    public static final double MOTOR_F = 0; // measure: duty * 1023 / velocity(ticks/100ms)
-    public static final double MOTOR_P = 1.0;
+    // Motion Magic, Phoenix 5 native units (ticks/100ms, ticks/100ms/s).
+    // Measured: 0.25 duty climbs at only ~16 ticks/100ms and stalls on binding spots —
+    // gravity+friction eat ~0.2 duty. Cruise kept low until the raised peak is bench-proven.
+    public static final double MOTOR_MAX_VELOCITY = 40;
+    public static final double MOTOR_MAX_ACCELERATION = 80;
+    // Rough net-of-gravity estimate from the calibration climb: (0.25-0.2)*1023/16 ~= 3.2.
+    public static final double MOTOR_F = 3.0;
+    public static final double MOTOR_P = 2.0;
     public static final double MOTOR_I = 0;
     public static final double MOTOR_D = 0;
+    // Constant duty added to every Motion Magic command to cancel gravity (arb feedforward).
+    public static final double GRAVITY_FF = 0.2;
 
-    // Bring-up safety clamps
-    public static final double PEAK_OUTPUT = 0.25;
-    public static final int CONTINUOUS_CURRENT_LIMIT = 10;
-    public static final int PEAK_CURRENT_LIMIT = 20;
+    // Bring-up safety clamps. Asymmetric: gravity helps down, so down stays gentle while up
+    // gets real authority (0.25 could not lift the carriage unassisted).
+    public static final double PEAK_OUTPUT_UP = 0.55;
+    public static final double PEAK_OUTPUT_DOWN = 0.25;
+    public static final int CONTINUOUS_CURRENT_LIMIT = 15;     // 10 was marginal for the climb
+    public static final int PEAK_CURRENT_LIMIT = 25;
     public static final int PEAK_CURRENT_DURATION_MS = 200;
-    public static final int FORWARD_SOFT_LIMIT_TICKS = 3250;
-    public static final int REVERSE_SOFT_LIMIT_TICKS = -100;
-    public static final double JOG_MAX_OUTPUT = 0.15;
+    public static final int FORWARD_SOFT_LIMIT_TICKS = 3100;   // measured top = 3178
+    public static final int REVERSE_SOFT_LIMIT_TICKS = -50;
+    public static final double JOG_MAX_UP = 0.45;
+    public static final double JOG_MAX_DOWN = 0.2;
     public static final double MAX_POS_INCHES = 23.25;
 
     // Elevator positions (inches from bottom). L2 restored from the old TalonFX ratio

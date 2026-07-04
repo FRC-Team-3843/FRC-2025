@@ -62,6 +62,15 @@ Measured ranges: Lifter 0-6733 ticks = 180 deg; Claw Arm 0-795000 ticks = 128 de
 7. **For the demo:** set `Constants.BENCH_TEST_MODE = false` to restore competition bindings.
 8. **Every power-on:** mechanisms at stow/bottom first — encoders zero at boot (arm can instead be homed via step 4).
 
+## Parade demo cycle (2026-07-04)
+
+Continuous loop: lifter to 120 deg -> arm to 123 deg -> elevator to 21.25 in -> reverse, forever.
+- **Run it:** enable **Autonomous**, or in bench mode press operator **POV-right** (toggle — press again to stop; Back = panic stop).
+- **Before enabling:** all mechanisms at stow/bottom at power-on (or re-home arm: POV jog + Start).
+- **Safety behavior:** the arm won't move until the lifter is at 120, and the lifter won't descend until the arm is stowed — those gates have no timeout, so a stall or a lifter divergence fault freezes the cycle in place rather than colliding. Elevator stages time out (15 s) and move on.
+- **Bench-verified state (2026-07-04):** all sensor phases/inverts verified by telemetry; elevator has gravity FF 0.2, asymmetric peaks 0.55 up / 0.25 down, calibrated 3178 ticks = 23.25 in; arm kF 0.056 measured, peak 0.4 for ~8 deg/s demo speed; lifter divergence watchdog at 3 deg.
+- **Physics note:** the elevator free-falls when disabled — keep hands/feet clear on disable. Jog release holds closed-loop; disable does not.
+
 ## Robot Dimensions
 - Pod Length: 25.25 in (0.6413 m)
 - Pod Width: 19.25 in (0.4889 m)

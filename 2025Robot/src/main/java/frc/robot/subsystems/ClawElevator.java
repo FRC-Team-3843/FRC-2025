@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -27,8 +28,9 @@ public class ClawElevator extends SubsystemBase{
 
         elevatorMotor.configNominalOutputForward(0, 30);
         elevatorMotor.configNominalOutputReverse(0, 30);
-        elevatorMotor.configPeakOutputForward(Constants.ClawElevatorConstants.PEAK_OUTPUT, 30);
-        elevatorMotor.configPeakOutputReverse(-Constants.ClawElevatorConstants.PEAK_OUTPUT, 30);
+        // Asymmetric: gravity assists down, so down authority stays low.
+        elevatorMotor.configPeakOutputForward(Constants.ClawElevatorConstants.PEAK_OUTPUT_UP, 30);
+        elevatorMotor.configPeakOutputReverse(-Constants.ClawElevatorConstants.PEAK_OUTPUT_DOWN, 30);
 
         elevatorMotor.configContinuousCurrentLimit(Constants.ClawElevatorConstants.CONTINUOUS_CURRENT_LIMIT, 30);
         elevatorMotor.configPeakCurrentLimit(Constants.ClawElevatorConstants.PEAK_CURRENT_LIMIT, 30);
@@ -62,14 +64,22 @@ public class ClawElevator extends SubsystemBase{
         if (!Constants.SubsystemEnables.CLAW_ELEVATOR_ENABLED) return;
         double clampedInches = MathUtil.clamp(targetPositionInches, 0, Constants.ClawElevatorConstants.MAX_POS_INCHES);
         double targetTicks = clampedInches * Constants.ClawElevatorConstants.TICKS_PER_INCH;
-        elevatorMotor.set(ControlMode.MotionMagic, targetTicks);
+        // Gravity feedforward — the carriage free-falls at 0 output and needs ~0.2 duty to hold.
+        elevatorMotor.set(ControlMode.MotionMagic, targetTicks,
+            DemandType.ArbitraryFeedForward, Constants.ClawElevatorConstants.GRAVITY_FF);
     }
 
-    /** Open-loop bench jog. */
+    /** Closed-loop hold at the current position — used when the bench jog is released. */
+    public void holdPosition() {
+        if (!Constants.SubsystemEnables.CLAW_ELEVATOR_ENABLED) return;
+        setPos(getPosition());
+    }
+
+    /** Open-loop bench jog. Asymmetric clamp: gravity assists down. */
     public void jog(double percentOutput) {
         if (!Constants.SubsystemEnables.CLAW_ELEVATOR_ENABLED) return;
         double clamped = MathUtil.clamp(percentOutput,
-            -Constants.ClawElevatorConstants.JOG_MAX_OUTPUT, Constants.ClawElevatorConstants.JOG_MAX_OUTPUT);
+            -Constants.ClawElevatorConstants.JOG_MAX_DOWN, Constants.ClawElevatorConstants.JOG_MAX_UP);
         elevatorMotor.set(ControlMode.PercentOutput, clamped);
     }
 
