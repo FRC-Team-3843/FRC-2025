@@ -85,6 +85,15 @@ Measured ranges: Lifter 0-6733 ticks = 180 deg; Claw Arm 0-795000 ticks = 128 de
 
 ## Error Log / Troubleshooting
 
+### DS "no communication" after deploy (2026-07-03) — SOLVED, know for next season rollover
+**Symptom:** deploy succeeds but DS never connects; robot code crash-loops silently (no java process, ports 1740/5810/1741 closed). Crash trace is in `/var/local/natinst/log/FRC_UserProgram.log` on the rio (ssh admin@172.22.11.2, blank password).
+**Root cause:** season/year mismatches, three layers deep:
+1. Phoenix5 5.35.1 (2025) natives link `libFRC_NetworkCommunication.so.25`; the 2026 rio image only ships `.so.26`. A symlink in `/usr/local/frc/lib` is NOT enough (ldconfig indexes by SONAME); shim placed at `/usr/lib/libFRC_NetworkCommunication.so.25` -> `.so.26.0.0` works. Proper fix (applied): Phoenix5 **5.36.0** (2026 build). Shim left in place, harmless.
+2. Swerve SparkMaxes carry 2026 firmware -> REVLib 2025.0.3 refuses ("firmware too new"). Fix: REVLib **2026.0.5**.
+3. YAGSL 2025.2.2 is compiled against REVLib 2025 (ClassNotFoundException at runtime). Fix: YAGSL **2026.4.1**.
+**Rule:** vendordep `frcYear` hand-edits don't make 2025 libraries 2026-compatible — pull real 2026 builds from `github.com/wpilibsuite/vendor-json-repo/2026/`. Note registry has BOTH `Studica-*` (NavX, what YAGSL needs) and `StudicaLib-*` (different product) — use `Studica-*`.
+**Current vendordep set (all real 2026 builds):** Phoenix5 5.36.0, Phoenix6 26.3.0, REVLib 2026.0.5, YAGSL 2026.4.1, Studica 2026.0.0, ReduxLib 2026.1.2, ThriftyLib 2026.1.2.
+
 ### Error - IllegalStateException
 **Time:** 5:34:42.857 PM
 **Symptom:** Robot program quit unexpectedly with IllegalStateException
