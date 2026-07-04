@@ -12,6 +12,7 @@ status: chosen
 load_profile: scope_entry
 scope: FRC-2025
 source_rel: FRC-2025\.context.md
+derived_from: RC-SEED-1 onboarding (seeded; no session origin)
 tags: [frc, decision, archive, motor-api, branch]
 question: "What is the lifecycle status of FRC-2025, and what is the motor-API/architecture state of its main branch?"
 position: "Repo is archived (no further active development, 2026-04-10); main-branch motor APIs were updated to 2026 standards (SparkMax + Phoenix6) on 2026-01-23 but architecture was not fully refactored — old CANSparkMax API survives only on the deprecated branches."
