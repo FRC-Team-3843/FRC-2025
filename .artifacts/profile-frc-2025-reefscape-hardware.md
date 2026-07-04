@@ -3,7 +3,7 @@ id: frc-2025-reefscape-hardware
 title: FRC-2025 Reefscape Robot Hardware Configuration
 schema_version: 2
 created: 2026-06-14T12:35:00Z
-updated: 2026-07-04T03:20:41Z
+updated: 2026-07-04T05:00:00Z
 valid_until: null
 author: claude
 session: null
@@ -48,6 +48,7 @@ Team 3843's 2025 REEFSCAPE robot uses a mixed motor controller stack: REV SparkM
 - [registry] **Demo-speed constants (parade cycle, `9ff9684`):** lifter cruise 100→200 ticks/100ms (~27→53°/s), accel→300, peak 0.35→0.5, kP→1.0; arm cruise 5000→7500 ticks/100ms (~8→12°/s), peak 0.4→0.55; lifter divergence-fault threshold raised **3°→5°** after a benign same-sign graze at the new speed (equal-and-opposite would NOT have been raised — see [[frc-2025-lessons-reefscape]] for the signature-interpretation rule). #motion-magic
 - [registry] **Vendordeps, genuine 2026 registry (commit `a46e55b`):** Phoenix5 5.36.0, Phoenix6 26.3.0, REVLib 2026.0.5, YAGSL 2026.4.1, Studica 2026.0.2, ReduxLib 2026.1.2, ThriftyLib 2026.1.2 — replaces the prior 2025-dated files that had only their `frcYear` field hand-edited (built fine, crash-looped at runtime against the 2026 rio image). #vendordep #build
 - [registry] Full diagnosis + bench-verification narrative: [[frc2025-parade-demo-bench-verification]]. The checklist this update resolves: [[frc-2025-bench-verification-checklist]] (status: resolved).
+- [registry] **User-measured mechanism travel ranges** (source of the Motion Magic tick↔real-unit conversion constants, provided in the origin conversion session [[frc2025-talonsrx-conversion-origin]]): **ClawElevator** 3214 tk = 23.25 in (~138.2 tk/in; bench-refined to 3178 tk, see above); **Lifter** 6733 tk = 180° (~37.4 tk/deg; right encoder counts negative, left positive — reconciled via `RIGHT_SENSOR_PHASE=true`/`LEFT_SENSOR_PHASE=false`); **ClawArm** 795000 tk = 128° (~6210.9 tk/deg). #motion-magic #hardware
 
 ### 2026-07-04 update — all mechanisms converted to TalonSRX (current state; supersedes the CAN table + motor stack below)
 
@@ -56,9 +57,14 @@ Team 3843's 2025 REEFSCAPE robot uses a mixed motor controller stack: REV SparkM
 - [registry] All three mechanisms (Lifter, ClawArm, ClawElevator) now have: current limits (10A cont/20A peak), soft limits, brake neutral mode, boot encoder zeroing, and (Lifter only) a left/right divergence watchdog — added in the 2026-07-03 bench-hardening pass, full detail in [[frc2025-talonsrx-bench-hardening]]. #safety
 - [registry] Invert/sensor-phase values for all six TalonSRX are UNVALIDATED as of this update — pending the Tuner blip test in [[frc-2025-bench-verification-checklist]]. #gotcha
 
-### CAN Bus Map (historical — HEAD/pre-2026-07 state; superseded above for Lifter/ClawArm/ClawElevator)
+### 2026-07-04 update — swerve CAN reassignment verified retained on main (supersedes the swerve line below)
 
-- [registry] Swerve modules: CAN IDs 1–12 (drive motors, steer motors, CANCoders, 3 per module × 4 modules) — YAGSL-managed #can-bus #drivetrain
+- [registry] **CURRENT swerve CAN table (main, verified against `2025Robot/src/main/deploy/swerve/modules/*.json`):** Drive motors (SparkMax NEO) CAN 10 (FL) / 11 (FR) / 12 (BR) / 13 (BL); Steer motors (SparkMax NEO) CAN 14 (FL) / 15 (FR) / 16 (BR) / 17 (BL); CANCoders CAN 18 (FL) / 19 (FR) / 20 (BR) / 21 (BL) — YAGSL-managed, restored from the `2025_Offseason_archive` branch in session `fa4471c4` (2026-07-03) and confirmed still present on `main` after `f95f43e`/`9ff9684`. Replaces the historical 1–12 block below. #can-bus #drivetrain #verified
+- [registry] **Auto/PathPlanner/PhotonVision removal confirmed retained on main:** `2025Robot/vendordeps/` has no PathplannerLib or photonlib entries (only Phoenix5, Phoenix6, REVLib, ReduxLib, Studica, ThriftyLib, WPILibNewCommands, maple-sim, yagsl); no `PhotonCamera`/`PhotonPoseEstimator`/`AutoBuilder` usage anywhere in `2025Robot/src/main/java` (the only "Vision" hit is YAGSL's own `addFakeVisionReading()` helper in `SwerveSubsystem.java`, unrelated to PhotonVision). Auto commands present (`AutoCoralScoreCommand.java`, `AutoBalanceCommand.java`) are plain WPILib command-based autos, not PathPlanner-driven. The Vision/PhotonVision section below is stale for the active `2025Robot` project — PhotonVision only remains in the separate, non-primary `2025Robot-SimplifiedMotion` project (which still carries `photonlib.json` + `PathplannerLib-2025.2.6.json` and a `Vision.java`). #vision #vendordep #verified
+
+### CAN Bus Map (historical — HEAD/pre-2026-07 state; superseded above for Lifter/ClawArm/ClawElevator, and now also for swerve)
+
+- [registry] Swerve modules: CAN IDs 1–12 (drive motors, steer motors, CANCoders, 3 per module × 4 modules) — YAGSL-managed #can-bus #drivetrain — **superseded, swerve is now CAN 10–21, see the 2026-07-04 swerve update above**
 - [registry] Lifter (dual motor): CAN ID 31 (right, not inverted) + CAN ID 32 (left, inverted) — REV SparkMax brushless #can-bus #mechanisms
 - [registry] ClawIntake motor: CAN ID 33 — CTRE TalonFX (Phoenix 6), Clockwise_Positive invert #can-bus #mechanisms
 - [registry] ClawArm motor: CAN ID 34 — CTRE TalonFX (Phoenix 6), MotionMagic position control #can-bus #mechanisms
@@ -79,7 +85,7 @@ Team 3843's 2025 REEFSCAPE robot uses a mixed motor controller stack: REV SparkM
 
 ### Vision
 
-- [registry] PhotonVision with `PhotonCamera` + `PhotonPoseEstimator` (MULTI_TAG_PNP_ON_COPROCESSOR strategy); AprilTag field layout `AprilTagFields.k2025ReefScape`; simulation support via `VisionSystemSim` #vision #photonvision
+- [registry] PhotonVision with `PhotonCamera` + `PhotonPoseEstimator` (MULTI_TAG_PNP_ON_COPROCESSOR strategy); AprilTag field layout `AprilTagFields.k2025ReefScape`; simulation support via `VisionSystemSim` #vision #photonvision — **stale for `2025Robot` (the active/primary project): removed in session `fa4471c4`, confirmed absent on `main` (no photonlib vendordep, no PhotonCamera/PhotonPoseEstimator code). Still present in the separate `2025Robot-SimplifiedMotion` project only — see the 2026-07-04 swerve/vendordep update above.**
 
 ### Build Config
 
@@ -105,4 +111,7 @@ Team 3843's 2025 REEFSCAPE robot uses a mixed motor controller stack: REV SparkM
 
 <!-- @claude 2026-07-04T00:22:46Z — appended 2026-07-04 update section (CAN table, motor stack, unit-transplant note) reflecting the TalonSRX conversion confirmed + hardened in session 58fac07f; prior model: claude-sonnet-4-6 -->
 <!-- @claude 2026-07-04T03:20:41Z — appended bench-verified invert/phase/kF/scale + vendordep-resolution update from session 58fac07f's parade-demo arc; prior model: claude-sonnet-4-6 -->
+<!-- @claude 2026-07-04T04:30:00Z (model claude-opus-4-8) — appended user-measured mechanism travel ranges (elevator/lifter/arm tick↔real-unit) from the origin conversion session fa4471c4; arm 795000tk=128° was absent from the corpus. Profile top-model unchanged; append-only. -->
+<!-- @claude 2026-07-04T05:00:00Z (model claude-sonnet-5) — verified the PENDING flag from the 04:30 entry directly against main HEAD (11e68a2): swerve CAN reassignment (Drive 10-13/Steer 14-17/CANCoder 18-21) confirmed RETAINED, read from src/main/deploy/swerve/modules/{frontleft,frontright,backleft,backright}.json; auto/PathPlanner/PhotonVision removal confirmed RETAINED for the active 2025Robot project (no vendordep, no code refs). Marked the old 1-12 swerve line and the Vision/PhotonVision line as historical/stale with supersession pointers; added two new dated sections with file-level evidence. Append-only, no prior content altered besides adding supersession annotations. -->
+
 
