@@ -196,13 +196,31 @@ public class RobotContainer
             () -> clawElevator.jog(-operatorXbox.getRightY() * Constants.ClawElevatorConstants.JOG_MAX_OUTPUT),
             () -> clawElevator.stop(), clawElevator));
 
-    // Arm jog: POV up = positive output, POV down = negative, while held.
-    operatorXbox.povUp().whileTrue(Commands.runEnd(
-        () -> clawArm.jog(Constants.ClawArmConstants.JOG_MAX_OUTPUT),
-        () -> clawArm.stop(), clawArm));
-    operatorXbox.povDown().whileTrue(Commands.runEnd(
-        () -> clawArm.jog(-Constants.ClawArmConstants.JOG_MAX_OUTPUT),
-        () -> clawArm.stop(), clawArm));
+    // Arm homing jog: POV up = positive output, POV down = negative, while held. The arm is
+    // backdriven and can't be positioned by hand, so this bypasses soft limits while held
+    // (they're relative to boot zero and would block driving toward the true stow position).
+    operatorXbox.povUp().whileTrue(Commands.startEnd(
+        () -> {
+          clawArm.setSoftLimitsEnabled(false);
+          clawArm.jog(Constants.ClawArmConstants.JOG_MAX_OUTPUT);
+        },
+        () -> {
+          clawArm.stop();
+          clawArm.setSoftLimitsEnabled(true);
+        }, clawArm));
+    operatorXbox.povDown().whileTrue(Commands.startEnd(
+        () -> {
+          clawArm.setSoftLimitsEnabled(false);
+          clawArm.jog(-Constants.ClawArmConstants.JOG_MAX_OUTPUT);
+        },
+        () -> {
+          clawArm.stop();
+          clawArm.setSoftLimitsEnabled(true);
+        }, clawArm));
+
+    // Once the arm physically sits at stow: Start = re-zero the arm encoder in place,
+    // making setpoints and soft limits valid without a power cycle.
+    operatorXbox.start().onTrue(Commands.runOnce(() -> clawArm.zeroEncoder(), clawArm));
 
     // Small closed-loop test moves (Motion Magic latches — Back or disable to stop).
     operatorXbox.a().onTrue(Commands.runOnce(() -> lifter.setPos(10), lifter));

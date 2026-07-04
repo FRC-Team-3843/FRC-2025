@@ -78,6 +78,22 @@ public class ClawArm extends SubsystemBase{
         clawArmMotor.set(ControlMode.PercentOutput, 0);
     }
 
+    /**
+     * Soft limits are relative to boot zero — if the arm powered on away from stow they block
+     * homing, so the bench homing jog disables them while held and re-enables on release.
+     */
+    public void setSoftLimitsEnabled(boolean enabled) {
+        if (!Constants.SubsystemEnables.CLAW_ARM_ENABLED) return;
+        clawArmMotor.configForwardSoftLimitEnable(enabled, 30);
+        clawArmMotor.configReverseSoftLimitEnable(enabled, 30);
+    }
+
+    /** Re-zero at the current position (arm physically at stow) — no power cycle needed. */
+    public void zeroEncoder() {
+        if (!Constants.SubsystemEnables.CLAW_ARM_ENABLED) return;
+        clawArmMotor.setSelectedSensorPosition(0, 0, 30);
+    }
+
     public double getPosition() {
         if (!Constants.SubsystemEnables.CLAW_ARM_ENABLED) return 0;
         return clawArmMotor.getSelectedSensorPosition() / Constants.ClawArmConstants.TICKS_PER_DEGREE;

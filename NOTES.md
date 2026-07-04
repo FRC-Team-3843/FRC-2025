@@ -56,10 +56,11 @@ Measured ranges: Lifter 0-6733 ticks = 180 deg; Claw Arm 0-795000 ticks = 128 de
 1. **Tuner X audit (robot on blocks, before deploying):** confirm TalonSRX at 31/32/34/36, set Brake on all four, check firmware.
 2. **Blip test (Tuner, ~3% output, fractions of a second, mechanism mid-range):** per motor, record (a) does positive output move toward deploy/up, (b) does the sensor count UP. Fix `*_MOTOR_INVERT` / `*_SENSOR_PHASE` in Constants until positive = deploy AND sensor counts up, on every motor. Lifter: verify BOTH sides agree before any closed-loop move. `setInverted` does NOT flip the quad sensor on Phoenix 5.
 3. **Measure kF (per mechanism):** steady duty in Tuner → read velocity (ticks/100ms) → `kF = duty * 1023 / velocity`. Enter in Constants.
-4. **First closed-loop moves (rider on disable):** operator A/B = lifter 10 deg/0; X/Y = elevator 2 in/0; LB/RB = arm 5 deg/stow. Sticks = open-loop jog (LY lifter, RY elevator, POV up/down arm). Back = panic stop. Watch `Lifter/DeltaDeg` on dashboard — watchdog latches + neutrals at 3 deg split (needs code restart).
-5. **Extend range gradually,** verify each named setpoint, then raise MOTOR_MAX_VELOCITY/ACCELERATION toward demo speed.
-6. **For the demo:** set `Constants.BENCH_TEST_MODE = false` to restore competition bindings.
-7. **Every power-on:** mechanisms at stow/bottom first — encoders zero at boot.
+4. **Arm homing (arm is backdriven — can't be moved by hand):** POV up/down = arm jog, soft limits bypassed while held. Drive it to physical stow, then **Start = re-zero arm encoder in place** (no power cycle needed). Only press Start with the arm at stow.
+5. **First closed-loop moves (rider on disable):** operator A/B = lifter 10 deg/0; X/Y = elevator 2 in/0; LB/RB = arm 5 deg/stow. Sticks = open-loop jog (LY lifter, RY elevator). Back = panic stop. Watch `Lifter/DeltaDeg` on dashboard — watchdog latches + neutrals at 3 deg split (needs code restart).
+6. **Extend range gradually,** verify each named setpoint, then raise MOTOR_MAX_VELOCITY/ACCELERATION toward demo speed.
+7. **For the demo:** set `Constants.BENCH_TEST_MODE = false` to restore competition bindings.
+8. **Every power-on:** mechanisms at stow/bottom first — encoders zero at boot (arm can instead be homed via step 4).
 
 ## Robot Dimensions
 - Pod Length: 25.25 in (0.6413 m)
