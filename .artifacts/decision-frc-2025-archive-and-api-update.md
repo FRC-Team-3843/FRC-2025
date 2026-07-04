@@ -4,9 +4,9 @@ artifact_kind: decision
 schema_version: 2
 title: FRC-2025 Archive Status + main-branch API Update
 created: 2026-06-23T19:00:00Z
-updated: 2026-06-23T19:00:00Z
+updated: 2026-07-04T00:22:46Z
 author: claude
-model: claude-opus-4-8
+model: claude-sonnet-5
 model_basis: confirmed
 status: chosen
 load_profile: scope_entry
@@ -33,7 +33,13 @@ Recent decisions for the FRC-2025 repository, extracted from `.context.md` Recen
 
 ### Chosen — main-branch API update (2026-01-23)
 
-- [decision] The `main` branch's motor APIs were updated to 2026 standards — `SparkMax` (with `SparkMaxConfig`) + Phoenix6 (`TalonFX`). The architecture was NOT fully refactored: command factories are incomplete and some deprecated patterns may remain. The old `CANSparkMax` API exists only on the deprecated branches (`2025_Archive`, `2025_Offseason_archive`). (source: `.standards.md` 2026-01-23 / Current State; `.context.md`) #motor-api #architecture
+- [decision] The `main` branch's motor APIs were updated to 2026 standards — `SparkMax` (with `SparkMaxConfig`) + Phoenix6 (`TalonFX`). The architecture was NOT fully refactored: command factories are incomplete and some deprecated patterns may remain. The old `CANSparkMax` API exists only on the deprecated branches (`2025_Archive`, `2025_Offseason_archive`). (source: `.standards.md` 2026-01-23 / Current State; `.context.md`) #motor-api #architecture — **NOTE (2026-07-04): superseded again, see below.**
+
+### Update (2026-07-04) — archived-status exception + further motor-API drift
+
+- [fact] The "archived, no further active development" position had a one-off, user-instructed exception: a 2026-07-04 team demo required bench-testing the Lifter/ClawArm/ClawElevator, so `main` received real code changes (commit `f95f43e`). This does not reopen the repo generally — treat it as archived again unless the user says otherwise. #archive
+- [fact] `main`'s mechanism motor API drifted a second time, away from the 2026-01-23 SparkMax+Phoenix6 update: as of `f95f43e` (2026-07-03), the Lifter (previously SparkMax), ClawArm, and ClawElevator (both previously Phoenix6 TalonFX) are now uniformly **Phoenix5 TalonSRX**. Full current CAN table + motor stack: [[frc-2025-reefscape-hardware]] "2026-07-04 update" section. #motor-api #architecture
+- [decision] This is a real API downgrade path (Phoenix6 → Phoenix5) driven by a physical hardware swap, not a code-only refactor — future lesson-porting to FRC-2026 should treat the 2026-01-23 SparkMax/Phoenix6 state as no longer current on `main`. See [[frc2025-talonsrx-bench-hardening]] for the full session. #lesson-port
 
 ## Relations
 
@@ -41,3 +47,8 @@ Recent decisions for the FRC-2025 repository, extracted from `.context.md` Recen
 - relates-to [[frc-2025-critical-rules]] (the archive guard + reference-main-only rule these decisions justify)
 - relates-to [[frc-2025-source]] (repo orientation)
 - relates-to [[frc-2026]] [[frc-team-3843]]
+- relates-to [[frc2025-talonsrx-bench-hardening]] (the 2026-07-04 demo bring-up session that produced this update)
+- relates-to [[frc-2025-reefscape-hardware]] (current CAN table + motor stack)
+
+<!-- @claude 2026-07-04T00:22:46Z — appended 2026-07-04 update noting archived-status exception + second motor-API drift (Phoenix6->Phoenix5 TalonSRX); prior model: claude-opus-4-8 -->
+

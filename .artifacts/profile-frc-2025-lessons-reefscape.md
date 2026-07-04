@@ -3,12 +3,12 @@ id: frc-2025-lessons-reefscape
 title: FRC-2025 Reefscape — durable lessons for FRC-2026
 schema_version: 2
 created: 2026-06-12T06:38:00Z
-updated: 2026-06-23T21:30:00Z
+updated: 2026-07-04T00:22:46Z
 valid_until: null
 author: claude
 session: phase7-onboarding-20260612
-tags: [frc, robotics, swerve, controls, lessons-learned, decision]
-aliases: [frc-2025-lessons-reefscape-202606120638, frc 2025 lessons, reefscape lessons, alliance control pitfall, competition control preferences]
+tags: [frc, robotics, swerve, controls, lessons-learned, decision, motor-api]
+aliases: [frc-2025-lessons-reefscape-202606120638, frc 2025 lessons, reefscape lessons, alliance control pitfall, competition control preferences, motor conversion unit transplant]
 status: active
 supersedes: null
 confidence: 55
@@ -18,8 +18,8 @@ sensitivity: normal
 decisions: []
 artifact_kind: memory
 memory_class: semantic
-model: unattributed
-model_basis: unattributed
+model: claude-sonnet-5
+model_basis: confirmed
 scope: FRC-2025
 ---
 
@@ -57,8 +57,15 @@ Active operator binding layout from `2025Robot/src/main/java/frc/robot/RobotCont
 
 **Dual intake binding:** both A (lifter intake) and X (claw intake) are bound to separate intake paths on the driver, matching the physical mechanism split. This lets the driver manage roller state directly without mode-switching.
 
+### Motor-controller-conversion unit-transplant pitfall (CONFIRMED IN CODE, 2026-07-03)
+
+Converting a mechanism between motor-controller vendor APIs (REV SparkMax MAXMotion RPM/RPM-per-s ↔ CTRE Phoenix6 rotations/rotations-per-s ↔ CTRE Phoenix5 encoder ticks/ticks-per-100ms) is NOT a like-for-like numeric copy — each API's Motion Magic/MAXMotion cruise-velocity, acceleration, and feedforward constants are in that API's own native units. A 2026-07-03 conversion of the FRC-2025 Lifter/ClawArm/ClawElevator from SparkMax/Phoenix6 to Phoenix5 TalonSRX dropped the old numeric values in raw: the lifter's SparkMax RPM values became a near-full-throttle step command in Phoenix5 ticks/100ms (mechanism range 6733 ticks, "cruise" alone implied 70,000 ticks/s), and the arm's Phoenix6 rotations-per-second value became ~0.1°/s (functionally frozen) in Phoenix5 ticks/100ms. Position setpoints have the same risk: old NEO-rotation values (10–198) were relabeled 1:1 as degrees without rebasing, putting two setpoints ~10% past the mechanism's actual 180° hard stop. Full incident: [[frc2025-talonsrx-bench-hardening]].
+
 ## Observations
 
+- [constraint] When converting a mechanism between motor-controller vendor APIs (SparkMax/Phoenix6/Phoenix5, or any future replacement), recompute Motion Magic/MAXMotion cruise, acceleration, and feedforward constants in the TARGET API's native units — never transplant the source API's numeric values directly. #motor-api #gotcha (see [[frc-2026-motor-safety-standards]] for the FRC-2026-side safety-limit half of this)
+- [constraint] After any motor-API conversion, verify every position setpoint against the mechanism's actual measured range before enabling closed-loop control — a relabeled/rebased unit (e.g. rotations → degrees) can silently put a setpoint past a hard stop. #motor-api #gotcha
+- [constraint] After any motor-API conversion, validate invert + sensor-phase per motor with a low-power blip test (confirm positive output = intended direction AND sensor counts the same way) before any closed-loop move — especially on mechanically-linked/paired mechanisms, where a wrong phase on one side can drive the pair in opposite directions. #motor-api #safety
 - [decision] Use `allianceRelativeControl(true)` OR `zeroGyroWithAlliance()` — never both. The 2025 robot uses `allianceRelativeControl(true)` + bare `zeroGyro()` reset; this is the safer default. #swerve #controls (double-compensation causes incorrect field orientation; source: RobotContainer.java line 87 + SwerveSubsystem.java lines 586–597)
 - [constraint] When porting swerve config to FRC-2026: verify the gyro-zero binding does NOT call `zeroGyroWithAlliance()` if `allianceRelativeControl(true)` is set. #swerve (audit both places; they are independent API calls)
 - [decision] POV/D-pad for discrete position presets is competition-proven and ergonomically preferable to adding more face-button chords. #controls (used for lifter stow/intake/score/clear; source: RobotContainer.java lines 168–171)
@@ -81,4 +88,7 @@ The control layout documented here is a working baseline confirmed in 2025 compe
 
 ## Relations
 
-[[frc-2026]] [[frc-team-3843]] [[frc-2025-source]] [[wpilib-build-env]]
+[[frc-2026]] [[frc-team-3843]] [[frc-2025-source]] [[wpilib-build-env]] [[frc2025-talonsrx-bench-hardening]] [[frc-2026-motor-safety-standards]] [[phoenix5-6-coexistence]]
+
+<!-- @claude 2026-07-04T00:22:46Z — appended motor-controller-conversion unit-transplant lesson from session 58fac07f (TalonSRX bench-hardening); prior model: unattributed -->
+
