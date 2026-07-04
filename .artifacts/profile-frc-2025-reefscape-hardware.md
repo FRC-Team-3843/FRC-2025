@@ -3,7 +3,7 @@ id: frc-2025-reefscape-hardware
 title: FRC-2025 Reefscape Robot Hardware Configuration
 schema_version: 2
 created: 2026-06-14T12:35:00Z
-updated: 2026-07-04T00:22:46Z
+updated: 2026-07-04T03:20:41Z
 valid_until: null
 author: claude
 session: null
@@ -39,6 +39,15 @@ scope: FRC-2025
 Team 3843's 2025 REEFSCAPE robot uses a mixed motor controller stack: REV SparkMax (brushless, PID via RevLib 2025+ API) for the Lifter, and CTRE TalonFX (Phoenix 6) for the Claw subsystems. Swerve drivetrain runs YAGSL. Physical dimensions: 25.25" length × 19.25" width pod. Robot mass approximately 58 lbs (128 kg less bumper estimate). Source: `2025Robot/src/main/java/frc/robot/`, `Constants.java`, `NOTES.md`.
 
 ## Observations
+
+### 2026-07-04 update, later same session — invert/phase/kF/scale bench-verified (supersedes the "UNVALIDATED" note below)
+
+- [registry] **Lifter:** `RIGHT_MOTOR_INVERT=false` / `RIGHT_SENSOR_PHASE=true` unchanged (verified correct); `LEFT_MOTOR_INVERT=true` unchanged; `LEFT_SENSOR_PHASE: false→true` — the wrong constant was the phase, not the invert, confirmed by two independent divergence-fault log captures both showing equal-and-opposite tick signs after both motor directions blip-tested correct. `kF` remains **0, unmeasured** (demo speed reached via kP=1.0 + cruise/accel/peak tuning alone — residual gap, not blocking). #talonsrx #bench-verified
+- [registry] **ClawArm:** `MOTOR_INVERT=false` unchanged (correct); `SENSOR_PHASE: false→true` — a second independent reconfirmation that Phoenix5 `setInverted` does NOT flip the quadrature sensor (found via a live runaway: +0.2 duty sustained while ticks ran to −260k over ~7s). `kF = 0.056`, measured directly from that runaway's recorded velocity. #talonsrx #bench-verified
+- [registry] **ClawElevator:** `MOTOR_INVERT: false→true` AND `SENSOR_PHASE: false→true` (both wrong — blip showed positive output moving down; Phoenix5 invert also flips the sensor reading, so both had to move together). Scale recalibrated from measured full-travel data: **3178 ticks = 23.25 in** (~136.9 ticks/in; the assumed 3214-tick figure was within 1%, now replaced). Gravity feedforward **0.2** added to Motion Magic — the mechanism free-falls at 0 output and 0.25 duty alone could not lift it unassisted. Peak clamps made asymmetric: **0.55 up / 0.25 down**. Jog-release now holds closed-loop instead of free-falling. #talonsrx #bench-verified
+- [registry] **Demo-speed constants (parade cycle, `9ff9684`):** lifter cruise 100→200 ticks/100ms (~27→53°/s), accel→300, peak 0.35→0.5, kP→1.0; arm cruise 5000→7500 ticks/100ms (~8→12°/s), peak 0.4→0.55; lifter divergence-fault threshold raised **3°→5°** after a benign same-sign graze at the new speed (equal-and-opposite would NOT have been raised — see [[frc-2025-lessons-reefscape]] for the signature-interpretation rule). #motion-magic
+- [registry] **Vendordeps, genuine 2026 registry (commit `a46e55b`):** Phoenix5 5.36.0, Phoenix6 26.3.0, REVLib 2026.0.5, YAGSL 2026.4.1, Studica 2026.0.2, ReduxLib 2026.1.2, ThriftyLib 2026.1.2 — replaces the prior 2025-dated files that had only their `frcYear` field hand-edited (built fine, crash-looped at runtime against the 2026 rio image). #vendordep #build
+- [registry] Full diagnosis + bench-verification narrative: [[frc2025-parade-demo-bench-verification]]. The checklist this update resolves: [[frc-2025-bench-verification-checklist]] (status: resolved).
 
 ### 2026-07-04 update — all mechanisms converted to TalonSRX (current state; supersedes the CAN table + motor stack below)
 
@@ -91,7 +100,9 @@ Team 3843's 2025 REEFSCAPE robot uses a mixed motor controller stack: REV SparkM
 - relates-to [[revlib-sparkmax]] (lifter motor controllers historically; superseded, see 2026-07-04 update)
 - relates-to [[frc2025-talonsrx-bench-hardening]] (session that converted + hardened all mechanisms to TalonSRX)
 - relates-to [[frc-2025-talonsrx-conversion-confirmed]] (user confirmation this update is based on)
-- relates-to [[frc-2025-bench-verification-checklist]] (open verification of the invert/phase values noted above)
+- relates-to [[frc-2025-bench-verification-checklist]] (verification of the invert/phase/kF/scale values now resolved)
+- relates-to [[frc2025-parade-demo-bench-verification]] (bench-verification session that finalized the invert/phase/kF/scale values above)
 
 <!-- @claude 2026-07-04T00:22:46Z — appended 2026-07-04 update section (CAN table, motor stack, unit-transplant note) reflecting the TalonSRX conversion confirmed + hardened in session 58fac07f; prior model: claude-sonnet-4-6 -->
+<!-- @claude 2026-07-04T03:20:41Z — appended bench-verified invert/phase/kF/scale + vendordep-resolution update from session 58fac07f's parade-demo arc; prior model: claude-sonnet-4-6 -->
 
