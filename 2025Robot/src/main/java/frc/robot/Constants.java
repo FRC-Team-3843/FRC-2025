@@ -106,25 +106,29 @@ public final class Constants
     public static final double TICKS_PER_DEGREE = 6733.0 / 180.0; // ~37.4
 
     // Motion Magic, Phoenix 5 native units: cruise = ticks/100ms, accel = ticks/100ms/s.
-    // BENCH values: ~27 deg/s cruise -> full 180 deg travel in ~7 s. Raise only after tuning kF.
-    public static final double MOTOR_MAX_VELOCITY = 100;
-    public static final double MOTOR_MAX_ACCELERATION = 200;
+    // Demo speed 2026-07-04: ~53 deg/s (doubled from bench 27 deg/s after clean cycle tests).
+    public static final double MOTOR_MAX_VELOCITY = 200;
+    // Accel softened 400 -> 300: side-to-side divergence opens during the accel phase.
+    public static final double MOTOR_MAX_ACCELERATION = 300;
 
     // kF drives Motion Magic — measure it, don't guess: run a fixed duty in Tuner, read
     // velocity in ticks/100ms, then kF = duty * 1023 / velocity. Zero until measured.
     public static final double MOTOR_F = 0;
-    public static final double MOTOR_P = 0.8;
+    public static final double MOTOR_P = 1.0;
     public static final double MOTOR_I = 0;
     public static final double MOTOR_D = 0;
 
-    // Bring-up safety clamps
-    public static final double PEAK_OUTPUT = 0.2;              // duty cycle, both directions
+    // Bring-up safety clamps. Peak raised again 0.35 -> 0.5 after a divergence trip at demo
+    // speed: kF is 0 so MM tracking is all kP, and the weaker side saturated and fell behind.
+    public static final double PEAK_OUTPUT = 0.5;              // duty cycle, both directions
     public static final int CONTINUOUS_CURRENT_LIMIT = 10;     // A — raise if it can't lift
     public static final int PEAK_CURRENT_LIMIT = 20;           // A
     public static final int PEAK_CURRENT_DURATION_MS = 200;
     public static final int FORWARD_SOFT_LIMIT_TICKS = 6800;   // just past full deploy
     public static final int REVERSE_SOFT_LIMIT_TICKS = -150;   // just past stow
-    public static final double DIVERGENCE_FAULT_DEGREES = 3.0; // left/right split that latches a fault
+    // Raised 3 -> 5 deg 2026-07-04: demo-speed descent showed benign same-sign friction lag
+    // just grazing 3 deg (right 2652 / left 2538 mid-descent). Real faults slam past this.
+    public static final double DIVERGENCE_FAULT_DEGREES = 5.0;
     public static final double JOG_MAX_OUTPUT = 0.15;
     public static final double MAX_POS_DEGREES = 180;
 
@@ -153,18 +157,18 @@ public final class Constants
 
     public static final double TICKS_PER_DEGREE = 795000.0 / 128.0; // ~6211
 
-    // Motion Magic, Phoenix 5 native units (ticks/100ms, ticks/100ms/s). ~8 deg/s for the
-    // parade demo cycle (bench-tested at 5 deg/s first; cruise duty = 5000*kF/1023 ~= 0.27).
-    public static final double MOTOR_MAX_VELOCITY = 5000;
-    public static final double MOTOR_MAX_ACCELERATION = 10000;
+    // Motion Magic, Phoenix 5 native units (ticks/100ms, ticks/100ms/s). ~12 deg/s for the
+    // parade demo cycle (cruise duty = 7500*kF/1023 ~= 0.41 — needs the 0.55 peak).
+    public static final double MOTOR_MAX_VELOCITY = 7500;
+    public static final double MOTOR_MAX_ACCELERATION = 15000;
     // Measured 2026-07-04: 0.2 duty -> ~3660 ticks/100ms => kF = 0.2*1023/3660 ~= 0.056
     public static final double MOTOR_F = 0.056;
     public static final double MOTOR_P = 0.05;
     public static final double MOTOR_I = 0;
     public static final double MOTOR_D = 0;
 
-    // Bring-up safety clamps. Peak raised 0.2 -> 0.4 for the demo-cycle cruise headroom.
-    public static final double PEAK_OUTPUT = 0.4;
+    // Bring-up safety clamps. Peak raised for demo-cycle cruise headroom (0.41 duty at cruise).
+    public static final double PEAK_OUTPUT = 0.55;
     public static final int CONTINUOUS_CURRENT_LIMIT = 10;
     public static final int PEAK_CURRENT_LIMIT = 20;
     public static final int PEAK_CURRENT_DURATION_MS = 200;
