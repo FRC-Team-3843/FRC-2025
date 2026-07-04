@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.signals.InvertedValue;
-
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
@@ -20,6 +18,22 @@ import swervelib.math.Matter;
  */
 public final class Constants
 {
+
+  // Bench bring-up mode: replaces all competition mechanism bindings with jog sticks +
+  // small closed-loop test moves (see RobotContainer.configureBenchTestBindings()).
+  // Set false to restore competition bindings for the demo once mechanisms are verified.
+  public static final boolean BENCH_TEST_MODE = true;
+
+  public static class SubsystemEnables {
+    public static final boolean BRAKES_ENABLED = false; // Brakes/servos
+    public static final boolean CLAW_INTAKE_ENABLED = false;
+    public static final boolean LIFTER_INTAKE_ENABLED = false;
+    
+    public static final boolean CLAW_ELEVATOR_ENABLED = true;
+    public static final boolean CLAW_ARM_ENABLED = true;
+    public static final boolean LIFTER_ENABLED = true;
+  }
+
 
   public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
@@ -51,7 +65,7 @@ public final class Constants
 
   public static class ClawIntakeConstants{
     public static final int MOTOR_ID = 33;
-    public static final InvertedValue MOTOR_INVERT = InvertedValue.Clockwise_Positive;
+    public static final boolean MOTOR_INVERT = false;
     public static final double ALGAE_INTAKE_SPEED = 1;
     public static final double ALGAE_HOLD_SPEED = 0.07;
     public static final double ALGAE_OUTTAKE_SPEED = 1;
@@ -60,37 +74,88 @@ public final class Constants
   }
 
   public static class LifterConstants{
+    // Hardware: 2x TalonSRX + quad encoders, mechanically linked sides.
+    // Measured range: 0 (stowed) to 6733 ticks (full deploy) = 180 degrees.
+    // Encoders are zeroed at boot (Lifter constructor) — mechanism MUST be at stow before power-on.
     public static final int RIGHT_MOTOR_ID = 31;
     public static final int LEFT_MOTOR_ID = 32;
+    // TO-VERIFY on bench (blip test, ~3% output in Tuner): positive output must move BOTH sides
+    // toward deploy AND count BOTH sensors up. On Phoenix 5, setInverted does NOT flip the quad
+    // sensor — phase must be validated per side. Wrong phase on one side = the sides fight.
     public static final boolean RIGHT_MOTOR_INVERT = false;
     public static final boolean LEFT_MOTOR_INVERT = true;
-    //6000-8000
-    public static final double MOTOR_MAX_VELOCITY = 7000;
-    public static final double MOTOR_MAX_ACCELERATION = 28000;
-    public static final double MOTOR_ALLOWED_ERROR = 0.8;
+    public static final boolean RIGHT_SENSOR_PHASE = true;
+    public static final boolean LEFT_SENSOR_PHASE = false;
 
-    public static final double MOTOR_MIN_OUTPUT = -1;
-    public static final double MOTOR_P = 0.1;
+    public static final double TICKS_PER_DEGREE = 6733.0 / 180.0; // ~37.4
+
+    // Motion Magic, Phoenix 5 native units: cruise = ticks/100ms, accel = ticks/100ms/s.
+    // BENCH values: ~27 deg/s cruise -> full 180 deg travel in ~7 s. Raise only after tuning kF.
+    public static final double MOTOR_MAX_VELOCITY = 100;
+    public static final double MOTOR_MAX_ACCELERATION = 200;
+
+    // kF drives Motion Magic — measure it, don't guess: run a fixed duty in Tuner, read
+    // velocity in ticks/100ms, then kF = duty * 1023 / velocity. Zero until measured.
+    public static final double MOTOR_F = 0;
+    public static final double MOTOR_P = 0.8;
     public static final double MOTOR_I = 0;
-    public static final double MOTOR_D = 0.01;
+    public static final double MOTOR_D = 0;
 
+    // Bring-up safety clamps
+    public static final double PEAK_OUTPUT = 0.2;              // duty cycle, both directions
+    public static final int CONTINUOUS_CURRENT_LIMIT = 10;     // A — raise if it can't lift
+    public static final int PEAK_CURRENT_LIMIT = 20;           // A
+    public static final int PEAK_CURRENT_DURATION_MS = 200;
+    public static final int FORWARD_SOFT_LIMIT_TICKS = 6800;   // just past full deploy
+    public static final int REVERSE_SOFT_LIMIT_TICKS = -150;   // just past stow
+    public static final double DIVERGENCE_FAULT_DEGREES = 3.0; // left/right split that latches a fault
+    public static final double JOG_MAX_OUTPUT = 0.15;
+    public static final double MAX_POS_DEGREES = 180;
 
-    // Lifter Positions
-    public static final double STOWED_POS = 10; 
-    public static final double HANG_POS = 10; 
-    public static final double CORAL_SCORE_POS = 101; 
-    public static final double CLEARANCE_POS = 130; //118 
-    public static final double ALGAE_INTAKE_POS = 130; //128 //125
-    public static final double ALGAE_SCORE_POS = 128; //125.1
-    public static final double CORAL_INTAKE_POS = 193; 
-    public static final double CLIMBING_APPROACH_POS = 198; 
+    // Lifter positions (degrees). Remapped from the old NEO-rotation setpoints (10..198) via
+    // (rot - 10) * 180 / 188 — the old values were encoder rotations, NOT degrees; 193/198
+    // taken as degrees would overrun the 180-degree hard stop. TO-VERIFY each on bench.
+    public static final double STOWED_POS = 0;                 // was 10 rot
+    public static final double HANG_POS = 0;                   // was 10 rot
+    public static final double CORAL_SCORE_POS = 87.1;         // was 101 rot
+    public static final double CLEARANCE_POS = 114.9;          // was 130 rot
+    public static final double ALGAE_INTAKE_POS = 114.9;       // was 130 rot
+    public static final double ALGAE_SCORE_POS = 113.0;        // was 128 rot
+    public static final double CORAL_INTAKE_POS = 175.2;       // was 193 rot
+    public static final double CLIMBING_APPROACH_POS = 180.0;  // was 198 rot
 
   }
 
   public static class ClawArmConstants{
+    // Hardware: TalonSRX + quad encoder. Measured range: 0 - 795000 ticks = 128 degrees.
+    // Encoder zeroed at boot — arm MUST be at stow before power-on.
     public static final int MOTOR_ID = 34;
-    
-    // Claw Arm Positions
+    // TO-VERIFY on bench (blip test): positive output must move toward deploy and count the sensor up.
+    public static final boolean MOTOR_INVERT = false;
+    public static final boolean SENSOR_PHASE = false;
+
+    public static final double TICKS_PER_DEGREE = 795000.0 / 128.0; // ~6211
+
+    // Motion Magic, Phoenix 5 native units (ticks/100ms, ticks/100ms/s). BENCH: ~5 deg/s.
+    public static final double MOTOR_MAX_VELOCITY = 3100;
+    public static final double MOTOR_MAX_ACCELERATION = 6200;
+    public static final double MOTOR_F = 0; // measure: duty * 1023 / velocity(ticks/100ms)
+    public static final double MOTOR_P = 0.05;
+    public static final double MOTOR_I = 0;
+    public static final double MOTOR_D = 0;
+
+    // Bring-up safety clamps
+    public static final double PEAK_OUTPUT = 0.2;
+    public static final int CONTINUOUS_CURRENT_LIMIT = 10;
+    public static final int PEAK_CURRENT_LIMIT = 20;
+    public static final int PEAK_CURRENT_DURATION_MS = 200;
+    public static final int FORWARD_SOFT_LIMIT_TICKS = 800000;
+    public static final int REVERSE_SOFT_LIMIT_TICKS = -5000;
+    public static final double JOG_MAX_OUTPUT = 0.1;
+    public static final double MAX_POS_DEGREES = 128;
+
+    // Claw Arm Positions (degrees). Carried 1:1 from the old TalonFX "rotation" setpoints —
+    // scaling is unverified on the new sensor; TO-VERIFY each on bench.
     public static final double STOWED_POS = 0.77; //0.2
     public static final double CLIMBING_APPROACH_POS = 0;
     public static final double ALGAE_TRANSFER_POS = 12.76; //10.76
@@ -105,25 +170,52 @@ public final class Constants
   }
 
   public static class ClawElevatorConstants{
-    public static final int MOTOR_ID = 50;
-    
-    // Elevator Positions
-    public static final double STOWED_POS = -0.75; //0 //2 //check with Harrison
-    public static final double L1_CORAL_SCORING_POS = 0; 
-    public static final double L1_ALGAE_INTAKE_POS = 0; 
-    public static final double CORAL_HUMAN_POS = 0; 
-    public static final double CLIMBING_APPROACH_POS = 0; 
-    public static final double ALGAE_TRANSFER_POS = 0;  
-    public static final double L2_CORAL_SCORING_POS = -28;  
-    public static final double L2_ALGAE_INTAKE_POS = -28;
-    public static final double ALGAE_SCORE_POS = -28; //28
-    public static final double TOP_POS = -46; //28 //49 //46
+    // Hardware: TalonSRX + quad encoder, CAN 36 (re-ID'd from the old 50 — NOTES.md updated).
+    // Measured range: 0 - 3214 ticks = 23.25 inches. Encoder zeroed at boot — start at bottom.
+    public static final int MOTOR_ID = 36;
+    // TO-VERIFY on bench (blip test): positive output must move UP and count the sensor up.
+    // The old TalonFX code had up = NEGATIVE; direction on the new wiring is unverified.
+    public static final boolean MOTOR_INVERT = false;
+    public static final boolean SENSOR_PHASE = false;
 
+    public static final double TICKS_PER_INCH = 3214.0 / 23.25; // ~138.2
+
+    // Motion Magic, Phoenix 5 native units (ticks/100ms, ticks/100ms/s). BENCH: ~7 in/s.
+    public static final double MOTOR_MAX_VELOCITY = 100;
+    public static final double MOTOR_MAX_ACCELERATION = 200;
+    public static final double MOTOR_F = 0; // measure: duty * 1023 / velocity(ticks/100ms)
+    public static final double MOTOR_P = 1.0;
+    public static final double MOTOR_I = 0;
+    public static final double MOTOR_D = 0;
+
+    // Bring-up safety clamps
+    public static final double PEAK_OUTPUT = 0.25;
+    public static final int CONTINUOUS_CURRENT_LIMIT = 10;
+    public static final int PEAK_CURRENT_LIMIT = 20;
+    public static final int PEAK_CURRENT_DURATION_MS = 200;
+    public static final int FORWARD_SOFT_LIMIT_TICKS = 3250;
+    public static final int REVERSE_SOFT_LIMIT_TICKS = -100;
+    public static final double JOG_MAX_OUTPUT = 0.15;
+    public static final double MAX_POS_INCHES = 23.25;
+
+    // Elevator positions (inches from bottom). L2 restored from the old TalonFX ratio
+    // (stow -0.75, L2 -28, TOP -46 rotations over 23.25 in) — the conversion had collapsed
+    // L2 and TOP to the same full-travel value. TO-VERIFY on bench.
+    public static final double STOWED_POS = 0;
+    public static final double L1_CORAL_SCORING_POS = 0;
+    public static final double L1_ALGAE_INTAKE_POS = 0;
+    public static final double CORAL_HUMAN_POS = 0;
+    public static final double CLIMBING_APPROACH_POS = 0;
+    public static final double ALGAE_TRANSFER_POS = 0;
+    public static final double L2_CORAL_SCORING_POS = 14.0;  // was 23 (== TOP)
+    public static final double L2_ALGAE_INTAKE_POS = 14.0;   // was 23 (== TOP)
+    public static final double ALGAE_SCORE_POS = 14.0;       // was 23 (== TOP)
+    public static final double TOP_POS = 23.0;
   }
 
   public static class LifterIntakeConstants{
     public static final int MOTOR_ID = 35;
-    public static InvertedValue LIFTER_MOTOR_INVERT = InvertedValue.Clockwise_Positive;
+    public static final boolean LIFTER_MOTOR_INVERT = false;
     public static final double ALGAE_INTAKE_SPEED = 1;
     public static final double ALGAE_OUTTAKE_SPEED = 1;
     public static final double CORAL_INTAKE_SPEED = 1;

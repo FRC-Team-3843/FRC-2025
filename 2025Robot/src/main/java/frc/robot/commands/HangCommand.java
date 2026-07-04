@@ -21,7 +21,6 @@ public class HangCommand extends SequentialCommandGroup{
             Commands.runOnce(() -> m_clawIntake.stop()),
             Commands.runOnce(() -> m_lifter.moveHangPos()),
             new WaitUntilCommand(() -> m_lifter.isAtHangPos()),
-            Commands.runOnce(() -> m_lifter.setBreak()),
             new WaitCommand(1),
             Commands.runOnce(() -> m_lifter.stopMotor())
         );

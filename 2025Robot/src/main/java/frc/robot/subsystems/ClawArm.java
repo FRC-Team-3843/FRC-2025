@@ -1,61 +1,90 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ClawArm extends SubsystemBase{
-    private final TalonFX clawArmMotor = new TalonFX(Constants.ClawArmConstants.MOTOR_ID);
-    private final MotionMagicVoltage clawArmMM = new MotionMagicVoltage(0);
-    public final TalonFXConfiguration clawArmConfig = new TalonFXConfiguration();
-	public Object moveAlgaeIntakePos;
+    private TalonSRX clawArmMotor;
+
     public ClawArm () {
+        if (!Constants.SubsystemEnables.CLAW_ARM_ENABLED) return;
+        clawArmMotor = new TalonSRX(Constants.ClawArmConstants.MOTOR_ID);
+        clawArmMotor.configFactoryDefault();
+        clawArmMotor.setNeutralMode(NeutralMode.Brake);
+        clawArmMotor.setInverted(Constants.ClawArmConstants.MOTOR_INVERT);
+        clawArmMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
+        clawArmMotor.setSensorPhase(Constants.ClawArmConstants.SENSOR_PHASE);
 
-        FeedbackConfigs fdb = clawArmConfig.Feedback;
-        fdb.SensorToMechanismRatio = 1;
+        // Boot position defines zero — arm must be at stow before power-on.
+        clawArmMotor.setSelectedSensorPosition(0, 0, 30);
 
-        MotionMagicConfigs clawArmMMConfig = clawArmConfig.MotionMagic;
-        //100-500
-        clawArmMMConfig.MotionMagicAcceleration = 120;
-        clawArmMMConfig.MotionMagicCruiseVelocity = 60;
-        
+        clawArmMotor.configNominalOutputForward(0, 30);
+        clawArmMotor.configNominalOutputReverse(0, 30);
+        clawArmMotor.configPeakOutputForward(Constants.ClawArmConstants.PEAK_OUTPUT, 30);
+        clawArmMotor.configPeakOutputReverse(-Constants.ClawArmConstants.PEAK_OUTPUT, 30);
 
-        Slot0Configs clawArmSlot0Configs = clawArmConfig.Slot0;
-        clawArmSlot0Configs.kS = 0.25; // Add 0.25 V output to overcome static friction
-        clawArmSlot0Configs.kV = 0.012; // A velocity target of 1 rps results in 0.12 V output
-        clawArmSlot0Configs.kA = 0.001; // An acceleration of 1 rps/s requires 0.01 V output
-        clawArmSlot0Configs.kP = 5; // A position error of 0.2 rotations results in 12 V output
-        clawArmSlot0Configs.kI = 0; // No output for integrated error
-        clawArmSlot0Configs.kD = 0; // A velocity error of 1 rps results in 0.5 V output
+        clawArmMotor.configContinuousCurrentLimit(Constants.ClawArmConstants.CONTINUOUS_CURRENT_LIMIT, 30);
+        clawArmMotor.configPeakCurrentLimit(Constants.ClawArmConstants.PEAK_CURRENT_LIMIT, 30);
+        clawArmMotor.configPeakCurrentDuration(Constants.ClawArmConstants.PEAK_CURRENT_DURATION_MS, 30);
+        clawArmMotor.enableCurrentLimit(true);
 
-        StatusCode status = StatusCode.StatusCodeNotInitialized;
-        for (int i = 0; i < 5; ++i) {
-            status = clawArmMotor.getConfigurator().apply(clawArmConfig);
-            if (status.isOK()) break;
-        }
-        if (!status.isOK()) {
-            System.out.println("Could not configure device. Error: " + status.toString());
-        }
+        clawArmMotor.configForwardSoftLimitThreshold(Constants.ClawArmConstants.FORWARD_SOFT_LIMIT_TICKS, 30);
+        clawArmMotor.configReverseSoftLimitThreshold(Constants.ClawArmConstants.REVERSE_SOFT_LIMIT_TICKS, 30);
+        clawArmMotor.configForwardSoftLimitEnable(true, 30);
+        clawArmMotor.configReverseSoftLimitEnable(true, 30);
 
+        clawArmMotor.selectProfileSlot(0, 0);
+        clawArmMotor.config_kF(0, Constants.ClawArmConstants.MOTOR_F, 30);
+        clawArmMotor.config_kP(0, Constants.ClawArmConstants.MOTOR_P, 30);
+        clawArmMotor.config_kI(0, Constants.ClawArmConstants.MOTOR_I, 30);
+        clawArmMotor.config_kD(0, Constants.ClawArmConstants.MOTOR_D, 30);
+
+        clawArmMotor.configMotionCruiseVelocity((int)Constants.ClawArmConstants.MOTOR_MAX_VELOCITY, 30);
+        clawArmMotor.configMotionAcceleration((int)Constants.ClawArmConstants.MOTOR_MAX_ACCELERATION, 30);
     }
-    public void setPos(double targetPosition) {
-        clawArmMM.withPosition(targetPosition);
-        clawArmMotor.setControl(clawArmMM);
+
+    @Override
+    public void periodic() {
+        if (!Constants.SubsystemEnables.CLAW_ARM_ENABLED) return;
+        SmartDashboard.putNumber("ClawArm/Ticks", clawArmMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber("ClawArm/Degrees", getPosition());
+        SmartDashboard.putNumber("ClawArm/Output", clawArmMotor.getMotorOutputPercent());
+    }
+
+    public void setPos(double targetPositionDegrees) {
+        if (!Constants.SubsystemEnables.CLAW_ARM_ENABLED) return;
+        double clampedDegrees = MathUtil.clamp(targetPositionDegrees, 0, Constants.ClawArmConstants.MAX_POS_DEGREES);
+        double targetTicks = clampedDegrees * Constants.ClawArmConstants.TICKS_PER_DEGREE;
+        clawArmMotor.set(ControlMode.MotionMagic, targetTicks);
+    }
+
+    /** Open-loop bench jog. */
+    public void jog(double percentOutput) {
+        if (!Constants.SubsystemEnables.CLAW_ARM_ENABLED) return;
+        double clamped = MathUtil.clamp(percentOutput,
+            -Constants.ClawArmConstants.JOG_MAX_OUTPUT, Constants.ClawArmConstants.JOG_MAX_OUTPUT);
+        clawArmMotor.set(ControlMode.PercentOutput, clamped);
+    }
+
+    public void stop() {
+        if (!Constants.SubsystemEnables.CLAW_ARM_ENABLED) return;
+        clawArmMotor.set(ControlMode.PercentOutput, 0);
     }
 
     public double getPosition() {
-        return clawArmMotor.getPosition().getValue().magnitude();
+        if (!Constants.SubsystemEnables.CLAW_ARM_ENABLED) return 0;
+        return clawArmMotor.getSelectedSensorPosition() / Constants.ClawArmConstants.TICKS_PER_DEGREE;
     }
 
     public boolean isAtPosition(double position){
-        if(Math.abs(getPosition() - position) < 2)
+        if(Math.abs(getPosition() - position) < 2.0)
             return true;
         return false;
     }

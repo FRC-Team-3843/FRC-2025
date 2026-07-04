@@ -4,13 +4,8 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.auto.AutoBuilder;
 
-//import com.pathplanner.lib.path.PathPlannerPath;
-//import com.pathplanner.lib.auto.AutoBuilder;
-
+////
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 //import edu.wpi.first.math.geometry.Translation2d;
@@ -18,7 +13,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -70,8 +67,7 @@ public class RobotContainer
 
   private final SwerveSubsystem drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
- SendableChooser<Command> autoChooser;
-  //LOOK HERE AUTO
+ private final PowerDistribution pdp = new PowerDistribution(1, PowerDistribution.ModuleType.kCTRE);
 
   
 
@@ -119,17 +115,11 @@ public class RobotContainer
     // Configure the trigger bindings
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
-    NamedCommands.registerCommand("test", Commands.print("I EXIST"));
-    NamedCommands.registerCommand("AutoCoralScore", new AutoCoralScoreCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake));
 
-   autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-    autoChooser.addOption("LinearAuto", LinearAuto()); 
-    autoChooser.addOption("CrookedAuto", CrookedAuto());
-    autoChooser.addOption("ScoreCoralCenter", ScoreCoralCenter());
-    autoChooser.addOption("ScoreCoralLeft", ScoreCoralLeft());
-    autoChooser.addOption("ScoreCoralRight", ScoreCoralRight());
-    //autoChooser.addOption("CrookedAuto", NewAuto());
+
+
+
+    //
   }
 
   /**
@@ -145,12 +135,93 @@ public class RobotContainer
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
     Command driveRobotOrientedAngularVelocity  = drivebase.driveFieldOriented(driveRobotOriented);
-    Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngle);
     Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
     Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
-    Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleKeyboard);
     
     
+    if (Constants.BENCH_TEST_MODE) {
+      configureBenchTestBindings();
+    } else {
+      configureCompetitionBindings();
+    }
+
+    if (RobotBase.isSimulation())
+    {
+      drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
+    } else
+    {
+      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    }
+
+    if (Robot.isSimulation())
+    {
+      driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
+      driverXbox.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
+
+    }
+    if (DriverStation.isTest()){
+      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
+
+      driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+      driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
+      driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+      driverXbox.back().whileTrue(drivebase.centerModulesCommand());
+      driverXbox.leftBumper().onTrue(Commands.none());
+      driverXbox.rightBumper().onTrue(Commands.none());
+    }
+    else{
+      driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+      driverXbox.povUp().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+    }
+
+  }
+
+  /**
+   * Bench bring-up controls (operator pad, port 3). Open-loop jogs on the sticks, small
+   * closed-loop Motion Magic test moves on the buttons, panic-stop on Back. No competition
+   * sequences are bound in this mode.
+   */
+  private void configureBenchTestBindings()
+  {
+    // Lifter jog: left stick Y, push up = positive output. Divergence watchdog in
+    // Lifter.periodic() still applies. Release = stop.
+    operatorXbox.axisMagnitudeGreaterThan(XboxController.Axis.kLeftY.value, 0.2)
+        .whileTrue(Commands.runEnd(
+            () -> lifter.jog(-operatorXbox.getLeftY() * Constants.LifterConstants.JOG_MAX_OUTPUT),
+            () -> lifter.stopMotor(), lifter));
+
+    // Elevator jog: right stick Y, push up = positive output.
+    operatorXbox.axisMagnitudeGreaterThan(XboxController.Axis.kRightY.value, 0.2)
+        .whileTrue(Commands.runEnd(
+            () -> clawElevator.jog(-operatorXbox.getRightY() * Constants.ClawElevatorConstants.JOG_MAX_OUTPUT),
+            () -> clawElevator.stop(), clawElevator));
+
+    // Arm jog: POV up = positive output, POV down = negative, while held.
+    operatorXbox.povUp().whileTrue(Commands.runEnd(
+        () -> clawArm.jog(Constants.ClawArmConstants.JOG_MAX_OUTPUT),
+        () -> clawArm.stop(), clawArm));
+    operatorXbox.povDown().whileTrue(Commands.runEnd(
+        () -> clawArm.jog(-Constants.ClawArmConstants.JOG_MAX_OUTPUT),
+        () -> clawArm.stop(), clawArm));
+
+    // Small closed-loop test moves (Motion Magic latches — Back or disable to stop).
+    operatorXbox.a().onTrue(Commands.runOnce(() -> lifter.setPos(10), lifter));
+    operatorXbox.b().onTrue(Commands.runOnce(() -> lifter.setPos(0), lifter));
+    operatorXbox.x().onTrue(Commands.runOnce(() -> clawElevator.setPos(2), clawElevator));
+    operatorXbox.y().onTrue(Commands.runOnce(() -> clawElevator.setPos(0), clawElevator));
+    operatorXbox.leftBumper().onTrue(Commands.runOnce(() -> clawArm.setPos(5), clawArm));
+    operatorXbox.rightBumper().onTrue(Commands.runOnce(() -> clawArm.setPos(Constants.ClawArmConstants.STOWED_POS), clawArm));
+
+    // Panic: neutral every mechanism.
+    operatorXbox.back().onTrue(Commands.runOnce(() -> {
+      lifter.stopMotor();
+      clawElevator.stop();
+      clawArm.stop();
+    }, lifter, clawElevator, clawArm));
+  }
+
+  private void configureCompetitionBindings()
+  {
     operatorXbox.a()
       .onTrue(new AlgaeGroundIntakeCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake));
     operatorXbox.b()
@@ -201,8 +272,8 @@ public class RobotContainer
     
     
     driverXbox.rightBumper()
-      .onTrue(new HangCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake))
-      .onFalse(Commands.runOnce(() -> lifter.releaseBreak()));
+      .onTrue(new HangCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake));
+      
     driverXbox.leftBumper()
     .onTrue(new HangApproachCommand(lifterIntake, clawArm, clawElevator, lifter, clawIntake));
     
@@ -220,47 +291,6 @@ public class RobotContainer
       .onTrue(Commands.runOnce(() -> clawIntake.outtake(Constants.ClawIntakeConstants.CORAL_OUTTAKE_SPEED)))
       .onFalse(Commands.runOnce(() -> clawIntake.stop()));
 
-    
- 
-    
-    
-    if (RobotBase.isSimulation())
-    {
-      drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
-    } else
-    {
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
-    }
-
-    if (Robot.isSimulation())
-    {
-      driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-      driverXbox.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
-
-    }
-    if (DriverStation.isTest()){
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
-
-      driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
-      driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.back().whileTrue(drivebase.centerModulesCommand());
-      driverXbox.leftBumper().onTrue(Commands.none());
-      driverXbox.rightBumper().onTrue(Commands.none());
-    } 
-    else{ 
-      driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      //driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-      //driverXbox.b().whileTrue(
-      //    drivebase.driveToPose(
-      //        new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-      //                        );
-      //driverXbox.start().whileTrue(Commands.none());
-      //driverXbox.back().whileTrue(Commands.none());
-      driverXbox.povUp().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      //driverXbox.rightBumper().onTrue(Commands.none());
-    } 
-
   }
 
   /**
@@ -268,34 +298,10 @@ public class RobotContainer
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand()
+    public Command getAutonomousCommand()
   {
-    // An example command will be run in autonomous
-  return autoChooser.getSelected();
-    //return drivebase.getAutonomousCommand("LinearPath");
-    //trying to integrate pathplanner for LinearAuto (short, about three feet forward move)
+    return Commands.none();
   }
-  
-  public Command LinearAuto() {
-  return new PathPlannerAuto("LinearAuto");
-  } 
-
-  public Command CrookedAuto() {
-    return new PathPlannerAuto("CrookedAuto");
-  }
-
-  public Command ScoreCoralCenter() {
-    return new PathPlannerAuto("ScoreCoralCenter");
-  }
-
-  public Command ScoreCoralLeft() {
-    return new PathPlannerAuto("ScoreCoralLeft");
-  }
-
-  public Command ScoreCoralRight() {
-    return new PathPlannerAuto("ScoreCoralRight");
-  }
-   
 
   public void setMotorBrake(boolean brake)
   {

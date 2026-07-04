@@ -1,17 +1,18 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class LifterIntake extends SubsystemBase{
-    TalonFX lifterIntakeMotor = new TalonFX(Constants.LifterIntakeConstants.MOTOR_ID);
-    TalonFXConfiguration lifterIntakeConfig = new TalonFXConfiguration();
+    TalonSRX lifterIntakeMotor;
     
     public LifterIntake() {
-        lifterIntakeConfig.MotorOutput.Inverted = Constants.LifterIntakeConstants.LIFTER_MOTOR_INVERT;
+        if (!Constants.SubsystemEnables.LIFTER_INTAKE_ENABLED) return;
+        lifterIntakeMotor = new TalonSRX(Constants.LifterIntakeConstants.MOTOR_ID);
+        lifterIntakeMotor.setInverted(Constants.LifterIntakeConstants.LIFTER_MOTOR_INVERT);
     }
 
     public void periodic() {
@@ -19,8 +20,9 @@ public class LifterIntake extends SubsystemBase{
     }
 
     public void setMotor(double speed, boolean direction) {
-        if (direction) lifterIntakeMotor.set(speed);
-        else lifterIntakeMotor.set( -speed);
+        if (!Constants.SubsystemEnables.LIFTER_INTAKE_ENABLED) return;
+        if (direction) lifterIntakeMotor.set(ControlMode.PercentOutput, speed);
+        else lifterIntakeMotor.set(ControlMode.PercentOutput, -speed);
     }
 
     public void intake(double speed) {

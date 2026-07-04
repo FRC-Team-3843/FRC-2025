@@ -1,59 +1,90 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ClawElevator extends SubsystemBase{
-    private final TalonFX elevatorMotor = new TalonFX(Constants.ClawElevatorConstants.MOTOR_ID);
-    private final MotionMagicVoltage elevatorMM = new MotionMagicVoltage(0);
-    public final TalonFXConfiguration elevatorConfig = new TalonFXConfiguration();
-    
+    private TalonSRX elevatorMotor;
+
     public ClawElevator () {
-        FeedbackConfigs fdb = elevatorConfig.Feedback;
-        fdb.SensorToMechanismRatio = 1;
+        if (!Constants.SubsystemEnables.CLAW_ELEVATOR_ENABLED) return;
+        elevatorMotor = new TalonSRX(Constants.ClawElevatorConstants.MOTOR_ID);
+        elevatorMotor.configFactoryDefault();
+        elevatorMotor.setNeutralMode(NeutralMode.Brake);
+        elevatorMotor.setInverted(Constants.ClawElevatorConstants.MOTOR_INVERT);
+        elevatorMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
+        elevatorMotor.setSensorPhase(Constants.ClawElevatorConstants.SENSOR_PHASE);
 
-        MotionMagicConfigs elevatorMMConfig = elevatorConfig.MotionMagic;
-        elevatorMMConfig.MotionMagicAcceleration = 100;
-        elevatorMMConfig.MotionMagicCruiseVelocity = 500;
+        // Boot position defines zero — elevator must be at the bottom before power-on.
+        elevatorMotor.setSelectedSensorPosition(0, 0, 30);
 
-        Slot0Configs elevatorSlot0Configs = elevatorConfig.Slot0;
-        elevatorSlot0Configs.kS = 0.25; // Add 0.25 V output to overcome static friction
-        elevatorSlot0Configs.kV = 0.012; // A velocity target of 1 rps results in 0.12 V output
-        elevatorSlot0Configs.kA = 0.001; // An acceleration of 1 rps/s requires 0.01 V output
-        elevatorSlot0Configs.kP = 5; // A position error of 0.2 rotations results in 12 V output
-        elevatorSlot0Configs.kI = 0; // No output for integrated error
-        elevatorSlot0Configs.kD = 0; // A velocity error of 1 rps results in 0.5 V output
+        elevatorMotor.configNominalOutputForward(0, 30);
+        elevatorMotor.configNominalOutputReverse(0, 30);
+        elevatorMotor.configPeakOutputForward(Constants.ClawElevatorConstants.PEAK_OUTPUT, 30);
+        elevatorMotor.configPeakOutputReverse(-Constants.ClawElevatorConstants.PEAK_OUTPUT, 30);
 
-        StatusCode status = StatusCode.StatusCodeNotInitialized;
-        for (int i = 0; i < 5; ++i) {
-            status = elevatorMotor.getConfigurator().apply(elevatorConfig);
-            if (status.isOK()) break;
-        }
-        if (!status.isOK()) {
-            System.out.println("Could not configure device. Error: " + status.toString());
-        }
+        elevatorMotor.configContinuousCurrentLimit(Constants.ClawElevatorConstants.CONTINUOUS_CURRENT_LIMIT, 30);
+        elevatorMotor.configPeakCurrentLimit(Constants.ClawElevatorConstants.PEAK_CURRENT_LIMIT, 30);
+        elevatorMotor.configPeakCurrentDuration(Constants.ClawElevatorConstants.PEAK_CURRENT_DURATION_MS, 30);
+        elevatorMotor.enableCurrentLimit(true);
 
+        elevatorMotor.configForwardSoftLimitThreshold(Constants.ClawElevatorConstants.FORWARD_SOFT_LIMIT_TICKS, 30);
+        elevatorMotor.configReverseSoftLimitThreshold(Constants.ClawElevatorConstants.REVERSE_SOFT_LIMIT_TICKS, 30);
+        elevatorMotor.configForwardSoftLimitEnable(true, 30);
+        elevatorMotor.configReverseSoftLimitEnable(true, 30);
+
+        elevatorMotor.selectProfileSlot(0, 0);
+        elevatorMotor.config_kF(0, Constants.ClawElevatorConstants.MOTOR_F, 30);
+        elevatorMotor.config_kP(0, Constants.ClawElevatorConstants.MOTOR_P, 30);
+        elevatorMotor.config_kI(0, Constants.ClawElevatorConstants.MOTOR_I, 30);
+        elevatorMotor.config_kD(0, Constants.ClawElevatorConstants.MOTOR_D, 30);
+
+        elevatorMotor.configMotionCruiseVelocity((int)Constants.ClawElevatorConstants.MOTOR_MAX_VELOCITY, 30);
+        elevatorMotor.configMotionAcceleration((int)Constants.ClawElevatorConstants.MOTOR_MAX_ACCELERATION, 30);
     }
 
-    public void setPos(double targetPosition) {
-         elevatorMM.withPosition(targetPosition);
-         elevatorMotor.setControl(elevatorMM);
+    @Override
+    public void periodic() {
+        if (!Constants.SubsystemEnables.CLAW_ELEVATOR_ENABLED) return;
+        SmartDashboard.putNumber("ClawElevator/Ticks", elevatorMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber("ClawElevator/Inches", getPosition());
+        SmartDashboard.putNumber("ClawElevator/Output", elevatorMotor.getMotorOutputPercent());
+    }
+
+    public void setPos(double targetPositionInches) {
+        if (!Constants.SubsystemEnables.CLAW_ELEVATOR_ENABLED) return;
+        double clampedInches = MathUtil.clamp(targetPositionInches, 0, Constants.ClawElevatorConstants.MAX_POS_INCHES);
+        double targetTicks = clampedInches * Constants.ClawElevatorConstants.TICKS_PER_INCH;
+        elevatorMotor.set(ControlMode.MotionMagic, targetTicks);
+    }
+
+    /** Open-loop bench jog. */
+    public void jog(double percentOutput) {
+        if (!Constants.SubsystemEnables.CLAW_ELEVATOR_ENABLED) return;
+        double clamped = MathUtil.clamp(percentOutput,
+            -Constants.ClawElevatorConstants.JOG_MAX_OUTPUT, Constants.ClawElevatorConstants.JOG_MAX_OUTPUT);
+        elevatorMotor.set(ControlMode.PercentOutput, clamped);
+    }
+
+    public void stop() {
+        if (!Constants.SubsystemEnables.CLAW_ELEVATOR_ENABLED) return;
+        elevatorMotor.set(ControlMode.PercentOutput, 0);
     }
 
     public double getPosition() {
-        return elevatorMotor.getPosition().getValue().magnitude();
+        if (!Constants.SubsystemEnables.CLAW_ELEVATOR_ENABLED) return 0;
+        return elevatorMotor.getSelectedSensorPosition() / Constants.ClawElevatorConstants.TICKS_PER_INCH;
     }
 
     public boolean isAtPosition(double position){
-        if(Math.abs(getPosition() - position) < 4)
+        if(Math.abs(getPosition() - position) < 0.5)
             return true;
         return false;
     }

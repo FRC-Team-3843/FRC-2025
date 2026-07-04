@@ -12,7 +12,7 @@
 |--------|--------|-------------|
 | Swerve Modules | 1-12 | Drive motors, steer motors, CANCoders |
 
-### Mechanisms
+### Mechanisms (all TalonSRX + quad encoders as of 2026-07 demo rebuild)
 | Device | CAN ID | Description |
 |--------|--------|-------------|
 | Right Lifter Motor | 31 | Lifter right side |
@@ -20,21 +20,21 @@
 | Claw Intake Motor | 33 | Intake/outtake control |
 | Claw Arm Motor | 34 | Arm positioning |
 | Lifter Intake Motor | 35 | Secondary intake |
-| Claw Elevator Motor | 50 | Vertical extension |
+| Claw Elevator Motor | 36 | Vertical extension (re-ID'd from 50) |
 
-## Key Positions
+## Key Positions (2026-07 TalonSRX rebuild — encoders zero at boot; pre-position at stow before power-on)
 
-### Lifter Positions (encoder rotations)
-- Stowed: 10
-- Hang: 10
-- Coral Score: 101
-- Clearance: 130
-- Algae Intake: 130
-- Algae Score: 128
-- Coral Intake: 193
-- Climbing Approach: 198
+Measured ranges: Lifter 0-6733 ticks = 180 deg; Claw Arm 0-795000 ticks = 128 deg; Claw Elevator 0-3214 ticks = 23.25 in.
 
-### Claw Arm Positions (rotations)
+### Lifter Positions (degrees; remapped from old NEO rotations via (rot-10)*180/188 — TO-VERIFY on bench)
+- Stowed / Hang: 0
+- Coral Score: 87.1
+- Clearance / Algae Intake: 114.9
+- Algae Score: 113.0
+- Coral Intake: 175.2
+- Climbing Approach: 180.0
+
+### Claw Arm Positions (degrees; carried 1:1 from old TalonFX rotations — TO-VERIFY on bench)
 - Stowed: 0.77
 - L1 Coral Scoring: 23.26
 - L2 Coral Scoring: 44
@@ -42,12 +42,24 @@
 - L2 Algae Intake: 38
 - Algae Score: 53
 
-### Claw Elevator Positions (rotations)
-- Stowed: -0.75
-- L2 Coral Scoring: -28
-- L2 Algae Intake: -28
-- Algae Score: -28
-- Top: -46
+### Claw Elevator Positions (inches from bottom; up = positive — TO-VERIFY on bench)
+- Stowed: 0
+- L2 Coral Scoring / L2 Algae Intake / Algae Score: 14.0
+- Top: 23.0
+
+### Old-bot values (pre-rebuild, for reference only)
+- Lifter (NEO rotations): stowed/hang 10, coral score 101, clearance/algae intake 130, algae score 128, coral intake 193, climbing approach 198
+- Claw Elevator (TalonFX rotations, up = negative): stowed -0.75, L2 -28, top -46
+
+## Bench Bring-Up Checklist (2026-07 demo — BENCH_TEST_MODE in Constants.java)
+
+1. **Tuner X audit (robot on blocks, before deploying):** confirm TalonSRX at 31/32/34/36, set Brake on all four, check firmware.
+2. **Blip test (Tuner, ~3% output, fractions of a second, mechanism mid-range):** per motor, record (a) does positive output move toward deploy/up, (b) does the sensor count UP. Fix `*_MOTOR_INVERT` / `*_SENSOR_PHASE` in Constants until positive = deploy AND sensor counts up, on every motor. Lifter: verify BOTH sides agree before any closed-loop move. `setInverted` does NOT flip the quad sensor on Phoenix 5.
+3. **Measure kF (per mechanism):** steady duty in Tuner → read velocity (ticks/100ms) → `kF = duty * 1023 / velocity`. Enter in Constants.
+4. **First closed-loop moves (rider on disable):** operator A/B = lifter 10 deg/0; X/Y = elevator 2 in/0; LB/RB = arm 5 deg/stow. Sticks = open-loop jog (LY lifter, RY elevator, POV up/down arm). Back = panic stop. Watch `Lifter/DeltaDeg` on dashboard — watchdog latches + neutrals at 3 deg split (needs code restart).
+5. **Extend range gradually,** verify each named setpoint, then raise MOTOR_MAX_VELOCITY/ACCELERATION toward demo speed.
+6. **For the demo:** set `Constants.BENCH_TEST_MODE = false` to restore competition bindings.
+7. **Every power-on:** mechanisms at stow/bottom first — encoders zero at boot.
 
 ## Robot Dimensions
 - Pod Length: 25.25 in (0.6413 m)

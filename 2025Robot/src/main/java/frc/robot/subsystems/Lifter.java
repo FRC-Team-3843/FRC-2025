@@ -1,130 +1,151 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Lifter extends SubsystemBase {
-    SparkMax lifterRightMotor = new SparkMax(Constants.LifterConstants.RIGHT_MOTOR_ID, MotorType.kBrushless);
-    SparkMax lifterLeftMotor = new SparkMax(Constants.LifterConstants.LEFT_MOTOR_ID, MotorType.kBrushless);
-    SparkClosedLoopController lifterRightClosedLoopController = lifterRightMotor.getClosedLoopController();
-    SparkClosedLoopController lifterLeftClosedLoopController = lifterLeftMotor.getClosedLoopController();
-    RelativeEncoder lifterRightEncoder = lifterRightMotor.getEncoder();
-    RelativeEncoder lifterLeftEncoder = lifterLeftMotor.getEncoder();
-    SparkMaxConfig lifterRightConfig = new SparkMaxConfig();
-    SparkMaxConfig lifterLeftConfig = new SparkMaxConfig();
-    Servo motorBreak = new Servo(0);
-    Servo lineUp = new Servo(1);
+    private TalonSRX lifterRightMotor;
+    private TalonSRX lifterLeftMotor;
+
+    // Latched when the two sides diverge past DIVERGENCE_FAULT_DEGREES. The sides are
+    // mechanically linked — divergence means one side is stalled, slipping, or fighting the
+    // other, and continuing to drive will break the mechanism. Cleared only by code restart.
+    private boolean divergenceFault = false;
 
     public Lifter(){
-        lifterRightConfig
-            .inverted(Constants.LifterConstants.RIGHT_MOTOR_INVERT)
-            .smartCurrentLimit(20, 30, 120);
-        lifterLeftConfig
-            .inverted(Constants.LifterConstants.LEFT_MOTOR_INVERT)
-            .smartCurrentLimit(20, 30, 120);
-        
-            lifterRightMotor.configure(lifterRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        lifterLeftMotor.configure(lifterLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        if (!Constants.SubsystemEnables.LIFTER_ENABLED) return;
+        lifterRightMotor = new TalonSRX(Constants.LifterConstants.RIGHT_MOTOR_ID);
+        lifterLeftMotor = new TalonSRX(Constants.LifterConstants.LEFT_MOTOR_ID);
+        lifterRightMotor.configFactoryDefault();
+        lifterLeftMotor.configFactoryDefault();
 
-        
-        
-        lifterRightConfig.encoder
-            .positionConversionFactor(1)
-            .velocityConversionFactor(1);
-            
-        lifterLeftConfig.encoder
-            .positionConversionFactor(1)
-            .velocityConversionFactor(1);
+        lifterRightMotor.setNeutralMode(NeutralMode.Brake);
+        lifterLeftMotor.setNeutralMode(NeutralMode.Brake);
 
-        /*
-        * Configure the closed loop controller. We want to make sure we set the
-        * feedback sensor as the primary encoder.
-        */
+        lifterRightMotor.setInverted(Constants.LifterConstants.RIGHT_MOTOR_INVERT);
+        lifterLeftMotor.setInverted(Constants.LifterConstants.LEFT_MOTOR_INVERT);
 
+        lifterRightMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
+        lifterRightMotor.setSensorPhase(Constants.LifterConstants.RIGHT_SENSOR_PHASE);
 
-        lifterRightConfig.closedLoop
-            .minOutput(Constants.LifterConstants.MOTOR_MIN_OUTPUT)
-            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            // Set PID values for position control. We don't need to pass a closed loop
-            // slot, as it will default to slot 0.
-            .p(Constants.LifterConstants.MOTOR_P)
-            .i(Constants.LifterConstants.MOTOR_I)
-            .d(Constants.LifterConstants.MOTOR_D)
-            .outputRange(-1, 1);
-        
-        lifterRightConfig.closedLoop.maxMotion
-            .allowedClosedLoopError(Constants.LifterConstants.MOTOR_ALLOWED_ERROR)
-            .maxVelocity(Constants.LifterConstants.MOTOR_MAX_VELOCITY)
-            .maxAcceleration(Constants.LifterConstants.MOTOR_MAX_ACCELERATION);
-    
+        lifterLeftMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
+        lifterLeftMotor.setSensorPhase(Constants.LifterConstants.LEFT_SENSOR_PHASE);
 
-        lifterLeftConfig.closedLoop
-            .minOutput(Constants.LifterConstants.MOTOR_MIN_OUTPUT)
-            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            // Set PID values for position control. We don't need to pass a closed loop
-            // slot, as it will default to slot 0.
-            .p(Constants.LifterConstants.MOTOR_P)
-            .i(Constants.LifterConstants.MOTOR_I)
-            .d(Constants.LifterConstants.MOTOR_D)
-            .outputRange(-1, 1);
-        
-        lifterLeftConfig.closedLoop.maxMotion
-            .allowedClosedLoopError(Constants.LifterConstants.MOTOR_ALLOWED_ERROR)
-            .maxVelocity(Constants.LifterConstants.MOTOR_MAX_VELOCITY)
-            .maxAcceleration(Constants.LifterConstants.MOTOR_MAX_ACCELERATION);
+        // Boot position defines zero — mechanism must be at stow before power-on.
+        lifterRightMotor.setSelectedSensorPosition(0, 0, 30);
+        lifterLeftMotor.setSelectedSensorPosition(0, 0, 30);
 
-        lifterRightMotor.configure(lifterRightConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-        lifterLeftMotor.configure(lifterLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        configureOutputLimits(lifterRightMotor);
+        configureOutputLimits(lifterLeftMotor);
+
+        configureGainsAndMotion(lifterRightMotor);
+        configureGainsAndMotion(lifterLeftMotor);
     }
 
+    private void configureOutputLimits(TalonSRX motor) {
+        motor.configNominalOutputForward(0, 30);
+        motor.configNominalOutputReverse(0, 30);
+        motor.configPeakOutputForward(Constants.LifterConstants.PEAK_OUTPUT, 30);
+        motor.configPeakOutputReverse(-Constants.LifterConstants.PEAK_OUTPUT, 30);
+
+        motor.configContinuousCurrentLimit(Constants.LifterConstants.CONTINUOUS_CURRENT_LIMIT, 30);
+        motor.configPeakCurrentLimit(Constants.LifterConstants.PEAK_CURRENT_LIMIT, 30);
+        motor.configPeakCurrentDuration(Constants.LifterConstants.PEAK_CURRENT_DURATION_MS, 30);
+        motor.enableCurrentLimit(true);
+
+        motor.configForwardSoftLimitThreshold(Constants.LifterConstants.FORWARD_SOFT_LIMIT_TICKS, 30);
+        motor.configReverseSoftLimitThreshold(Constants.LifterConstants.REVERSE_SOFT_LIMIT_TICKS, 30);
+        motor.configForwardSoftLimitEnable(true, 30);
+        motor.configReverseSoftLimitEnable(true, 30);
+    }
+
+    private void configureGainsAndMotion(TalonSRX motor) {
+        motor.selectProfileSlot(0, 0);
+        motor.config_kF(0, Constants.LifterConstants.MOTOR_F, 30);
+        motor.config_kP(0, Constants.LifterConstants.MOTOR_P, 30);
+        motor.config_kI(0, Constants.LifterConstants.MOTOR_I, 30);
+        motor.config_kD(0, Constants.LifterConstants.MOTOR_D, 30);
+
+        motor.configMotionCruiseVelocity((int)Constants.LifterConstants.MOTOR_MAX_VELOCITY, 30);
+        motor.configMotionAcceleration((int)Constants.LifterConstants.MOTOR_MAX_ACCELERATION, 30);
+    }
+
+    @Override
     public void periodic() {
-        // Code here gets executed perodically
+        if (!Constants.SubsystemEnables.LIFTER_ENABLED) return;
+
+        double rightTicks = lifterRightMotor.getSelectedSensorPosition();
+        double leftTicks = lifterLeftMotor.getSelectedSensorPosition();
+        double deltaDegrees = (rightTicks - leftTicks) / Constants.LifterConstants.TICKS_PER_DEGREE;
+
+        if (!divergenceFault && Math.abs(deltaDegrees) > Constants.LifterConstants.DIVERGENCE_FAULT_DEGREES) {
+            divergenceFault = true;
+            DriverStation.reportError(
+                "LIFTER DIVERGENCE FAULT: sides split " + deltaDegrees
+                    + " deg (right " + rightTicks + " / left " + leftTicks
+                    + " ticks). Motors neutralized until code restart.", false);
+        }
+        if (divergenceFault) {
+            // Re-assert neutral every loop so a latched Motion Magic setpoint can't re-engage.
+            lifterRightMotor.set(ControlMode.PercentOutput, 0);
+            lifterLeftMotor.set(ControlMode.PercentOutput, 0);
+        }
+
+        SmartDashboard.putNumber("Lifter/RightTicks", rightTicks);
+        SmartDashboard.putNumber("Lifter/LeftTicks", leftTicks);
+        SmartDashboard.putNumber("Lifter/RightDeg", rightTicks / Constants.LifterConstants.TICKS_PER_DEGREE);
+        SmartDashboard.putNumber("Lifter/LeftDeg", leftTicks / Constants.LifterConstants.TICKS_PER_DEGREE);
+        SmartDashboard.putNumber("Lifter/DeltaDeg", deltaDegrees);
+        SmartDashboard.putNumber("Lifter/RightOutput", lifterRightMotor.getMotorOutputPercent());
+        SmartDashboard.putNumber("Lifter/LeftOutput", lifterLeftMotor.getMotorOutputPercent());
+        SmartDashboard.putBoolean("Lifter/DivergenceFault", divergenceFault);
     }
 
-    public void setPos(double targetPosition) {
-        lifterLeftClosedLoopController.setReference(targetPosition, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
-        lifterRightClosedLoopController.setReference(targetPosition, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
-        
-     // System.out.println(targetPosition);
-        
+    public void setPos(double targetPositionDegrees) {
+        if (!Constants.SubsystemEnables.LIFTER_ENABLED) return;
+        if (divergenceFault) return;
+        double clampedDegrees = MathUtil.clamp(targetPositionDegrees, 0, Constants.LifterConstants.MAX_POS_DEGREES);
+        double targetTicks = clampedDegrees * Constants.LifterConstants.TICKS_PER_DEGREE;
+        lifterLeftMotor.set(ControlMode.MotionMagic, targetTicks);
+        lifterRightMotor.set(ControlMode.MotionMagic, targetTicks);
     }
 
-    public void setBreak(){
-        motorBreak.set(0.75);
-    }
-
-
-    public void releaseBreak(){
-        motorBreak.set(0);
+    /** Open-loop bench jog; both sides get the same duty. Watchdog in periodic() still applies. */
+    public void jog(double percentOutput) {
+        if (!Constants.SubsystemEnables.LIFTER_ENABLED) return;
+        if (divergenceFault) return;
+        double clamped = MathUtil.clamp(percentOutput,
+            -Constants.LifterConstants.JOG_MAX_OUTPUT, Constants.LifterConstants.JOG_MAX_OUTPUT);
+        lifterLeftMotor.set(ControlMode.PercentOutput, clamped);
+        lifterRightMotor.set(ControlMode.PercentOutput, clamped);
     }
 
     public void stopMotor(){
-        lifterLeftMotor.set(0);
-        lifterRightMotor.set(0);
+        if (!Constants.SubsystemEnables.LIFTER_ENABLED) return;
+        lifterLeftMotor.set(ControlMode.PercentOutput, 0);
+        lifterRightMotor.set(ControlMode.PercentOutput, 0);
     }
 
-    public void deployLineUp(){
-        lineUp.set(1);
+    public boolean isFaulted() {
+        return divergenceFault;
     }
+
     public double getPosition() {
-        // Get the average position of the motor in revolutions
-        return ((lifterRightEncoder.getPosition() + lifterLeftEncoder.getPosition()) / 2);
+        if (!Constants.SubsystemEnables.LIFTER_ENABLED) return 0;
+        double rawTicks = (lifterRightMotor.getSelectedSensorPosition() + lifterLeftMotor.getSelectedSensorPosition()) / 2.0;
+        return rawTicks / Constants.LifterConstants.TICKS_PER_DEGREE;
     }
 
     public boolean isAtPosition(double position){
-        if(Math.abs(getPosition() - position) < 15)
+        if(Math.abs(getPosition() - position) < 2.0)
             return true;
         return false;
     }
