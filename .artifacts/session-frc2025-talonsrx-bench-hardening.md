@@ -24,6 +24,7 @@ decisions: []
 artifact_kind: memory
 memory_class: episodic
 scope: FRC-2025
+load_profile: on_demand
 ---
 
 # FRC-2025 TalonSRX conversion hardened for 2026-07-04 demo bench bring-up

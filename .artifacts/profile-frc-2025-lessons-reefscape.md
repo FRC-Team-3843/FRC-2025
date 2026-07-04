@@ -21,6 +21,7 @@ memory_class: semantic
 model: claude-sonnet-5
 model_basis: confirmed
 scope: FRC-2025
+load_profile: on_demand
 ---
 
 # FRC-2025 Reefscape — durable lessons for FRC-2026

@@ -24,6 +24,7 @@ decisions: []
 artifact_kind: memory
 memory_class: episodic
 scope: FRC-2025
+load_profile: on_demand
 ---
 
 # FRC-2025 DS no-comms root-caused + full bench verification + parade demo cycle built

@@ -15,6 +15,7 @@ model: unattributed
 model_basis: unattributed
 author: claude
 scope: FRC-2025
+load_profile: on_demand
 ---
 
 # FRC-2025 Repository Source

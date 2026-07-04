@@ -22,6 +22,7 @@ confidence: 70
 human_edited: false
 sensitivity: normal
 supersedes: session-stub-fa4471c4-202607032032
+load_profile: on_demand
 ---
 
 # FRC-2025 TalonSRX conversion + unit-scaling first pass (origin of the 2026-07-04 demo work)
